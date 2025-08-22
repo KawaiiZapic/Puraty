@@ -1,0 +1,23 @@
+{
+	"items": [
+		{
+			"name": "Puraty",
+			"action": "./start.sh"
+		},
+    {
+      "name": "Puraty Tools",
+      "items": [
+        {
+          "name": "Uninstall Puraty",
+          "action": "./uninstall.sh",
+			    "exitmenu": false
+        },
+        {
+          "name": "Fix Puraty",
+          "action": "./install.sh",
+			    "exitmenu": false
+        }
+      ]
+    }
+	]
+}
