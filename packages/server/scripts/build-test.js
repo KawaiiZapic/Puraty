@@ -14,6 +14,7 @@ buildSync({
   external: ["tjs:*"],
   outdir: "dist/tests",
   entryNames: "test-[hash]-[name]",
+  sourcemap: true,
   format: "esm"
 });
 

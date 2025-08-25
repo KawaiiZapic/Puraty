@@ -1,5 +1,5 @@
 import { ComicSource } from "@/venera-lib/Source";
-import assert from "../lib";
+import assert from "../assert";
 
 class TestSource extends ComicSource {
   key = "test_source";
