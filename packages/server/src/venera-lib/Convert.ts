@@ -1,11 +1,17 @@
 
 import CryptoJS from "crypto-js";
 
-const _toWordArr = (buf: ArrayBuffer): CryptoJS.lib.WordArray => {
-  return CryptoJS.lib.WordArray.create(buf)
+export const _toWordArr = (buf: ArrayBuffer): CryptoJS.lib.WordArray => {
+  return CryptoJS.lib.WordArray.create(buf);
 }
-const _toArrBuf = (wordArr: CryptoJS.lib.WordArray): ArrayBuffer => {
-  return new Uint8Array(wordArr.words).buffer
+
+const be2le = (v: number) => ((v & 0xFF) << 24) | ((v & 0xFF00) << 8) | ((v >> 8) & 0xFF00) | ((v >> 24) & 0xFF);
+
+export const _toArrBuf = (wordArr: CryptoJS.lib.WordArray, sliceToLen = false): ArrayBuffer => {
+  // Crypto.js uses big-endian internally, convert to little-endian is required
+  // Sometime we need slice array for correct result in some function
+  const r= new Int32Array(wordArr.words.map(be2le)).buffer;
+  return sliceToLen ? r.slice(0, wordArr.sigBytes) : r;
 }
 export const Convert = {
   encodeUtf8: (str: string): ArrayBuffer => {
@@ -18,13 +24,13 @@ export const Convert = {
     throw new Error("Calling not implemented function encodeGbk(str: string)");
   },
   decodeGbk(str: ArrayBuffer): string {
-    return new TextDecoder("gbk").decode(str);
+    throw new Error("Calling not implemented function decodeGbk(str: string)");
   },
   encodeBase64: (value: ArrayBuffer): string => {
     return CryptoJS.enc.Base64.stringify(_toWordArr(value));
   },
   decodeBase64: (value: string): ArrayBuffer => {
-    return _toArrBuf(CryptoJS.MD5(CryptoJS.enc.Base64.parse(value)));
+    return _toArrBuf(CryptoJS.enc.Base64.parse(value), true);
   },
   md5: (value: ArrayBuffer): ArrayBuffer => {
     return _toArrBuf(CryptoJS.MD5(_toWordArr(value)));
@@ -64,30 +70,32 @@ export const Convert = {
       )
     );
   },
-  decryptAesCbc: (value: ArrayBuffer, key: ArrayBuffer): ArrayBuffer => {
+  decryptAesCbc: (value: ArrayBuffer, key: ArrayBuffer, iv: ArrayBuffer): ArrayBuffer => {
     return _toArrBuf(
       CryptoJS.AES.decrypt(
         CryptoJS.enc.Base64.stringify(_toWordArr(value)), 
         _toWordArr(key), 
-        { mode: CryptoJS.mode.CBC }
+        { mode: CryptoJS.mode.CBC, iv: _toWordArr(iv) }
       )
     );
   },
-  decryptAesCfb: (value: ArrayBuffer, key: ArrayBuffer): ArrayBuffer => {
+  decryptAesCfb: (value: ArrayBuffer, key: ArrayBuffer, blockSize: number): ArrayBuffer => {
+    throw new Error("AES-CFB required IV to work which Venera doesn't implement correctly, this method should not be called.");
     return _toArrBuf(
       CryptoJS.AES.decrypt(
         CryptoJS.enc.Base64.stringify(_toWordArr(value)), 
         _toWordArr(key), 
-        { mode: CryptoJS.mode.CFB }
+        { mode: CryptoJS.mode.CFB, blockSize }
       )
     );
   },
-  decryptAesOfb: (value: ArrayBuffer, key: ArrayBuffer): ArrayBuffer => {
+  decryptAesOfb: (value: ArrayBuffer, key: ArrayBuffer, blockSize: number): ArrayBuffer => {
+    throw new Error("AES-OFB required IV to work which Venera doesn't implement correctly, this method should not be called.");
     return _toArrBuf(
       CryptoJS.AES.decrypt(
         CryptoJS.enc.Base64.stringify(_toWordArr(value)), 
         _toWordArr(key), 
-        { mode: CryptoJS.mode.OFB }
+        { mode: CryptoJS.mode.OFB, blockSize }
       )
     );
   },
@@ -98,3 +106,5 @@ export const Convert = {
     return CryptoJS.enc.Hex.stringify(_toWordArr(bytes));
   }
 }
+
+export {};
