@@ -1,4 +1,9 @@
 import { buildSync } from "esbuild";
+import { rmSync } from "node:fs";
+
+try {
+  rmSync("dist", { recursive: true })
+} catch(e) {}
 
 buildSync({
   target: "es2023",
@@ -7,5 +12,7 @@ buildSync({
   entryPoints: [
     "src/index.ts"
   ],
+  format: "esm",
+  external: ["tjs:*"],
   logLevel: "info"
 });

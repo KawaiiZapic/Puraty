@@ -15,9 +15,14 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
-    }
+    },
+    "typeRoots": [
+	    "node_modules/@txikijs/types",
+	    "node_modules/@types"
+    ]
   },
   "include": [
-	  "src/**/*"
-	]
+    "src/**/*",
+    "tests/**/*"
+  ]
 }
