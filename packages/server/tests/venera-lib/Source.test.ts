@@ -1,5 +1,9 @@
 import { ComicSource } from "@/venera-lib/Source";
 import assert from "../assert";
+import initialize from "@/utils/initialize";
+import path from "tjs:path";
+
+await initialize();
 
 class TestSource extends ComicSource {
   key = "test_source";
@@ -18,7 +22,7 @@ assert.ok(
     const source = new TestSource();
     source.loadData("key0");
 
-    const f = await tjs.open("./comic_source_data.db", "r");
+    const f = await tjs.open(path.join(APP_DIR, "comic_source_data.db"), "r");
     return f.readable;
   }
 );

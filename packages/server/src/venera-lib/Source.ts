@@ -1,3 +1,4 @@
+import path from "tjs:path";
 import { Database } from "tjs:sqlite";
 
 const dbSymbol = Symbol("DB");
@@ -11,7 +12,7 @@ export abstract class ComicSource {
 
     private getSqliteDB(): Database {
       if (!ComicSource[dbSymbol]) {
-        const db = new Database("comic_source_data.db", {
+        const db = new Database(path.join(APP_DIR, "comic_source_data.db"), {
           create: true,
           readOnly: false
         });
@@ -26,6 +27,7 @@ export abstract class ComicSource {
       const db = this.getSqliteDB();
       const st = db.prepare("SELECT value from source_data where key=?;");
       const result = st.all(this.key + "_" + dataKey)[0]?.value;
+      st.finalize();
       return result;
     }
 
@@ -33,6 +35,7 @@ export abstract class ComicSource {
       const db = this.getSqliteDB();
       const st = db.prepare("SELECT value from source_settings where key=?;");
       const result = st.all(this.key + "_" + key)[0]?.value;
+      st.finalize();
       return result;
     }
 
@@ -40,12 +43,14 @@ export abstract class ComicSource {
       const db = this.getSqliteDB();
       const st = db.prepare("INSERT OR REPLACE INTO source_data (key, value) VALUES (?, ?);");
       st.run(this.key + "_" + dataKey, data);
+      st.finalize();
     }
 
     deleteData(dataKey: string) {
       const db = this.getSqliteDB();
       const st = db.prepare("DELETE from source_data where key=?;");
       st.run(this.key + "_" + dataKey);
+      st.finalize();
     }
 
     get isLogged(): boolean {

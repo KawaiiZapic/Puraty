@@ -4,7 +4,7 @@ const asyncWrapper = async (actual: unknown) => {
   if (typeof actual === "function") {
     return await actual();
   }
-  return actual;
+  return await actual;
 }
 
 export default {
