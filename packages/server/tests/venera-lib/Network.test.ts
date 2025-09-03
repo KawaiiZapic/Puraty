@@ -4,7 +4,7 @@ import assert from "tests/assert";
 
 await initialize();
 
-const HTTP_BIN_URL = "http://localhost:19900"
+const HTTP_BIN_URL = "https://httpbin.org"
 
 assert.ok("GET", Network.get(HTTP_BIN_URL + "/get").then(v => v.status === 200));
 assert.ok("POST", Network.post(HTTP_BIN_URL + "/post").then(v => v.status === 200));
