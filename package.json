@@ -11,6 +11,5 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
-    "navigo": "^8.11.1"
   }
 }

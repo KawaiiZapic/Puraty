@@ -7,10 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      navigo:
-        specifier: ^8.11.1
-        version: 8.11.1
     devDependencies:
       typescript:
         specifier: ^5.9.2
@@ -30,6 +26,9 @@ importers:
       mutationobserver-shim:
         specifier: ^0.3.7
         version: 0.3.7
+      navigo:
+        specifier: ^8.11.1
+        version: 8.11.1
       postcss:
         specifier: ^8.5.6
         version: 8.5.6
@@ -58,8 +57,8 @@ importers:
         specifier: 2.0.0-beta.3
         version: 2.0.0-beta.3
       h3-txikijs-adapter:
-        specifier: ^0.1.0
-        version: 0.1.0(h3@2.0.0-beta.3)
+        specifier: ^0.2.0
+        version: 0.2.0(h3@2.0.0-beta.3)
     devDependencies:
       '@txikijs/types':
         specifier: ^24.12.0
@@ -974,8 +973,8 @@ packages:
     resolution: {integrity: sha512-3hN7NaskYvMDLQY55gnW3NQ+mesEAepTqlg+VEbj7zzqEMBVNhzcGYYeqFo/TlYz6eQiFcp1HcsCZO+nGgS8zg==}
     engines: {node: '>=6.9.0'}
 
-  h3-txikijs-adapter@0.1.0:
-    resolution: {integrity: sha512-dtT7r9CPfpq4uZZgaXZaXCQbCaeMpKtsuvp59RlhBjYi8yx33f8Va+gKXX5Xi51LkjGp/wvQAcuMFNgSTw8rOg==}
+  h3-txikijs-adapter@0.2.0:
+    resolution: {integrity: sha512-CyPa3dBeYiBh2sw26uzWVr7Icr+HEr8FGRTXBNSdv/umObUCc9Bne2OPVo8/4Y5kH19V7k1EKhi+iGR3snv81g==}
     peerDependencies:
       h3: ^2.0.0
 
@@ -2185,7 +2184,7 @@ snapshots:
 
   gensync@1.0.0-beta.2: {}
 
-  h3-txikijs-adapter@0.1.0(h3@2.0.0-beta.3):
+  h3-txikijs-adapter@0.2.0(h3@2.0.0-beta.3):
     dependencies:
       h3: 2.0.0-beta.3
       http-headers: 3.0.2
