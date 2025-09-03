@@ -1,56 +1,27 @@
-import path from "tjs:path";
-import { Database } from "tjs:sqlite";
+import { SourceData } from "@/db/SourceData";
 
-const dbSymbol = Symbol("DB");
 export abstract class ComicSource {
     public name = "";
     public key = "";
     public version = "";
     public minAppVersion = "";
     public url = "";
-    private static [dbSymbol]: Database;
-
-    private getSqliteDB(): Database {
-      if (!ComicSource[dbSymbol]) {
-        const db = new Database(path.join(APP_DIR, "comic_source_data.db"), {
-          create: true,
-          readOnly: false
-        });
-        db.exec("CREATE TABLE IF NOT EXISTS source_data (key TEXT PRIMARY KEY, value TEXT)");
-        db.exec("CREATE TABLE IF NOT EXISTS source_settings (key TEXT PRIMARY KEY, value TEXT)");
-        ComicSource[dbSymbol] = db;
-      }
-      return ComicSource[dbSymbol];
-    }
+    private sd = SourceData.instance;
 
     loadData(dataKey: string): string {
-      const db = this.getSqliteDB();
-      const st = db.prepare("SELECT value from source_data where key=?;");
-      const result = st.all(this.key + "_" + dataKey)[0]?.value;
-      st.finalize();
-      return result;
+      return this.sd.get("data", this.key, dataKey);
     }
 
     loadSetting(key: string): string {
-      const db = this.getSqliteDB();
-      const st = db.prepare("SELECT value from source_settings where key=?;");
-      const result = st.all(this.key + "_" + key)[0]?.value;
-      st.finalize();
-      return result;
+      return this.sd.get("setting", this.key, key);
     }
 
     saveData(dataKey: string, data: string) {
-      const db = this.getSqliteDB();
-      const st = db.prepare("INSERT OR REPLACE INTO source_data (key, value) VALUES (?, ?);");
-      st.run(this.key + "_" + dataKey, data);
-      st.finalize();
+      this.sd.set("data", this.key, dataKey, data)
     }
 
     deleteData(dataKey: string) {
-      const db = this.getSqliteDB();
-      const st = db.prepare("DELETE from source_data where key=?;");
-      st.run(this.key + "_" + dataKey);
-      st.finalize();
+      this.sd.delete("data", this.key, dataKey);
     }
 
     get isLogged(): boolean {

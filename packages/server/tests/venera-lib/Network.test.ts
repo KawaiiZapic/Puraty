@@ -2,7 +2,7 @@ import initialize from "@/utils/initialize";
 import { Network } from "@/venera-lib/Network";
 import assert from "tests/assert";
 
-await initialize();
+await initialize(await tjs.makeTempDir("network-test-XXXXXX"));
 
 const HTTP_BIN_URL = "https://httpbin.org"
 
