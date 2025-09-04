@@ -22,6 +22,20 @@ const getCookieHeader = (url: string): string => {
   }).join("; ");
 }
 
+const RequestBodyNormalize = (body?: BodyInit): string | undefined => {
+  if (typeof body === "object" 
+    && ![
+      ArrayBuffer, 
+      Blob,
+      URLSearchParams, 
+      FormData
+    ].some(type => body instanceof type)
+  ) {
+    return JSON.stringify(body);
+  }
+  return body?.toString();
+}
+
 export const Network = {
   async fetchBytes(
     method: string, 
@@ -35,7 +49,7 @@ export const Network = {
         Cookie: (getCookieHeader(url) || undefined) as string,
         ...headers,
       },
-      body: data
+      body: RequestBodyNormalize(data)
     });
 
     return {
@@ -57,7 +71,7 @@ export const Network = {
         Cookie: (getCookieHeader(url) || undefined) as string,
         ...headers,
       },
-      body: data
+      body: RequestBodyNormalize(data)
     });
 
     return {
