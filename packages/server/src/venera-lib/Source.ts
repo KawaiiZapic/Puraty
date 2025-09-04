@@ -1,4 +1,12 @@
 import { SourceData } from "@/db/SourceData";
+import { APP } from "./App";
+
+interface SettingItem {
+  type: "select";
+  title: string;
+  options?: string[];
+  default?: string;
+}
 
 export abstract class ComicSource {
     public name = "";
@@ -7,13 +15,14 @@ export abstract class ComicSource {
     public minAppVersion = "";
     public url = "";
     private sd = SourceData.instance;
+    protected abstract settings: Record<string, SettingItem>;
 
     loadData(dataKey: string): string {
       return this.sd.get("data", this.key, dataKey);
     }
 
     loadSetting(key: string): string {
-      return this.sd.get("setting", this.key, key);
+      return this.sd.get("setting", this.key, key) ?? this.settings[key]?.default;
     }
 
     saveData(dataKey: string, data: string) {
@@ -25,13 +34,14 @@ export abstract class ComicSource {
     }
 
     get isLogged(): boolean {
-      throw new Error("Calling not implemented getter isLogged(): boolean");
+      return true;
     }
 
     translation: Record<string, Record<string, string>> = {}
 
     translate(key: string): string {
-      throw new Error("Calling not implemented method translate(key: string): string");
+        let locale = APP.locale;
+        return this.translation[locale]?.[key] ?? key;
     }
 
     init() { }
