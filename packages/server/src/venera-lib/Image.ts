@@ -35,5 +35,3 @@ export class Image {
         throw new Error("Calling not implemented method empty()")
     }
 }
-
-export {}

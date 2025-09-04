@@ -38,4 +38,4 @@ const APP = {
   }
 }
 
-export {};
+export { APP };

@@ -1,13 +1,13 @@
 
 import CryptoJS from "crypto-js";
 
-export const _toWordArr = (buf: ArrayBuffer): CryptoJS.lib.WordArray => {
+const _toWordArr = (buf: ArrayBuffer): CryptoJS.lib.WordArray => {
   return CryptoJS.lib.WordArray.create(buf);
 }
 
 const be2le = (v: number) => ((v & 0xFF) << 24) | ((v & 0xFF00) << 8) | ((v >> 8) & 0xFF00) | ((v >> 24) & 0xFF);
 
-export const _toArrBuf = (wordArr: CryptoJS.lib.WordArray, sliceToLen = false): ArrayBuffer => {
+const _toArrBuf = (wordArr: CryptoJS.lib.WordArray, sliceToLen = false): ArrayBuffer => {
   // Crypto.js uses big-endian internally, convert to little-endian is required
   // Sometime we need slice array for correct result in some function
   const r= new Int32Array(wordArr.words.map(be2le)).buffer;

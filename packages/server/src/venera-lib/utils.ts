@@ -2,29 +2,29 @@
  * Simulate original behavior of Venera setTimeout
  * pass native function as callback may cause error
  */
-const _setTimeout: typeof setTimeout = (
+export const setTimeout: typeof globalThis.setTimeout = (
   handler,
   timeout
 ) => {
-  return setTimeout(
+  return globalThis.setTimeout(
     typeof handler === "function" ? () => handler() : handler, 
     timeout
   );
 }
 
-const createUuid = (): string => {
+export const createUuid = (): string => {
   return crypto.randomUUID();
 }
 
-const randomDouble = (min: number, max: number): number => {
+export const randomDouble = (min: number, max: number): number => {
   return Math.random() * (max - min) + min;
 }
 
-const randomInt = (min: number, max: number): number => {
+export const randomInt = (min: number, max: number): number => {
   return Math.ceil(randomDouble(min, max));
 }
 
-class _Timer {
+export class _Timer {
     delay = 0;
 
     callback: Function = () => { };
@@ -46,7 +46,7 @@ class _Timer {
             return;
         }
         this.callback();
-        _setTimeout(this._interval.bind(this), this.delay);
+        setTimeout(this._interval.bind(this), this.delay);
     }
 
     cancel() {
@@ -54,20 +54,20 @@ class _Timer {
     }
 }
 
-const _setInterval = (callback: Function, delay: number) => {
+export const setInterval = (callback: Function, delay: number) => {
     let timer = new _Timer(delay, callback);
     timer.run();
     return timer;
 }
 
-let _console = {
+export const console = {
   log: (content: unknown) => {
-    console.log('[ComicSource]', content)
+    globalThis.console.log('[ComicSource]', content)
   },
   warn: (content: unknown) => {
-    console.warn('[ComicSource]', content)
+    globalThis.console.warn('[ComicSource]', content)
   },
   error: (content: unknown) => {
-    console.error('[ComicSource]', content)
+    globalThis.console.error('[ComicSource]', content)
   },
 };

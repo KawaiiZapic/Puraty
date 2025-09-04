@@ -38,5 +38,3 @@ export abstract class ComicSource {
 
     static sources = {}
 }
-
-export {};

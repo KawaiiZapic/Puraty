@@ -1,6 +1,6 @@
 // to be implemented with htmlparser2
 
-class HtmlDocument {
+export class HtmlDocument {
     constructor(html: string) {
         throw new Error("Not implemented");
     }
@@ -22,7 +22,7 @@ class HtmlDocument {
     }
 }
 
-class HtmlElement {
+export class HtmlElement {
     constructor() {
         throw new Error("Not implemented");
     }
@@ -79,7 +79,7 @@ class HtmlElement {
     }
 }
 
-class HtmlNode {
+export class HtmlNode {
     constructor(k: number, doc: number) {
         throw new Error("Not implemented");
     }

@@ -1,4 +1,4 @@
-class Comic {
+export class Comic {
   public id: string;
   public title: string;
   public subtitle: string;
@@ -25,7 +25,7 @@ class Comic {
   }
 }
 
-class ComicDetails {
+export class ComicDetails {
   public title: string;
   public subtitle?: string;
   public subTitle?: string;
@@ -95,7 +95,7 @@ class ComicDetails {
     
 }
 
-class Comment {
+export class Comment {
   public userName: string;
   public avatar?: string;
   public content?: string;
@@ -129,7 +129,7 @@ class Comment {
   }
 }
 
-class ImageLoadingConfig {
+export class ImageLoadingConfig {
   public url?: string;
   public method?: string;
   public data: any;
@@ -156,6 +156,3 @@ class ImageLoadingConfig {
     this.onLoadFailed = onLoadFailed;
   }
 }
-
-
-export {};

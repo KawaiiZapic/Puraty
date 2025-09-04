@@ -1,4 +1,4 @@
-import { Convert, _toArrBuf, _toWordArr } from "@/venera-lib/Convert";
+import { Convert } from "@/venera-lib/Convert";
 import assert from "../assert";
 
 const test_string_str = "1A+啊🎆";
