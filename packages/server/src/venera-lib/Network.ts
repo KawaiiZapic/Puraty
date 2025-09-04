@@ -77,7 +77,7 @@ export const Network = {
     return {
       status: resp.status,
       headers: convertHeaders(resp.headers),
-      body: await resp.text()
+      body: new TextDecoder().decode(await resp.arrayBuffer())
     }
   },
 
