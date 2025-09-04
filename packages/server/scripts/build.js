@@ -10,9 +10,10 @@ buildSync({
   outdir: "dist",
   bundle: true,
   entryPoints: [
-    "src/index.ts"
+    "src/**/*.ts"
   ],
   format: "esm",
   external: ["tjs:*"],
-  logLevel: "info"
+  logLevel: "info",
+  splitting: true
 });
