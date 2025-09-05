@@ -4,17 +4,21 @@ import * as cheerio from "cheerio";
 import type { AnyNode } from "domhandler";
 
 export class HtmlDocument {
-    inst: cheerio.CheerioAPI;
+    $: cheerio.CheerioAPI;
     constructor(html: string) {
-        this.inst = cheerio.load(html);
+        this.$ = cheerio.load(html);
     }
 
-    querySelector(query: string): HtmlElement {
-        return new HtmlElement(cheerio.load(this.inst(query)[0]).root());
+    querySelector(query: string): HtmlElement | null {
+        const el = this.$(query).first();
+        if (el.length === 0) return null;
+        return new HtmlElement(el, this.$);
     }
 
     querySelectorAll(query: string): HtmlElement[] {
-        return Array.from(this.inst(query)).map(v => new HtmlElement(cheerio.load(v).root()));
+        return this.$(query).toArray().map((el) => {
+            return new HtmlElement(this.$(el), this.$);
+        });
     }
 
     dispose() {
@@ -27,80 +31,92 @@ export class HtmlDocument {
 }
 
 export class HtmlElement {
-    inst: cheerio.Cheerio<AnyNode>;
+    $: cheerio.CheerioAPI;
+    $el: cheerio.Cheerio<AnyNode>;
 
-    constructor(inst: cheerio.Cheerio<AnyNode>) {
-        this.inst = inst;
+    constructor(inst: cheerio.Cheerio<AnyNode>, root: cheerio.CheerioAPI) {
+        this.$ = root;
+        this.$el = inst;
     }
 
     get text(): string {
-        return this.inst.text();
+        return this.$el.text();
     }
 
     get attributes(): Record<string, string> {
-        return this.inst.attr() ?? {};
+        return this.$el.attr() ?? {};
     }
 
-    querySelector(query: string): HtmlElement {
-        return new HtmlElement(cheerio.load(this.inst.children(query)[0]).root());
+    querySelector(query: string): HtmlElement | null {
+        const el = this.$el.children(query).first();
+        if (el.length === 0) return null;
+        return new HtmlElement(el, this.$);
     }
 
     querySelectorAll(query: string): HtmlElement[] {
-        return Array.from(this.inst.children(query)).map(v => new HtmlElement(cheerio.load(v).root()));
+        return this.$el.children(query)
+            .toArray()
+            .map(el => new HtmlElement(this.$(el), this.$));
     }
 
     get children(): HtmlElement[] {
-        return Array.from(this.inst.children()).map(v => new HtmlElement(cheerio.load(v).root()));
+        return this.$el.children().map((i, e) => {
+            return new HtmlElement(this.$(e), this.$);
+        }).toArray();
     }
 
-    get nodes(): HtmlElement[] {
-        return Array.from(this.inst.children()).map(v => new HtmlElement(cheerio.load(v).root()));
+    get nodes(): HtmlNode[] {
+        return this.$el.children().map((i, e) => {
+            return new HtmlNode(this.$(e), this.$);
+        }).toArray();
     }
 
     get innerHTML(): string | null {
-        return this.inst.html();
+        return this.$el.html();
     }
 
     get parent(): HtmlElement {
-        return new HtmlElement(this.inst.parent());
+        return new HtmlElement(this.$el.parent(), this.$);
     }
 
     get classNames(): string[] {
-        return this.inst.attr("class")?.split(" ") ?? [];
+        return this.$el.attr("class")?.split(" ") ?? [];
     }
     get id(): string | null {
-        return this.inst.attr("id") ?? null;
+        return this.$el.attr("id") ?? null;
     }
 
     get localName() {
-        return "";
+        return this.$el[0].type as string;
     }
 
     get previousElementSibling(): HtmlElement | null {
-        return new HtmlElement(this.inst.prev());
+        return new HtmlElement(this.$el.prev(), this.$);
     }
 
     get nextElementSibling(): HtmlElement | null {
-        return new HtmlElement(this.inst.next());
+        return new HtmlElement(this.$el.next(), this.$);
     }
 }
 
 export class HtmlNode {
-    inst: cheerio.Cheerio<AnyNode>;
+    $el: cheerio.Cheerio<AnyNode>;
+    $: cheerio.CheerioAPI;
 
-    constructor(inst: cheerio.Cheerio<AnyNode>) {
-        this.inst = inst;
+    constructor(inst: cheerio.Cheerio<AnyNode>, root: cheerio.CheerioAPI) {
+        this.$el = inst;
+        this.$ = root;
     }
 
     get text() {
-        return this.inst.text();
+        return this.$el.text();
     }
 
     get type() {
-        return this.inst[0].type as string;
+        return this.$el[0].type as string;
     }
 
     toElement(): HtmlElement | null {
-        return new HtmlElement(this.inst);
+        return new HtmlElement(this.$el, this.$);
     }
 }
