@@ -1,16 +1,20 @@
 // to be implemented with htmlparser2
 
+import * as cheerio from "cheerio";
+import type { AnyNode } from "domhandler";
+
 export class HtmlDocument {
+    inst: cheerio.CheerioAPI;
     constructor(html: string) {
-        throw new Error("Not implemented");
+        this.inst = cheerio.load(html);
     }
 
-    querySelector(query: string) {
-        throw new Error("Not implemented");
+    querySelector(query: string): HtmlElement {
+        return new HtmlElement(cheerio.load(this.inst(query)[0]).root());
     }
 
-    querySelectorAll(query: string) {
-        throw new Error("Not implemented");
+    querySelectorAll(query: string): HtmlElement[] {
+        return Array.from(this.inst(query)).map(v => new HtmlElement(cheerio.load(v).root()));
     }
 
     dispose() {
@@ -18,81 +22,85 @@ export class HtmlDocument {
     }
 
     getElementById(id: string) {
-        throw new Error("Not implemented");
+        return this.querySelector("#" + id);
     }
 }
 
 export class HtmlElement {
-    constructor() {
-        throw new Error("Not implemented");
+    inst: cheerio.Cheerio<AnyNode>;
+
+    constructor(inst: cheerio.Cheerio<AnyNode>) {
+        this.inst = inst;
     }
 
-    get text() {
-        throw new Error("Not implemented");
+    get text(): string {
+        return this.inst.text();
     }
 
-    get attributes() {
-        throw new Error("Not implemented");
+    get attributes(): Record<string, string> {
+        return this.inst.attr() ?? {};
     }
 
-    querySelector(query: string) {
-        throw new Error("Not implemented");
+    querySelector(query: string): HtmlElement {
+        return new HtmlElement(cheerio.load(this.inst.children(query)[0]).root());
     }
 
-    querySelectorAll(query: string) {
-        throw new Error("Not implemented");
+    querySelectorAll(query: string): HtmlElement[] {
+        return Array.from(this.inst.children(query)).map(v => new HtmlElement(cheerio.load(v).root()));
     }
 
-    get children() {
-        throw new Error("Not implemented");
+    get children(): HtmlElement[] {
+        return Array.from(this.inst.children()).map(v => new HtmlElement(cheerio.load(v).root()));
     }
 
-    get nodes() {
-        throw new Error("Not implemented");
+    get nodes(): HtmlElement[] {
+        return Array.from(this.inst.children()).map(v => new HtmlElement(cheerio.load(v).root()));
     }
 
-    get innerHTML() {
-        throw new Error("Not implemented");
+    get innerHTML(): string | null {
+        return this.inst.html();
     }
 
-    get parent() {
-        throw new Error("Not implemented");
+    get parent(): HtmlElement {
+        return new HtmlElement(this.inst.parent());
     }
 
     get classNames(): string[] {
-        throw new Error("Not implemented");
+        return this.inst.attr("class")?.split(" ") ?? [];
     }
     get id(): string | null {
-        throw new Error("Not implemented");
+        return this.inst.attr("id") ?? null;
     }
 
     get localName() {
-        throw new Error("Not implemented");
+        return "";
     }
 
-    get previousElementSibling(): HTMLElement | null {
-        throw new Error("Not implemented");
+    get previousElementSibling(): HtmlElement | null {
+        return new HtmlElement(this.inst.prev());
     }
 
-    get nextElementSibling(): HTMLElement | null {
-        throw new Error("Not implemented");
+    get nextElementSibling(): HtmlElement | null {
+        return new HtmlElement(this.inst.next());
     }
 }
 
 export class HtmlNode {
-    constructor(k: number, doc: number) {
-        throw new Error("Not implemented");
+    inst: cheerio.Cheerio<AnyNode>;
+
+    constructor(inst: cheerio.Cheerio<AnyNode>) {
+        this.inst = inst;
     }
 
     get text() {
-        throw new Error("Not implemented");
+        return this.inst.text();
     }
 
     get type() {
-        throw new Error("Not implemented");
+        return this.inst[0].type as string;
     }
 
-    toElement(): HTMLElement | null {
-        throw new Error("Not implemented");
+    toElement(): HtmlElement | null {
+        return new HtmlElement(this.inst);
     }
 }
