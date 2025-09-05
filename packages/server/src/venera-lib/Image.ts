@@ -1,4 +1,5 @@
-// to be re-implemented with jimp
+// jimp is too heavy for quickjs, takes up to 300 secs to process a png with 2M size
+// Considering using some native command line tool like imagemagick
 
 export class Image {
     key = 0;
