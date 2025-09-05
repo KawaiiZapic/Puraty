@@ -22,6 +22,21 @@ const getCookieHeader = (url: string): string => {
   }).join("; ");
 }
 
+const headerFilter = (header?: Record<string, string>) => {
+  const res = {
+    ...header
+  };
+  header && Object.keys(header).forEach((k) => {
+    if ([
+      "connection",
+      "accept-encoding"
+    ].includes(k.toLowerCase())) {
+      delete header[k];
+    }
+  });
+  return res;
+}
+
 const RequestBodyNormalize = (body?: BodyInit): string | undefined => {
   if (typeof body === "object" 
     && ![
@@ -47,7 +62,7 @@ export const Network = {
       method,
       headers: {
         Cookie: (getCookieHeader(url) || undefined) as string,
-        ...headers,
+        ...headerFilter(headers)
       },
       body: RequestBodyNormalize(data)
     });
@@ -69,7 +84,7 @@ export const Network = {
       method,
       headers: {
         Cookie: (getCookieHeader(url) || undefined) as string,
-        ...headers,
+        ...headerFilter(headers)
       },
       body: RequestBodyNormalize(data)
     });
