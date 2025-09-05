@@ -15,8 +15,13 @@ const convertHeaders = (h: Headers) => {
 };
 
 const getCookieHeader = (url: string): string => {
-  const domain = new URL(url).hostname;
-  const cookies = CookieStorage.instance.get(domain);
+  const originDomain = new URL(url).hostname.split(".");
+  const domains = originDomain.map((_, i) => {
+    return (i > 0 ? "." : "") + originDomain.toSpliced(0, i).join(".");
+  }).splice(originDomain.length - 2);
+  const cookies = domains.flatMap(d => {
+    return CookieStorage.instance.get(d);
+  });
   return cookies.map(c => {
     return `${encodeURIComponent(c.name)}=${encodeURIComponent(c.value)}`
   }).join("; ");
