@@ -1,10 +1,8 @@
-// to be implemented with htmlparser2
-
-import * as cheerio from "cheerio";
-import type { AnyNode } from "domhandler";
+import * as cheerio from "cheerio/slim";
+import type { AnyNode, ParentNode } from "domhandler";
 
 export class HtmlDocument {
-    $: cheerio.CheerioAPI;
+    private $: cheerio.CheerioAPI;
     constructor(html: string) {
         this.$ = cheerio.load(html);
     }
@@ -31,8 +29,8 @@ export class HtmlDocument {
 }
 
 export class HtmlElement {
-    $: cheerio.CheerioAPI;
-    $el: cheerio.Cheerio<AnyNode>;
+    private $: cheerio.CheerioAPI;
+    private $el: cheerio.Cheerio<AnyNode>;
 
     constructor(inst: cheerio.Cheerio<AnyNode>, root: cheerio.CheerioAPI) {
         this.$ = root;
@@ -48,13 +46,13 @@ export class HtmlElement {
     }
 
     querySelector(query: string): HtmlElement | null {
-        const el = this.$el.children(query).first();
+        const el = this.$el.find(query).first();
         if (el.length === 0) return null;
         return new HtmlElement(el, this.$);
     }
 
     querySelectorAll(query: string): HtmlElement[] {
-        return this.$el.children(query)
+        return this.$el.find(query)
             .toArray()
             .map(el => new HtmlElement(this.$(el), this.$));
     }
@@ -66,9 +64,7 @@ export class HtmlElement {
     }
 
     get nodes(): HtmlNode[] {
-        return this.$el.children().map((i, e) => {
-            return new HtmlNode(this.$(e), this.$);
-        }).toArray();
+        throw new Error("Not implemented");
     }
 
     get innerHTML(): string | null {
@@ -87,21 +83,25 @@ export class HtmlElement {
     }
 
     get localName() {
-        return this.$el[0].type as string;
+        throw new Error("Not implemented");
     }
 
     get previousElementSibling(): HtmlElement | null {
-        return new HtmlElement(this.$el.prev(), this.$);
+        const el = this.$el.prev();
+        if (el.length === 0) return null;
+        return new HtmlElement(el, this.$);
     }
 
     get nextElementSibling(): HtmlElement | null {
-        return new HtmlElement(this.$el.next(), this.$);
+        const el = this.$el.next();
+        if (el.length === 0) return null;
+        return new HtmlElement(el, this.$);
     }
 }
 
 export class HtmlNode {
-    $el: cheerio.Cheerio<AnyNode>;
-    $: cheerio.CheerioAPI;
+    private $el: cheerio.Cheerio<AnyNode>;
+    private $: cheerio.CheerioAPI;
 
     constructor(inst: cheerio.Cheerio<AnyNode>, root: cheerio.CheerioAPI) {
         this.$el = inst;
