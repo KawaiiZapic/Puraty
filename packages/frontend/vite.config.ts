@@ -1,18 +1,21 @@
 import { defineConfig } from "vite";
-import legacy from "@vitejs/plugin-legacy";
+import path from "node:path";
 import autoprefixer from "autoprefixer";
 
 export default defineConfig(() => {
   return {
-    plugins: [
-      legacy({
-        renderModernChunks: false,
-        targets: "safari 5"
-      })
-    ],
     "base": "",
     build: {
-      minify: false
+      minify: false,
+      target: "chrome75"
+    },
+    resolve: {
+      alias: [
+				{
+					find: "@",
+					replacement: path.resolve("src")
+				}
+      ]
     },
     css: {
       postcss: {

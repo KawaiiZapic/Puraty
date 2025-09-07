@@ -1,7 +1,5 @@
 import "./style.css";
 
-import "mutationobserver-shim";
-import vc from "vconsole";
 import Navigo from "navigo";
 import main from "./pages/main";
 
@@ -16,7 +14,3 @@ router.on("/", () => {
 });
 
 router.navigate("/");
-
-if (import.meta.env.MODE !== "production") {
-  new vc();
-}
