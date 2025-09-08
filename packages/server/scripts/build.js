@@ -10,7 +10,8 @@ buildSync({
   outdir: "dist",
   bundle: true,
   entryPoints: [
-    "src/**/*.ts"
+    "src/index.ts",
+    "src/venera-lib/index.ts"
   ],
   format: "esm",
   external: ["tjs:*"],
