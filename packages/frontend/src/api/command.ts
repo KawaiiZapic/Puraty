@@ -1,7 +1,7 @@
+import { Req } from ".";
+
 export const Command = {
   exit: () => {
-    return fetch("/command/exit", {
-      method: "POST"
-    });
+    return Req.post<void>("/command/exit");
   }
 };

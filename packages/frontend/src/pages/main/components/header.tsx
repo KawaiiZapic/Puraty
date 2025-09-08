@@ -5,7 +5,7 @@ import api from "@/api";
 
 export default () => {
   const toHome = () => {
-    api.command.exit();
+    api.Command.exit();
   }
   return <div class={ style.wrapper }>
     <div onClick={ toHome } class={ style.iconBtn } >

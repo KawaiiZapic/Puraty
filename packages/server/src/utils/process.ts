@@ -1,4 +1,4 @@
-export const startBrowser = (signal?: AbortSignal) => {
+export const launchUI = (signal?: AbortSignal) => {
   runWmctrl();
   const p = tjs.spawn([
     "/usr/bin/chromium/bin/kindle_browser",
