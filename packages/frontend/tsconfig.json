@@ -11,7 +11,7 @@
     "moduleResolution": "bundler",
     "isolatedModules": true,
     "esModuleInterop": true,
-    "lib": ["ES5", "DOM"],
+    "lib": ["ES2019", "DOM"],
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "types": ["vite/client"],

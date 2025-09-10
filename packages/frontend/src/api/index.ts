@@ -1,7 +1,9 @@
+import { ComicSource } from "./comic-source";
 import { Command } from "./command";
 
 export default {
-  Command
+  Command,
+  ComicSource
 };
 
 export const Req = {

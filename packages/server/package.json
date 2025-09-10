@@ -24,6 +24,6 @@
     "crypto-js": "^4.2.0",
     "domhandler": "^5.0.3",
     "h3": "2.0.0-beta.3",
-    "h3-txikijs-adapter": "^0.2.0"
+    "h3-txikijs-adapter": "^0.2.1"
   }
 }

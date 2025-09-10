@@ -51,8 +51,8 @@ importers:
         specifier: 2.0.0-beta.3
         version: 2.0.0-beta.3
       h3-txikijs-adapter:
-        specifier: ^0.2.0
-        version: 0.2.0(h3@2.0.0-beta.3)
+        specifier: ^0.2.1
+        version: 0.2.1(h3@2.0.0-beta.3)
     devDependencies:
       '@txikijs/types':
         specifier: ^24.12.0
@@ -455,8 +455,8 @@ packages:
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
 
-  h3-txikijs-adapter@0.2.0:
-    resolution: {integrity: sha512-CyPa3dBeYiBh2sw26uzWVr7Icr+HEr8FGRTXBNSdv/umObUCc9Bne2OPVo8/4Y5kH19V7k1EKhi+iGR3snv81g==}
+  h3-txikijs-adapter@0.2.1:
+    resolution: {integrity: sha512-uf3G5Qkn0y1ROv0vJA6b5uFiDLb6HJCdTCctjik535QvQsnjL20Fn30YxDYOpp5/yLT3WmbBpRc4rHK4sC5/qQ==}
     peerDependencies:
       h3: ^2.0.0
 
@@ -940,7 +940,7 @@ snapshots:
   fsevents@2.3.3:
     optional: true
 
-  h3-txikijs-adapter@0.2.0(h3@2.0.0-beta.3):
+  h3-txikijs-adapter@0.2.1(h3@2.0.0-beta.3):
     dependencies:
       h3: 2.0.0-beta.3
       http-headers: 3.0.2

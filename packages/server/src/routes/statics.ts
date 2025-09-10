@@ -1,7 +1,7 @@
 import { HTTPError, type H3 } from "h3";
 import path from "tjs:path";
 
-const assertBase = "/mnt/us/extensions/Puraty/frontend";
+const assertBase = "./frontend";
 const serveStatic = async (fp: string) => {
   const p = path.join(assertBase, fp);
   try {

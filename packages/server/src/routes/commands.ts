@@ -4,8 +4,8 @@ export const ac = new AbortController();
 const PURATY_VERSION = "0.1.0";
 
 export default (app: H3) => {
-  app.post("/command/exit", () => {
+  app.post("/api/command/exit", () => {
     ac.abort();
   });
-  app.post("/version", () => PURATY_VERSION);
+  app.post("/api/version", () => PURATY_VERSION);
 }

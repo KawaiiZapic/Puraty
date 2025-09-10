@@ -21,6 +21,11 @@ export default defineConfig(() => {
       postcss: {
         plugins: [autoprefixer({})]
       }
+    },
+    server: {
+      proxy: {
+        "/api": "http://localhost:3000/"
+      }
     }
   };
 });

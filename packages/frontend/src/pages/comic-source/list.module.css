@@ -1,0 +1,9 @@
+.listItemWrapper {
+  display: flex;
+  padding: 12px;
+  align-items: center;
+}
+
+.listItemMeta {
+  flex-grow: 1;
+}
