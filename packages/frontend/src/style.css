@@ -3,11 +3,15 @@
 }
 
 * {
-  transition-duration: 0!important;
-  animation-duration: 0!important;
+  transition-duration: 0s!important;
+  animation-duration: 0s!important;
 }
 
 html, body {
   margin: 0;
   max-width: 1246px;
+}
+
+html {
+  font-size: 36px;
 }

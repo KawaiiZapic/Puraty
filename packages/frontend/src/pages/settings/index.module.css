@@ -1,0 +1,5 @@
+.listItem {
+  display: block;
+  padding: 1.2rem 1rem;
+  border-bottom: 2px solid black;
+}

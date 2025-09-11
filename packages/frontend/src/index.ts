@@ -1,16 +1,9 @@
+import App from "./pages/App";
+import { router } from "./router";
 import "./style.css";
 
-import Navigo from "navigo";
-import main from "./pages/main";
+const AppRoot = document.getElementById("app")!;
 
-const AppHome = document.getElementById("app")!;
-const router = new Navigo("/", {
-  hash: true
-});
+AppRoot.appendChild(App());
 
-router.on("/", () => {
-  AppHome.innerHTML = "";
-  AppHome.appendChild(main());
-});
-
-router.navigate("/");
+router.resolve();

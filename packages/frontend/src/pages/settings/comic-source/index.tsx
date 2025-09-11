@@ -1,5 +1,5 @@
 import api from "@/api";
-import style from "./list.module.css";
+import style from "./index.module.css";
 
 export default () => {
   const list = <div />;
