@@ -4,7 +4,7 @@ import SettingsFilled from "@sicons/material/SettingsFilled.svg";
 import ChevronLeftFilled from "@sicons/material/ChevronLeftFilled.svg";
 import api from "@/api";
 import { RouterLink } from "@/router/RouterLink";
-import { currentMatched, router } from "@/router";
+import { lastMatched, router } from "@/router";
 
 export default () => {
   const toHome = () => {
@@ -22,7 +22,7 @@ export default () => {
   let isBack = false;
   const btnIcon = <img src={ CloseFilled }></img>;
   const onRouteUpdate = () => {
-    isBack = currentMatched?.path !== "/";
+    isBack = lastMatched?.path !== "/";
     if (isBack) {
       btnIcon.setAttribute("src", ChevronLeftFilled);
     } else {

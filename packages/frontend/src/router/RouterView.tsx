@@ -1,20 +1,15 @@
-import { currentMatched } from ".";
+import { currentMatched, shiftRouteViewTree } from ".";
 
-export default () => {
-  const el = <div></div>;
-  const flushRoute = () => {
-    if (!el.parentElement) {
-      window.removeEventListener("route-update", flushRoute)
-      return;
+export const RouteView = () => {
+  let el = shiftRouteViewTree()?.component({}) ?? <div></div>;
+  window.addEventListener("route-update", () => {
+    if (!el.parentElement) return;
+    const newEl = shiftRouteViewTree()?.component({});
+    if (newEl) {
+      el.replaceWith(newEl);
+      el = newEl;
     }
-    el.innerHTML = "";
-    const c = currentMatched;
-    if (c) {
-      el.appendChild(c.component())
-    }
-  }
-  flushRoute();
-  window.addEventListener("route-update", flushRoute);
+  });
   return el;
 };
 

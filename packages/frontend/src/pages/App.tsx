@@ -1,9 +1,9 @@
+import { RouteView } from "@/router/RouterView";
 import Header from "./components/header";
-import RouterView from "../router/RouterView";
 
 export default () => {
-  return <>
-    <Header />
-    <RouterView />
-  </>
+  return [
+    <Header />,
+    <RouteView />
+  ]
 }
