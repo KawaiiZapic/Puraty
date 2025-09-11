@@ -1,7 +1,14 @@
 .listItemWrapper {
   display: flex;
-  padding: 12px;
+  padding: 0.5rem;
   align-items: center;
+  border-bottom: 2px solid black;
+}
+
+.listItemDesc {
+  font-size: 0.75rem;
+  min-height: 1rem;
+  color: #666;
 }
 
 .listItemMeta {

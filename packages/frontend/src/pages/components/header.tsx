@@ -32,10 +32,10 @@ export default () => {
   window.addEventListener("route-update", onRouteUpdate);
   onRouteUpdate();
   return <div class={ style.wrapper }>
-    <div onClick={ toHome } class={ style.iconBtn } >
+    <div onClick={ toHome } class={ [style.iconBtn, "clickable-item"] } >
       { btnIcon }
     </div>
-    <RouterLink href="/settings" class={ style.iconBtn } >
+    <RouterLink href="/settings" class={ [style.iconBtn, "clickable-item"] } >
       <img src={ SettingsFilled }></img>
     </RouterLink>
   </div>;

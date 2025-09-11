@@ -4,6 +4,5 @@ import "./style.css";
 
 const AppRoot = document.getElementById("app")!;
 
-App().forEach(v => AppRoot.appendChild(v));
-
 router.resolve();
+App().forEach(v => AppRoot.appendChild(v));

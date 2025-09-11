@@ -17,18 +17,19 @@ export default () => {
             const doInstall = () => {
               if (ins) return;
               ins = true;
+              el.textContent = "正在安装";
               api.ComicSource.install(item.fileName, item.key).then(v => {
                 el.textContent = "已安装: " + item.version;
-              }).catch(() => { ins = false; });
+              }).catch(() => { ins = false; el.textContent = "安装" });
             };
-            const el = <div onClick={doInstall}>安装</div>;
+            const el = <div onClick={doInstall} class={[ "clickable-item" ]}>安装</div>;
             return el;
           }
         }
       const el = <div class={style.listItemWrapper}>
         <div class={style.listItemMeta}>
           <div>{ item.name }</div>
-          <div>{ item.version } { item.description }</div>
+          <div class={ style.listItemDesc }>{ item.version } { item.description ? " - " + item.description : ""}</div>
         </div>
         <InsBtn />
       </div>

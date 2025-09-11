@@ -12,6 +12,9 @@ export const Req = {
       method,
       body
     });
+    if (v.status >= 400) {
+      throw new Error("Network request failed with non-2xx status code");
+    }
     return await v.json();
   },
   get<T>(url: string, params?: Record<string, string | number | boolean>) {
