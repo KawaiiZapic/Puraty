@@ -1,7 +1,7 @@
 import { context } from "esbuild";
 import { watch } from "node:fs/promises";
 import { exec } from "node:child_process";
-import { stdout, stderr, env, exit } from "node:process";
+import process from "node:process";
 
 const ctx = await context({
   target: "es2023",
@@ -25,25 +25,25 @@ const watcher = watch("dist", {
 });
 let requireReload = true;
 
-process = null;
+let tjs = null;
 setInterval(() => {
   if (!requireReload) return;
   requireReload = false;
-  process?.kill();
-  process = exec("tjs run index.js --api", {
+  tjs?.kill();
+  tjs = exec("tjs run index.js --api", {
     cwd: "dist",
     env: {
       DEV: 1,
-      ...env
+      ...process.env
     }
   });
 
-  process.stdout.setEncoding('utf8');
-  process.stdout.pipe(stdout);
+  tjs.stdout.setEncoding('utf8');
+  tjs.stdout.pipe(process.stdout);
 
-  process.stderr.setEncoding('utf8');
-  process.stderr.pipe(stderr);
-  process.on("exit", (code) => {
+  tjs.stderr.setEncoding('utf8');
+  tjs.stderr.pipe(process.stderr);
+  tjs.on("exit", (code) => {
     exit(code);
   });
 }, 100);
@@ -51,3 +51,7 @@ setInterval(() => {
 for await (const _ of watcher) {
   requireReload = true;
 }
+
+process.on("beforeExit", () => {
+  tjs?.kill();
+});
