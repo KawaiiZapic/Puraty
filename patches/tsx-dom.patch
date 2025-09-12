@@ -1,0 +1,47 @@
+diff --git a/dist/index.d.ts b/dist/index.d.ts
+index 8ddb0347458ea1eff1ac6e37dc7f4bedbd0dd29f..4835d833259673395eb11f03c2ed0a15a202afce 100644
+--- a/dist/index.d.ts
++++ b/dist/index.d.ts
+@@ -10,7 +10,7 @@ type IfTsxConfig<T extends string, TIF, TELSE> = TsxConfig[T] extends false ? TE
+ type IntrinsicElementsCombined = IfTsxConfig<"html", IntrinsicElementsHTML, unknown> & IfTsxConfig<"svg", IntrinsicElementsSVG, unknown>;
+ declare global {
+     namespace JSX {
+-        type Element = IfTsxConfig<"html", HTMLElement, never> | IfTsxConfig<"svg", SVGElement, never>;
++        type Element = IfTsxConfig<"html", HTMLElement, never> | IfTsxConfig<"svg", SVGElement, never> | Node;
+         interface ElementAttributesProperty {
+             props: unknown;
+         }
+diff --git a/dist/jsx-runtime.js b/dist/jsx-runtime.js
+index 9ace7f924b6a0782cf3fa2fc7aa88c3549167333..9fcb76976b49864c1740e12bb40ed2949298ba4a 100644
+--- a/dist/jsx-runtime.js
++++ b/dist/jsx-runtime.js
+@@ -8,6 +8,16 @@ const utils_1 = require("./utils");
+ function jsx(tag, props) {
+     if (typeof tag === "function")
+         return tag(props);
++    else if (typeof tag === "undefined") {
++        if (props.children instanceof Node) {
++            return props.children;
++        } else if (typeof props.children === "string" || typeof props.children === "number") {
++            return document.createTextNode(props.children.toString());
++        } else {
++            tag = "div";
++        }
++    }
++        
+     const { children, ...attrs } = props;
+     const { finalTag, finalAttrs } = (0, utils_1.applyTsxTag)(tag, attrs);
+     const element = (0, utils_1.createDomElement)(finalTag, finalAttrs);
+diff --git a/dist/utils.js b/dist/utils.js
+index 6502f9e224de06eb8f8525aa5265090c6a186adf..6e8cad387217b344ebdb7d099e8c5b6fb4947d44 100644
+--- a/dist/utils.js
++++ b/dist/utils.js
+@@ -4,7 +4,7 @@ exports.applyChildren = applyChildren;
+ exports.createDomElement = createDomElement;
+ exports.applyTsxTag = applyTsxTag;
+ function applyChild(element, child) {
+-    if (child instanceof Element)
++    if (child instanceof Node) 
+         element.appendChild(child);
+     else if (typeof child === "string" || typeof child === "number")
+         element.appendChild(document.createTextNode(child.toString()));

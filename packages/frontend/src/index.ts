@@ -2,7 +2,7 @@ import App from "./pages/App";
 import { router } from "./router";
 import "./style.css";
 
-const AppRoot = document.getElementById("app")!;
+const AppRoot = document.body;
 
 router.resolve();
-App().forEach(v => AppRoot.appendChild(v));
+AppRoot.appendChild(App());

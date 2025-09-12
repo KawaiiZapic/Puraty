@@ -1,12 +1,12 @@
 import { currentMatched, shiftRouteViewTree } from ".";
 
 export const RouteView = () => {
-  let el = shiftRouteViewTree()?.component({}) ?? <div></div>;
+  let el = shiftRouteViewTree()?.component({}) ?? document.createComment("");
   window.addEventListener("route-update", () => {
-    if (!el.parentElement) return;
+    if (!el.parentNode) return;
     const newEl = shiftRouteViewTree()?.component({});
     if (newEl) {
-      el.replaceWith(newEl);
+      el.parentNode?.replaceChild(newEl, el);
       el = newEl;
     }
   });
@@ -16,7 +16,6 @@ export const RouteView = () => {
 export const RouteDebug = () => {
   const el = <div></div>;
   const flushRoute = () => {
-    el.innerHTML = "";
     el.textContent = JSON.stringify(currentMatched, null, 2);
   }
   flushRoute();
