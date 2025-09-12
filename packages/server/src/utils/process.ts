@@ -1,4 +1,7 @@
+import { env } from "./env";
+
 export const launchUI = (signal?: AbortSignal) => {
+  if (env.DEV) return;
   runWmctrl();
   const p = tjs.spawn([
     "/usr/bin/chromium/bin/kindle_browser",
@@ -31,7 +34,9 @@ export const launchUI = (signal?: AbortSignal) => {
       LC_ALL: "zh_CN.utf8",
       KINDLE_TZ: "Asia/Chongqing"
     },
-    cwd: "/"
+    cwd: "/",
+    stdout: "ignore",
+    stderr: "ignore"
   });
   signal?.addEventListener("abort", () => {
     p.kill();
@@ -51,5 +56,5 @@ export const runWmctrl = () => {
   }, 500);
   setTimeout(() => {
     clearInterval(int);
-  }, 5000);
+  }, 10000);
 }

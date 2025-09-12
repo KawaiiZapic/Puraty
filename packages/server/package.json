@@ -7,7 +7,8 @@
   "scripts": {
     "build": "node scripts/build.js",
     "test": "node scripts/build-test.js && cd dist/tests && tjs test .",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "dev": "node scripts/dev.js"
   },
   "keywords": [],
   "author": "",
