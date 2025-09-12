@@ -20,13 +20,13 @@ export default () => {
     }
   }
   let isBack = false;
-  const btnIcon = <img src={ CloseFilled }></img>;
+  const btnIcon = <img src={ CloseFilled }></img> as HTMLImageElement;
   const onRouteUpdate = () => {
     isBack = lastMatched?.path !== "/";
     if (isBack) {
-      btnIcon.setAttribute("src", ChevronLeftFilled);
+      btnIcon.src = ChevronLeftFilled;
     } else {
-      btnIcon.setAttribute("src", CloseFilled);
+      btnIcon.src = CloseFilled;
     }
   }
   window.addEventListener("route-update", onRouteUpdate);
