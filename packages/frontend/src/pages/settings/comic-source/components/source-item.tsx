@@ -1,28 +1,50 @@
 import type { SourceDetail } from "@/api/comic-source";
 import style from "./source-item.module.css";
 import api from "@/api";
+import { rNode } from "@/utils/ReactiveTextNode";
 
 export default ({ item, installedVersion }: { item: SourceDetail, installedVersion?: string }) => {
   const InsBtn =
     () => {
-      let ins = installedVersion === item.version;
+      let loading = false;
+      const { state, $: BtnText } = rNode(
+        ({ loading, installedVersion }) => {
+          if (loading) {
+            return <>正在安装</>;
+          }
+          if (installedVersion === item.version) {
+            return <>已安装</>;
+          } else {
+            return <>{ !!installedVersion ? "升级" : "安装" }</>;
+          }
+        }, 
+        {
+          loading: false,
+          installedVersion
+        }
+      );
       const doInstall = () => {
-        if (ins) return;
-        ins = true;
-        el.textContent = "正在安装";
-        api.ComicSource.install(item.fileName, item.key).then(v => {
-          el.textContent = "已安装";
-        }).catch(() => { ins = false; el.textContent = (!installedVersion ? "安装" : "升级") });
+        if (loading || installedVersion === item.version) return;
+        state.loading = true;
+        api.ComicSource.install(item.fileName, item.key)
+          .then(() => {
+            state.installedVersion = item.version;
+          })
+          .finally(() => {
+            state.loading = false;
+          });
       };
       const el = <div onClick={doInstall} class={["clickable-item"]}>
-        { ins ? `已安装` : (!installedVersion ? "安装" : "升级") }
+        <BtnText />
       </div>;
       return el;
     }
   return <div class={style.listItemWrapper}>
     <div class={style.listItemMeta}>
       <div>{item.name}</div>
-      <div class={style.listItemDesc}>{(!installedVersion || item.version === installedVersion) ? item.version : "可升级: " + item.version} {item.description ? " - " + item.description : ""}</div>
+      <div class={style.listItemDesc}>{
+        (!installedVersion || item.version === installedVersion) ? item.version : "可升级: " + item.version
+      } {item.description ? " - " + item.description : ""}</div>
     </div>
     <InsBtn />
   </div>;
