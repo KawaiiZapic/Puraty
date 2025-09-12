@@ -14,6 +14,7 @@ html {
 
 .clickable-item {
   transition-delay: 0.1s;
+  user-select: none;
 }
 
 .clickable-item:active {

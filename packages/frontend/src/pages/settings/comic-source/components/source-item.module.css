@@ -14,3 +14,7 @@
 .listItemMeta {
   flex-grow: 1;
 }
+
+.listItemBtn {
+  padding: 0.5rem;
+}

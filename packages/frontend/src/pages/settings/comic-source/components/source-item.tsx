@@ -1,7 +1,7 @@
 import type { SourceDetail } from "@/api/comic-source";
 import style from "./source-item.module.css";
 import api from "@/api";
-import { rNode } from "@/utils/ReactiveTextNode";
+import { rNode } from "@/utils/Reactive";
 
 export default ({ item, installedVersion }: { item: SourceDetail, installedVersion?: string }) => {
   const InsBtn =
@@ -34,10 +34,9 @@ export default ({ item, installedVersion }: { item: SourceDetail, installedVersi
             state.loading = false;
           });
       };
-      const el = <div onClick={doInstall} class={["clickable-item"]}>
+      return <div onClick={doInstall} class={["clickable-item", style.listItemBtn]}>
         <BtnText />
       </div>;
-      return el;
     }
   return <div class={style.listItemWrapper}>
     <div class={style.listItemMeta}>
