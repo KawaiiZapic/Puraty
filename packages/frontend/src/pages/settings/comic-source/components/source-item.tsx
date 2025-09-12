@@ -1,30 +1,27 @@
 import type { SourceDetail } from "@/api/comic-source";
 import style from "./source-item.module.css";
 import api from "@/api";
-import { rNode } from "@/utils/Reactive";
+import { computed, reactive, ref, rNode, toRef } from "@/utils/Reactive";
 
 export default ({ item, installedVersion }: { item: SourceDetail, installedVersion?: string }) => {
   const InsBtn =
     () => {
-      let loading = false;
-      const { state, $: BtnText } = rNode(
-        ({ loading, installedVersion }) => {
-          if (loading) {
-            return <>正在安装</>;
-          }
-          if (installedVersion === item.version) {
-            return <>已安装</>;
-          } else {
-            return <>{ !!installedVersion ? "升级" : "安装" }</>;
-          }
-        }, 
-        {
-          loading: false,
-          installedVersion
+      const state = reactive({
+        loading: false,
+        installedVersion
+      });
+      const updateBtnStateText = computed(({ loading, installedVersion }) => {
+        if (loading) {
+          return "正在安装";
         }
-      );
+        if (installedVersion === item.version) {
+          return "已安装";
+        } else {
+          return !!installedVersion ? "升级" : "安装" 
+        };
+      }, state);
       const doInstall = () => {
-        if (loading || installedVersion === item.version) return;
+        if (state.loading || state.installedVersion === item.version) return;
         state.loading = true;
         api.ComicSource.install(item.fileName, item.key)
           .then(() => {
@@ -35,7 +32,7 @@ export default ({ item, installedVersion }: { item: SourceDetail, installedVersi
           });
       };
       return <div onClick={doInstall} class={["clickable-item", style.listItemBtn]}>
-        <BtnText />
+        { updateBtnStateText }
       </div>;
     }
   return <div class={style.listItemWrapper}>

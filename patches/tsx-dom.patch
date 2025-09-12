@@ -1,8 +1,8 @@
 diff --git a/dist/index.d.ts b/dist/index.d.ts
-index 8ddb0347458ea1eff1ac6e37dc7f4bedbd0dd29f..4835d833259673395eb11f03c2ed0a15a202afce 100644
+index 8ddb0347458ea1eff1ac6e37dc7f4bedbd0dd29f..cb972da20aa8bf0dbe1c2f0a8bd5a4add7e8c172 100644
 --- a/dist/index.d.ts
 +++ b/dist/index.d.ts
-@@ -10,7 +10,7 @@ type IfTsxConfig<T extends string, TIF, TELSE> = TsxConfig[T] extends false ? TE
+@@ -10,14 +10,14 @@ type IfTsxConfig<T extends string, TIF, TELSE> = TsxConfig[T] extends false ? TE
  type IntrinsicElementsCombined = IfTsxConfig<"html", IntrinsicElementsHTML, unknown> & IfTsxConfig<"svg", IntrinsicElementsSVG, unknown>;
  declare global {
      namespace JSX {
@@ -11,6 +11,15 @@ index 8ddb0347458ea1eff1ac6e37dc7f4bedbd0dd29f..4835d833259673395eb11f03c2ed0a15
          interface ElementAttributesProperty {
              props: unknown;
          }
+         interface ElementChildrenAttribute {
+             children: unknown;
+         }
+-        interface IntrinsicElements extends IntrinsicElementsCombined, CustomElementsHTML {
+-        }
++        // interface IntrinsicElements extends IntrinsicElementsCombined, CustomElementsHTML {
++        // }
+     }
+ }
 diff --git a/dist/jsx-runtime.js b/dist/jsx-runtime.js
 index 9ace7f924b6a0782cf3fa2fc7aa88c3549167333..9fcb76976b49864c1740e12bb40ed2949298ba4a 100644
 --- a/dist/jsx-runtime.js
@@ -32,15 +41,120 @@ index 9ace7f924b6a0782cf3fa2fc7aa88c3549167333..9fcb76976b49864c1740e12bb40ed294
      const { children, ...attrs } = props;
      const { finalTag, finalAttrs } = (0, utils_1.applyTsxTag)(tag, attrs);
      const element = (0, utils_1.createDomElement)(finalTag, finalAttrs);
+diff --git a/dist/setAttributes.js b/dist/setAttributes.js
+index 85dcea63462e7fe6208c0ec3b62719c5a5a12e99..3112b42e9754fa89fc0c3b9831118435f9ec4b2c 100644
+--- a/dist/setAttributes.js
++++ b/dist/setAttributes.js
+@@ -11,35 +11,46 @@ function transferKnownProperties(source, target) {
+ }
+ /** "on" followed by an uppercase character. Not sure if there are any events with anything other than A-Z. Checking unicode just to be safe */
+ const eventAttributeName = /^on\p{Lu}/u;
++
++function setAttribute(element, name, value) {
++    if (typeof value.onUpdate === "function") {
++        value.onUpdate(() => {
++            setAttribute(element, name, value.value);
++        });
++        return void setAttribute(element, name, value.value);
++    }
++    // Ignore some debug props that might be added by bundlers
++    if (name === "__source" || name === "__self" || name === "tsxTag")
++        return;
++    if (name === "class") {
++        const finalValue = (0, tsx_dom_types_1.classnames)(value);
++        if (finalValue)
++            element.setAttribute(name, finalValue);
++    }
++    else if (name === "ref") {
++        value.current = element;
++    }
++    else if (eventAttributeName.test(name)) {
++        const finalName = name.replace(/Capture$/, "");
++        const useCapture = name !== finalName;
++        const eventName = finalName.toLowerCase().substring(2);
++        element.addEventListener(eventName, value, useCapture);
++    }
++    else if (name === "style" && typeof value !== "string") {
++        // Special handler for style with a value of type CSSStyleDeclaration
++        transferKnownProperties(value, element.style);
++    }
++    else if (name === "dangerouslySetInnerHTML")
++        element.innerHTML = value;
++    else if (value === true)
++        element.setAttribute(name, name);
++    else if (value || value === 0 || value === "")
++        element.setAttribute(name, value.toString());
++    else
++        element.removeAttribute(name);
++}
+ function setAttributes(element, attrs) {
+     for (const name of Object.keys(attrs)) {
+-        // Ignore some debug props that might be added by bundlers
+-        if (name === "__source" || name === "__self" || name === "tsxTag")
+-            continue;
+-        const value = attrs[name];
+-        if (name === "class") {
+-            const finalValue = (0, tsx_dom_types_1.classnames)(value);
+-            if (finalValue)
+-                element.setAttribute(name, finalValue);
+-        }
+-        else if (name === "ref") {
+-            value.current = element;
+-        }
+-        else if (eventAttributeName.test(name)) {
+-            const finalName = name.replace(/Capture$/, "");
+-            const useCapture = name !== finalName;
+-            const eventName = finalName.toLowerCase().substring(2);
+-            element.addEventListener(eventName, value, useCapture);
+-        }
+-        else if (name === "style" && typeof value !== "string") {
+-            // Special handler for style with a value of type CSSStyleDeclaration
+-            transferKnownProperties(value, element.style);
+-        }
+-        else if (name === "dangerouslySetInnerHTML")
+-            element.innerHTML = value;
+-        else if (value === true)
+-            element.setAttribute(name, name);
+-        else if (value || value === 0 || value === "")
+-            element.setAttribute(name, value.toString());
++        setAttribute(element, name, attrs[name]);
+     }
+ }
 diff --git a/dist/utils.js b/dist/utils.js
-index 6502f9e224de06eb8f8525aa5265090c6a186adf..6e8cad387217b344ebdb7d099e8c5b6fb4947d44 100644
+index 6502f9e224de06eb8f8525aa5265090c6a186adf..672457c73c20bd9eebc66a7b899356ac0fc8dd9b 100644
 --- a/dist/utils.js
 +++ b/dist/utils.js
-@@ -4,7 +4,7 @@ exports.applyChildren = applyChildren;
+@@ -4,7 +4,33 @@ exports.applyChildren = applyChildren;
  exports.createDomElement = createDomElement;
  exports.applyTsxTag = applyTsxTag;
  function applyChild(element, child) {
 -    if (child instanceof Element)
++    if (typeof child.onUpdate === "function") {
++        let el = null;
++        const handler = () => {
++            const value = child.value;
++            if (value instanceof Node) {
++                el?.parentNode?.removeChild(el);
++                el = value;
++                element.appendChild(el);
++            } else if (typeof value === "string" || typeof value === "number") {
++                if (el instanceof Text) {
++                    el.textContent = value.toString();
++                } else {
++                    el?.parentNode?.removeChild(el);
++                    el = document.createTextNode(value.toString());
++                    element.appendChild(el);
++                }
++            } else {
++                console.warn("Unknown type to append: ", value);
++                el?.parentNode?.removeChild(el);
++                el = null;
++            }
++        };
++        child.onUpdate(handler);
++        handler();
++        return;
++    }
 +    if (child instanceof Node) 
          element.appendChild(child);
      else if (typeof child === "string" || typeof child === "number")

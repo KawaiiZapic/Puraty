@@ -5,6 +5,7 @@ import ChevronLeftFilled from "@sicons/material/ChevronLeftFilled.svg";
 import api from "@/api";
 import { RouterLink } from "@/router/RouterLink";
 import { lastMatched, router } from "@/router";
+import { ref, rNode } from "@/utils/Reactive";
 
 export default () => {
   const toHome = () => {
@@ -20,20 +21,20 @@ export default () => {
     }
   }
   let isBack = false;
-  const btnIcon = <img src={ CloseFilled }></img> as HTMLImageElement;
+  const backIconUrl = ref(CloseFilled);
   const onRouteUpdate = () => {
     isBack = lastMatched?.path !== "/";
     if (isBack) {
-      btnIcon.src = ChevronLeftFilled;
+      backIconUrl.value = ChevronLeftFilled;
     } else {
-      btnIcon.src = CloseFilled;
+      backIconUrl.value = CloseFilled;
     }
   }
   window.addEventListener("route-update", onRouteUpdate);
   onRouteUpdate();
   return <div class={ style.wrapper }>
     <div onClick={ toHome } class={ [style.iconBtn, "clickable-item"] } >
-      { btnIcon }
+      <img src={ backIconUrl }></img>
     </div>
     <RouterLink href="/settings" class={ [style.iconBtn, "clickable-item"] } >
       <img src={ SettingsFilled }></img>
