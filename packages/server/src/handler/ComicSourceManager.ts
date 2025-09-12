@@ -1,6 +1,7 @@
-import { AppData } from "@/db/AppData";
 import { InstalledSource } from "@/db/InstalledSource";
+import { env } from "@/utils/env";
 import type { ComicSource } from "@/venera-lib";
+import path from "tjs:path";
 
 const IMPORT_TEMPLATE = `import { 
   APP, Cookie, Comic, ComicDetails, 
@@ -8,7 +9,7 @@ const IMPORT_TEMPLATE = `import {
   HtmlElement, HtmlNode, Image, ImageLoadingConfig, 
   Network, _Timer, console, createUuid, randomDouble, 
   randomInt, setInterval, setTimeout 
-} from "../../venera-lib/index.js";
+} from "../../${env.DEV ? "dist" : "server"}/venera-lib/index.js";
 
 `;
 
@@ -17,11 +18,11 @@ export class ComicSourceManager {
     try {
       let source = IMPORT_TEMPLATE + new TextDecoder().decode(await (await fetch(url)).arrayBuffer());
       source = source.replace(/class .*? extends ComicSource/gi, v => `export default ${v}`);
-      await tjs.makeDir("./data/comic-source", { recursive: true });
-      const f = await tjs.open(`data/comic-source/${key}.js`, "w");
+      await tjs.makeDir(path.join(APP_DIR, "comic-source"), { recursive: true });
+      const f = await tjs.open(path.join(APP_DIR, `comic-source/${key}.js`), "w");
       await f.write(new TextEncoder().encode(source));
       await f.close();
-      const v = await import(`data/comic-source/${key}.js`).then(({ default: source }) => {
+      const v = await import(path.join(APP_DIR, `comic-source/${key}.js`)).then(({ default: source }) => {
         const s: ComicSource = new source();
         return s.version;
       });
@@ -29,7 +30,7 @@ export class ComicSourceManager {
       return v;
     } catch (e) {
       try {
-        await tjs.remove(`data/comic-source/${key}.js`);
+        await tjs.remove(path.join(APP_DIR, `comic-source/${key}.js`));
       } finally {}
       throw e;
     }
