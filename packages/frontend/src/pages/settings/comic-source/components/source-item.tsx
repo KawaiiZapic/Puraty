@@ -1,7 +1,7 @@
 import type { SourceDetail } from "@/api/comic-source";
 import style from "./source-item.module.css";
 import api from "@/api";
-import { computed, reactive, ref, rNode, toRef } from "@/utils/Reactive";
+import { computed, reactive } from "@puraty/reactivity";
 
 export default ({ item, installedVersion }: { item: SourceDetail, installedVersion?: string }) => {
   const InsBtn =

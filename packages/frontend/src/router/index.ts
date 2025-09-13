@@ -2,7 +2,7 @@ import main from "@/pages/main";
 import SettingsIndex from "@/pages/settings";
 import ComicSourceList from "@/pages/settings/comic-source";
 import Navigo from "navigo";
-import type { FC } from "tsx-dom";
+import type { FC } from "@puraty/render";
 
 export const router = new Navigo("/", {
   hash: true

@@ -5,7 +5,7 @@ import ChevronLeftFilled from "@sicons/material/ChevronLeftFilled.svg";
 import api from "@/api";
 import { RouterLink } from "@/router/RouterLink";
 import { lastMatched, router } from "@/router";
-import { ref, rNode } from "@/utils/Reactive";
+import { ref } from "@puraty/reactivity";
 
 export default () => {
   const toHome = () => {

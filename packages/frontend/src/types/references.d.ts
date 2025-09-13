@@ -1,2 +1,2 @@
 /// <reference types="vite/client" />
-import "tsx-dom";
+import "@puraty/render";

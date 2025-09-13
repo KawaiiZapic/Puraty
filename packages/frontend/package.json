@@ -15,7 +15,8 @@
     "@sicons/material": "^0.13.0",
     "autoprefixer": "^10.4.21",
     "navigo": "^8.11.1",
-    "tsx-dom": "^3.1.0",
+    "@puraty/render": "workspace:",
+    "@puraty/reactivity": "workspace:",
     "vite": "^7.1.3"
   }
 }

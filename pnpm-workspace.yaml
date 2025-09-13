@@ -1,4 +1,4 @@
 packages:
   - packages/*
-patchedDependencies:
-  tsx-dom: patches/tsx-dom.patch
+ignoredBuiltDependencies:
+  - esbuild

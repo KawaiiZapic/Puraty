@@ -1,4 +1,4 @@
-import { FC, type BaseProps } from "tsx-dom"
+import { FC, type BaseProps } from "@puraty/render"
 import { router } from ".";
 
 
