@@ -1,5 +1,6 @@
 import { AppData } from "@/db/AppData";
 import { ComicSourceManager } from "@/handler/ComicSourceManager";
+import type { Comic, ComicSource } from "@/venera-lib";
 import { HTTPError, type H3 } from "h3";
 
 interface SourceDetail {
@@ -13,6 +14,19 @@ interface SourceDetail {
 interface InstallBody {
   url: string;
   key: string;
+}
+
+interface InstalledSourceDetail {
+  name: string;
+  explore?: {
+    id: number;
+    title: string;
+    type: Required<ComicSource>["explore"][number]["type"];
+  }[];
+}
+
+interface SourceExplorePageDetail {
+  data: Comic[];
 }
 
 export default (app: H3) => {
@@ -45,6 +59,49 @@ export default (app: H3) => {
     const id = e.context.params?.id;
     if (id && id in list) {
       await ComicSourceManager.uninstall(id);
+    } else {
+      throw new HTTPError("Comic source not found: " + id, { status: 404 });
+    }
+  });
+
+  app.get("/api/comic-source/:id", async (e) => {
+    const id = e.context.params?.id;
+    if (id) {
+      const source = await ComicSourceManager.get(id);
+      return {
+        name: source.name,
+        explore: source.explore?.map((v, id) => ({
+          id,
+          title: v.title,
+          type: v.type
+        }))
+      } satisfies InstalledSourceDetail;
+    } else {
+      throw new HTTPError("Comic source not found: " + id, { status: 404 });
+    }
+  });
+
+  app.get("/api/comic-source/:id/explore/:explore", async (e) => {
+    const id = e.context.params?.id;
+    const explore = parseInt(e.context.params?.explore ?? "");
+    if (id) {
+      const source = await ComicSourceManager.get(id);
+      const explorePage = source.explore?.[explore];
+      if (!explorePage) {
+        throw new HTTPError("Comic source explore page not found: " + id + ":" + explore, { status: 404 });
+      }
+      try {
+        let data;
+        if (explorePage.type === "multiPageComicList") {
+          data = await (explorePage.loadNext ? (explorePage).loadNext(null) : explorePage.load(1));
+        } else {
+          data = await explorePage.load(1);
+        }
+        return data;
+      } catch (_) {
+        console.error(_);
+        throw new HTTPError("Comic source failed to load data: " + _, { status: 500 });
+      }
     } else {
       throw new HTTPError("Comic source not found: " + id, { status: 404 });
     }

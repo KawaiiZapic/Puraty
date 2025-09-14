@@ -1,7 +1,9 @@
 import main from "@/pages/main";
 import SettingsIndex from "@/pages/settings";
 import ComicSourceList from "@/pages/settings/comic-source";
-import Navigo from "navigo";
+import ComicSourceDetail from "@/pages/comic-source/detail";
+import ComicSourceExplore from "@/pages/comic-source/explore";
+import Navigo, { type Match } from "navigo";
 import type { FC } from "@puraty/render";
 
 export const router = new Navigo("/", {
@@ -38,21 +40,19 @@ const routes: RouteRecord[] = [
   },
   {
     path: "/settings",
-    component: SettingsIndex,
-    children: [
-      {
-        path: "/settings/comic-sources/1",
-        component: main
-      },
-      {
-        path: "/settings/comic-sources/2",
-        component: SettingsIndex
-      }
-    ]
+    component: SettingsIndex
   },
   {
     path: "/settings/comic-sources",
     component: ComicSourceList
+  }, 
+  {
+    path: "/source/:id",
+    component: ComicSourceDetail
+  }, 
+  {
+    path: "/source/:id/explore/:page",
+    component: ComicSourceExplore
   }
 ];
 const addRoutes = (routes: RouteRecord[], parents?: RouteRecord[]) => {

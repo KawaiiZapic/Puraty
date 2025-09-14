@@ -14,6 +14,22 @@ const IMPORT_TEMPLATE = `import {
 `;
 
 export class ComicSourceManager {
+  static _instances: Record<string, ComicSource> = {};
+
+  static async get(id: string) {
+    if (ComicSourceManager._instances[id]) {
+      return ComicSourceManager._instances[id];
+    }
+    if (!(id in InstalledSource.instance.list())) {
+      throw new Error("Source not found: " + id);
+    }
+    return await import(path.join(APP_DIR, `comic-source/${id}.js`)).then(({ default: source }) => {
+      const s: ComicSource = new source();
+      ComicSourceManager._instances[id] = s;
+      return s;
+    });
+  }
+
   static async install(url: string, key: string) {
     try {
       let source = IMPORT_TEMPLATE + new TextDecoder().decode(await (await fetch(url)).arrayBuffer());
@@ -44,6 +60,7 @@ export class ComicSourceManager {
       await tjs.remove(path.join(APP_DIR, `comic-source/${id}.js`));
     } finally {}
     InstalledSource.instance.delete(id);
+    delete ComicSourceManager._instances[id];
   }
 
   static list() {

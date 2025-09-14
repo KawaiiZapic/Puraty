@@ -31,5 +31,11 @@ export const ComicSource = {
   },
   uninstall: (id: string) => {
     return Req.delete(`/api/comic-source/${id}`);
+  },
+  get(id: string) {
+    return Req.get<InstalledSourceDetail>(`/api/comic-source/${id}`);
+  },
+  explore(id: string, page: string) {
+    return Req.get<any>(`/api/comic-source/${id}/explore/${page}`);
   }
 };
