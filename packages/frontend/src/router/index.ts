@@ -9,9 +9,18 @@ export const router = new Navigo("/", {
 });
 export let currentMatched: RouteRecord[] = [];
 export let lastMatched: RouteRecord | null = null;
+export let currentRouteInfo: Match | null = null;
 
 export const shiftRouteViewTree = () => {
   return currentMatched.shift();
+}
+
+export const getCurrentRoute = () => currentRouteInfo;
+
+export class RouteUpdateEvent extends Event {
+  constructor() {
+    super("route-update");
+  }
 }
 
 interface RouteRecord {
@@ -51,11 +60,12 @@ const addRoutes = (routes: RouteRecord[], parents?: RouteRecord[]) => {
     router.on({
       [route.path]: {
         as: route.name,
-        uses() {
+        uses(match: Match) {
+          currentRouteInfo = match;
           const p = parents ?? [];
           currentMatched = [...p, route];
           lastMatched = route;
-          window.dispatchEvent(new CustomEvent("route-update"));
+          window.dispatchEvent(new RouteUpdateEvent());
         }
       }
     });
