@@ -32,6 +32,12 @@ interface RouteRecord {
   children?: RouteRecord[];
 }
 
+router.notFound(() => {
+  currentMatched = [];
+  lastMatched = null;
+  window.dispatchEvent(new RouteUpdateEvent());
+});
+
 const routes: RouteRecord[] = [
   {
     path: "/",
