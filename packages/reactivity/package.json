@@ -10,12 +10,5 @@
   "exports": {
     ".": "./src/index.ts"
   },
-  "main": "src/index.ts",
-  "typesVersions": {
-    "*": {
-      "jsx-runtime": [
-        "src/jsx-runtime"
-      ]
-    }
-  }
+  "main": "src/index.ts"
 }
