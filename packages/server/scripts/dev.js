@@ -25,11 +25,12 @@ const watcher = watch("dist", {
 });
 let requireReload = true;
 
+/** @type {import("node:child_process").ChildProcess} */
 let tjs = null;
 setInterval(() => {
   if (!requireReload) return;
-  requireReload = false;
   tjs?.kill();
+  requireReload = false;
   tjs = exec("tjs run index.js --api", {
     cwd: "dist",
     env: {
@@ -43,9 +44,6 @@ setInterval(() => {
 
   tjs.stderr.setEncoding('utf8');
   tjs.stderr.pipe(process.stderr);
-  tjs.on("exit", (code) => {
-    exit(code);
-  });
 }, 100);
 
 for await (const _ of watcher) {
