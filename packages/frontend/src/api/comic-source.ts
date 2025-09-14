@@ -7,6 +7,14 @@ export interface SourceDetail {
   version: string;
   description?: string;
 }
+export interface InstalledSourceDetail {
+  name: string;
+  explore?: {
+    id: number;
+    type: string;
+    title: string;
+  }[];
+}
 
 export const ComicSource = {
   available: () => {
@@ -20,5 +28,8 @@ export const ComicSource = {
       url,
       key
     }));
+  },
+  uninstall: (id: string) => {
+    return Req.delete(`/api/comic-source/${id}`);
   }
 };

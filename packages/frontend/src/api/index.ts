@@ -34,5 +34,15 @@ export const Req = {
   },
   post<T>(url: string, body?: BodyInit) {
     return Req.send<T>("post", url, body);
+  },
+  delete<T>(url: string, params?: Record<string, string | number | boolean>) {return Req.send<T>(
+      "delete", 
+      url 
+        + (
+          params 
+            ? "?" + new URLSearchParams(params as Record<string, string>).toString() 
+            : ""
+        )
+      );
   }
 };

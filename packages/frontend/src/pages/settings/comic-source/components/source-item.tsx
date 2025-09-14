@@ -11,25 +11,37 @@ export default ({ item, installedVersion }: { item: SourceDetail, installedVersi
         installedVersion
       });
       const updateBtnStateText = computed(({ loading, installedVersion }) => {
-        if (loading) {
-          return "正在安装";
-        }
+        let res = "";
         if (installedVersion === item.version) {
-          return "已安装";
+          res = "卸载";
         } else {
-          return !!installedVersion ? "升级" : "安装" 
+          res = !!installedVersion ? "升级" : "安装" 
         };
+        if (loading) {
+          res = "正在" + res;
+        }
+        return res;
       }, state);
       const doInstall = () => {
-        if (state.loading || state.installedVersion === item.version) return;
+        if (state.loading) return;
         state.loading = true;
-        api.ComicSource.install(item.fileName, item.key)
-          .then(() => {
-            state.installedVersion = item.version;
-          })
-          .finally(() => {
-            state.loading = false;
-          });
+        if (state.installedVersion !== item.version) {
+          api.ComicSource.install(item.fileName, item.key)
+            .then(() => {
+              state.installedVersion = item.version;
+            })
+            .finally(() => {
+              state.loading = false;
+            });
+        } else {
+          api.ComicSource.uninstall(item.key)
+            .then(() => {
+              state.installedVersion = undefined;
+            })
+            .finally(() => {
+              state.loading = false;
+            });
+        }
       };
       return <div onClick={doInstall} class={["clickable-item", style.listItemBtn]}>
         { updateBtnStateText }

@@ -36,6 +36,16 @@ export class ComicSourceManager {
     }
   }
 
+  static async uninstall(id: string) {
+    if (!(id in InstalledSource.instance.list())) {
+      throw new Error("Source not found: " + id);
+    }
+    try {
+      await tjs.remove(path.join(APP_DIR, `comic-source/${id}.js`));
+    } finally {}
+    InstalledSource.instance.delete(id);
+  }
+
   static list() {
     return InstalledSource.instance.list();
   }

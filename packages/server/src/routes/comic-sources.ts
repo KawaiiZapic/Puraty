@@ -1,5 +1,4 @@
 import { AppData } from "@/db/AppData";
-import { InstalledSource } from "@/db/InstalledSource";
 import { ComicSourceManager } from "@/handler/ComicSourceManager";
 import { HTTPError, type H3 } from "h3";
 
@@ -31,7 +30,7 @@ export default (app: H3) => {
   });
 
   app.get("/api/comic-source/installed", async (e) => {
-    return InstalledSource.instance.list();
+    return ComicSourceManager.list();
   });
   
   app.post("/api/comic-source/add", async (e) => {
@@ -39,5 +38,15 @@ export default (app: H3) => {
     const v = await ComicSourceManager.install("https://cdn.jsdelivr.net/gh/venera-app/venera-configs@latest/" + b.url, b.key);
     e.res.status = 201;
     return { key: b.key, version: v };
+  });
+
+  app.delete("/api/comic-source/:id", async (e) => {
+    const list = ComicSourceManager.list();
+    const id = e.context.params?.id;
+    if (id && id in list) {
+      await ComicSourceManager.uninstall(id);
+    } else {
+      throw new HTTPError("Comic source not found: " + id, { status: 404 });
+    }
   });
 };
