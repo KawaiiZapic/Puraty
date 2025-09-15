@@ -1,24 +1,11 @@
-import { H3 } from "h3";
-import { serve } from "h3-txikijs-adapter";
 import { launchUI } from "./utils/process";
 
 import initialize from "./utils/initialize";
-import statics from "./routes/statics";
-import { ac } from "./routes/commands";
-import "./routes/comic-sources";
-import { applyHandler } from "./utils/decorator";
+import { ac } from "./app/commands/commands.controller";
+import { App } from "./app";
 
 await initialize();
+const app = new App();
 
-const app = new H3();
-
-[
-  statics
-].forEach(handler => handler(app));
-
-applyHandler(app);
-
+app.serve(ac.signal);
 launchUI(ac.signal);
-serve(app, {
-  signal: ac.signal
-});

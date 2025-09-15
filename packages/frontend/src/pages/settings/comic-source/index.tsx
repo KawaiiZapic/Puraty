@@ -5,7 +5,7 @@ export default () => {
   const list = <div />;
   Promise.all([
     api.ComicSource.available(),
-    api.ComicSource.installed()
+    api.ComicSource.list()
   ]).then(([available, installed]) => {
     available.forEach(item => {
       list.appendChild(SourceItem({ item, installedVersion: installed[item.key] }));

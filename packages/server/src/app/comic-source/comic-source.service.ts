@@ -1,7 +1,8 @@
-import { InstalledSource } from "@/db/InstalledSource";
+import { InstalledSource } from "@/app/comic-source/comic-source.db";
 import { env } from "@/utils/env";
 import type { ComicSource } from "@/venera-lib";
 import path from "tjs:path";
+import type { NetworkSourceDetail } from "./comic-source.model";
 
 const IMPORT_TEMPLATE = `import { 
   APP, Cookie, Comic, ComicDetails, 
@@ -13,26 +14,26 @@ const IMPORT_TEMPLATE = `import {
 
 `;
 
-export class ComicSourceManager {
+export class ComicSourceService {
   static _instances: Record<string, ComicSource> = {};
 
   static async get(id: string) {
-    if (ComicSourceManager._instances[id]) {
-      return ComicSourceManager._instances[id];
+    if (ComicSourceService._instances[id]) {
+      return ComicSourceService._instances[id];
     }
-    if (!(id in InstalledSource.instance.list())) {
+    if (!(id in InstalledSource.list())) {
       throw new Error("Source not found: " + id);
     }
     return await import(path.join(APP_DIR, `comic-source/${id}.js`)).then(({ default: source }) => {
       const s: ComicSource = new source();
-      ComicSourceManager._instances[id] = s;
+      ComicSourceService._instances[id] = s;
       return s;
     });
   }
 
   static async install(url: string, key: string) {
     try {
-      let source = IMPORT_TEMPLATE + new TextDecoder().decode(await (await fetch(url)).arrayBuffer());
+      let source = IMPORT_TEMPLATE + new TextDecoder().decode(await (await fetch("https://cdn.jsdelivr.net/gh/venera-app/venera-configs@latest/" + url)).arrayBuffer());
       source = source.replace(/class .*? extends ComicSource/gi, v => `export default ${v}`);
       await tjs.makeDir(path.join(APP_DIR, "comic-source"), { recursive: true });
       const f = await tjs.open(path.join(APP_DIR, `comic-source/${key}.js`), "w");
@@ -42,28 +43,33 @@ export class ComicSourceManager {
         const s: ComicSource = new source();
         return s.version;
       });
-      InstalledSource.instance.install(key, v)
+      InstalledSource.install(key, v)
       return v;
     } catch (e) {
       try {
         await tjs.remove(path.join(APP_DIR, `comic-source/${key}.js`));
-      } finally {}
+      } finally { }
       throw e;
     }
   }
 
   static async uninstall(id: string) {
-    if (!(id in InstalledSource.instance.list())) {
+    if (!(id in InstalledSource.list())) {
       throw new Error("Source not found: " + id);
     }
     try {
       await tjs.remove(path.join(APP_DIR, `comic-source/${id}.js`));
-    } finally {}
-    InstalledSource.instance.delete(id);
-    delete ComicSourceManager._instances[id];
+    } finally { }
+    InstalledSource.delete(id);
+    delete ComicSourceService._instances[id];
   }
 
   static list() {
-    return InstalledSource.instance.list();
+    return InstalledSource.list();
+  }
+
+  static async available() {
+    const data = new TextDecoder().decode(await(await fetch("https://cdn.jsdelivr.net/gh/venera-app/venera-configs@latest/index.json")).arrayBuffer());
+    return JSON.parse(data) as NetworkSourceDetail[];
   }
 }

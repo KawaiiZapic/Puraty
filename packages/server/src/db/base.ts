@@ -2,7 +2,7 @@ import path from "tjs:path";
 import { Database } from "tjs:sqlite";
 
 export abstract class BaseDB {
-  static _db: Database;
+  private static _db: Database;
   protected VERSION = 0;
 
   constructor(name: string) {

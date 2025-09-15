@@ -9,9 +9,9 @@ const controllers: {
   path: string;
 }[] = [];
 
-export const Controller = (path: string): ClassDecorator => {
+export const Controller = (path?: string): ClassDecorator => {
   return (target) => {
-    target.prototype[s] = path;
+    target.prototype[s] = path ?? "";
   };
 }
 
@@ -38,7 +38,7 @@ export const Delete = (path: string): MethodDecorator => {
   return Handle("delete", path);
 }
 
-export const applyHandler = (app: H3) => {
+export const initializeHandlers = (app: H3) => {
   controllers.forEach((info) => {
     app[info.method]("/api" + info.proto[s] + info.path, info.value);
   });

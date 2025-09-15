@@ -1,9 +1,9 @@
-import type { SourceDetail } from "@/api/comic-source";
 import style from "./source-item.module.css";
 import api from "@/api";
 import { computed, reactive } from "@puraty/reactivity";
+import type { NetworkSourceDetail } from "@puraty/server";
 
-export default ({ item, installedVersion }: { item: SourceDetail, installedVersion?: string }) => {
+export default ({ item, installedVersion }: { item: NetworkSourceDetail, installedVersion?: string }) => {
   const InsBtn =
     () => {
       const state = reactive({
@@ -26,7 +26,7 @@ export default ({ item, installedVersion }: { item: SourceDetail, installedVersi
         if (state.loading) return;
         state.loading = true;
         if (state.installedVersion !== item.version) {
-          api.ComicSource.install(item.fileName, item.key)
+          api.ComicSource.add(item.fileName, item.key)
             .then(() => {
               state.installedVersion = item.version;
             })
@@ -34,7 +34,7 @@ export default ({ item, installedVersion }: { item: SourceDetail, installedVersi
               state.loading = false;
             });
         } else {
-          api.ComicSource.uninstall(item.key)
+          api.ComicSource.delete(item.key)
             .then(() => {
               state.installedVersion = undefined;
             })

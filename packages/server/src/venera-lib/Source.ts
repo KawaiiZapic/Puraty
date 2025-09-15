@@ -1,4 +1,4 @@
-import { SourceData } from "@/db/SourceData";
+import { ComicSourceData } from "@/app/comic-source/comic-source.db";
 import { APP } from "./App";
 import type { Comic, ComicDetails, ImageLoadingConfig } from "./Data";
 
@@ -128,22 +128,21 @@ export abstract class ComicSource {
       }
     };
 
-    private sd = SourceData.instance;
 
     loadData(dataKey: string): string {
-      return this.sd.get("data", this.key, dataKey);
+      return ComicSourceData.get("data", this.key, dataKey);
     }
 
     loadSetting(key: string): string {
-      return this.sd.get("setting", this.key, key) ?? (this.settings?.[key] as InputSettingItem)?.default;
+      return ComicSourceData.get("setting", this.key, key) ?? (this.settings?.[key] as InputSettingItem)?.default;
     }
 
     saveData(dataKey: string, data: string) {
-      this.sd.set("data", this.key, dataKey, data)
+      ComicSourceData.set("data", this.key, dataKey, data)
     }
 
     deleteData(dataKey: string) {
-      this.sd.delete("data", this.key, dataKey);
+      ComicSourceData.delete("data", this.key, dataKey);
     }
 
     get isLogged(): boolean {

@@ -8,11 +8,11 @@ export class AppData extends BaseDB {
     super("app");
   }
 
-  static get instance() {
+  static get db() {
     if (!this._instance) {
       this._instance = new AppData();
     }
-    return this._instance;
+    return this._instance.db;
   }
 
   protected initialize(): void {
@@ -21,20 +21,20 @@ export class AppData extends BaseDB {
 
   protected upgrade(): void { }
 
-  get(name: string): string | undefined {
+  static get(name: string): string | undefined {
     const st = this.db.prepare("SELECT value from app_data where key=?;");
     const result = st.all(name)[0]?.value;
     st.finalize();
     return result;
   }
 
-  set(name: string, data: string) {
+  static set(name: string, data: string) {
     const st = this.db.prepare("INSERT OR REPLACE INTO app_data (key, value) VALUES (?, ?);");
     st.run(name, data);
     st.finalize();
   }
 
-  delete(name: string) {
+  static delete(name: string) {
     const st = this.db.prepare("DELETE from app_data where key=?;");
     st.run(name);
     st.finalize();
