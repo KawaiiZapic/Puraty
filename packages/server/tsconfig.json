@@ -13,6 +13,7 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "baseUrl": ".",
+    "experimentalDecorators": true,
     "paths": {
       "@/*": ["src/*"]
     },

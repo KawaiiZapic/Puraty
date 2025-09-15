@@ -1,7 +1,8 @@
 import { AppData } from "@/db/AppData";
 import { ComicSourceManager } from "@/handler/ComicSourceManager";
+import { Controller, Delete, Get, Post } from "@/utils/decorator";
 import type { Comic, ComicSource } from "@/venera-lib";
-import { HTTPError, type H3 } from "h3";
+import { HTTPError, type H3, type H3Event } from "h3";
 
 interface SourceDetail {
   name: string;
@@ -25,12 +26,11 @@ interface InstalledSourceDetail {
   }[];
 }
 
-interface SourceExplorePageDetail {
-  data: Comic[];
-}
+@Controller("/comic-source")
+export class ComicSourceHandler {
 
-export default (app: H3) => {
-  app.get("/api/comic-source/available", async (e) => {
+  @Get("/available")
+  async available() {
     let data = AppData.instance.get("comic-source-cache");
     if (!data) {
       data = new TextDecoder().decode(await (await fetch("https://cdn.jsdelivr.net/gh/venera-app/venera-configs@latest/index.json")).arrayBuffer());
@@ -41,20 +41,23 @@ export default (app: H3) => {
     } catch(_) {}
     if (!list) throw new HTTPError("Failed to load comic source list", { status: 500 });
     return list;
-  });
+  }
 
-  app.get("/api/comic-source/installed", async (e) => {
+  @Get("/installed")
+  InstalledSource() {
     return ComicSourceManager.list();
-  });
-  
-  app.post("/api/comic-source/add", async (e) => {
+  }
+
+  @Post("/add")
+  async add(e: H3Event) {
     const b = await e.req.json() as InstallBody;
     const v = await ComicSourceManager.install("https://cdn.jsdelivr.net/gh/venera-app/venera-configs@latest/" + b.url, b.key);
     e.res.status = 201;
     return { key: b.key, version: v };
-  });
+  }
 
-  app.delete("/api/comic-source/:id", async (e) => {
+  @Delete("/:id")
+  async delete(e: H3Event) {
     const list = ComicSourceManager.list();
     const id = e.context.params?.id;
     if (id && id in list) {
@@ -62,9 +65,10 @@ export default (app: H3) => {
     } else {
       throw new HTTPError("Comic source not found: " + id, { status: 404 });
     }
-  });
+  }
 
-  app.get("/api/comic-source/:id", async (e) => {
+  @Get("/:id")
+  async detail(e: H3Event) {
     const id = e.context.params?.id;
     if (id) {
       const source = await ComicSourceManager.get(id);
@@ -79,9 +83,10 @@ export default (app: H3) => {
     } else {
       throw new HTTPError("Comic source not found: " + id, { status: 404 });
     }
-  });
+  }
 
-  app.get("/api/comic-source/:id/explore/:explore", async (e) => {
+  @Get("/:id/explore/:explore")
+  async explore(e: H3Event){
     const id = e.context.params?.id;
     const explore = parseInt(e.context.params?.explore ?? "");
     if (id) {
@@ -105,5 +110,5 @@ export default (app: H3) => {
     } else {
       throw new HTTPError("Comic source not found: " + id, { status: 404 });
     }
-  });
-};
+  }
+}

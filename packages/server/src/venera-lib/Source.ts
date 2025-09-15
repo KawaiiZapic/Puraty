@@ -17,7 +17,7 @@ interface AccountLogin {
   registerWebsite: string;
 }
 
-interface PageJumpTarget {
+export interface PageJumpTarget {
   page: "category" | "search";
   attributes: Record<string, string>;
 }
