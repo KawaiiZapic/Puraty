@@ -1,4 +1,4 @@
-import { Controller, Post, Get } from "@/utils/decorators";
+import { Controller, Post, Get, Path } from "@/utils/decorators";
 import { Convert } from "@/venera-lib";
 import { type H3Event, HTTPError } from "h3";
 
@@ -12,12 +12,8 @@ export class MiscController {
   }
 
   @Get("/image/:url")
-  async image(e: H3Event) {
-    let url = e.context.params?.url;
-    if (!url) {
-      throw new HTTPError("Required params not found");
-    }
-    url = Convert.decodeUtf8(Convert.decodeBase64(url));
+  async image(@Path("url") _url: string) {
+    const url = Convert.decodeUtf8(Convert.decodeBase64(_url));
     return await fetch(url);
   }
 }

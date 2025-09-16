@@ -1,5 +1,5 @@
 import { ComicSourceService } from "./comic-source.service";
-import { Controller, Delete, Get, Post } from "@/utils/decorators";
+import { Controller, Delete, Get, Json, Path, Post, ReqEvent, Required } from "@/utils/decorators";
 import type { Comic } from "@/venera-lib";
 import { HTTPError, type H3Event } from "h3";
 import type { InstallBody, InstalledSourceDetail } from "./comic-source.model";
@@ -10,11 +10,7 @@ export class ComicSourceHandler {
 
   @Get("/available")
   available() {
-    try {
-      return ComicSourceService.available();
-    } catch (_) {
-      throw new HTTPError("Failed to load comic source list", { status: 500 });
-    }
+    return ComicSourceService.available();
   }
 
   @Get("/installed")
@@ -23,18 +19,21 @@ export class ComicSourceHandler {
   }
 
   @Post("/add")
-  async add(e: H3Event) {
-    const b = await e.req.json() as InstallBody;
-    const v = await ComicSourceService.install(b.url, b.key);
+  async add(
+    @Required @Json body: InstallBody, 
+    @ReqEvent e: H3Event
+  ) {
+    const v = await ComicSourceService.install(body.url, body.key);
     e.res.status = 201;
-    return { key: b.key, version: v };
+    return { key: body.key, version: v };
   }
 
   @Delete("/:id")
-  async delete(e: H3Event) {
+  async delete(
+    @Path("id") id: string
+  ) {
     const list = ComicSourceService.list();
-    const id = e.context.params?.id;
-    if (id && id in list) {
+    if (id in list) {
       await ComicSourceService.uninstall(id);
     } else {
       throw new HTTPError("Comic source not found: " + id, { status: 404 });
@@ -42,46 +41,41 @@ export class ComicSourceHandler {
   }
 
   @Get("/:id")
-  async get(e: H3Event) {
-    const id = e.context.params?.id;
-    if (id) {
-      const source = await ComicSourceService.get(id);
-      return {
-        name: source.name,
-        explore: source.explore?.map((v, id) => ({
-          id,
-          title: v.title,
-          type: v.type
-        }))
-      } satisfies InstalledSourceDetail;
-    } else {
-      throw new HTTPError("Comic source not found: " + id, { status: 404 });
-    }
+  async get(
+    @Path("id") id: string
+  ) {
+    const source = await ComicSourceService.get(id);
+    return {
+      name: source.name,
+      explore: source.explore?.map((v, id) => ({
+        id,
+        title: v.title,
+        type: v.type
+      }))
+    } satisfies InstalledSourceDetail;
   }
 
   @Get("/:id/explore/:explore")
-  async explore(e: H3Event){
-    const id = e.context.params?.id;
-    const explore = parseInt(e.context.params?.explore ?? "");
-    if (id) {
-      const source = await ComicSourceService.get(id);
-      const explorePage = source.explore?.[explore];
-      if (!explorePage) {
-        throw new HTTPError("Comic source explore page not found: " + id + ":" + explore, { status: 404 });
+  async explore(
+    @Path("id") id: string,
+    @Path("explore") _explore: string
+  ){
+    const explore = parseInt(_explore);
+    const source = await ComicSourceService.get(id);
+    const explorePage = source.explore?.[explore];
+    if (!explorePage) {
+      throw new HTTPError("Comic source explore page not found: " + id + ":" + explore, { status: 404 });
+    }
+    try {
+      let data;
+      if (explorePage.type === "multiPageComicList") {
+        data = await (explorePage.loadNext ? (explorePage).loadNext(null) : explorePage.load(1));
+      } else {
+        data = await explorePage.load(1);
       }
-      try {
-        let data;
-        if (explorePage.type === "multiPageComicList") {
-          data = await (explorePage.loadNext ? (explorePage).loadNext(null) : explorePage.load(1));
-        } else {
-          data = await explorePage.load(1);
-        }
-        return data;
-      } catch (_) {
-        throw new HTTPError("Comic source failed to load data: " + _, { status: 500 });
-      }
-    } else {
-      throw new HTTPError("Comic source not found: " + id, { status: 404 });
+      return data;
+    } catch (_) {
+      throw new HTTPError("Comic source failed to load data: " + _, { status: 500 });
     }
   }
 }
