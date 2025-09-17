@@ -10,7 +10,7 @@ type ParamInfo = ({
   }) & { required?: boolean };
 
 const controllers: Map<unknown, {
-  method: "get" | "post" | "delete";
+  method: "get" | "post" | "delete" | "patch";
   proto: any;
   value: any;
   path: string;
@@ -51,7 +51,7 @@ export const Controller = (path?: string): ClassDecorator => {
   };
 }
 
-export const Handle = (method: "get" | "post" | "delete", path: string): MethodDecorator => {
+export const Handle = (method: "get" | "post" | "delete" | "patch", path: string): MethodDecorator => {
   return (target, prop, descriptor) => {
     let o = initControllerInfo(descriptor.value);
     if (!o) {
@@ -77,6 +77,9 @@ export const Get = (path: string): MethodDecorator => {
 
 export const Post = (path: string): MethodDecorator => {
   return Handle("post", path);
+}
+export const Patch = (path: string): MethodDecorator => {
+  return Handle("patch", path);
 }
 
 export const Delete = (path: string): MethodDecorator => {
@@ -105,7 +108,6 @@ export const Query = (id: string) => {
 
 export const Json: ParameterDecorator = ((target, prop, idx) => {
   const func = (target as any)[prop!];
-  let o = initControllerInfo(func);
   setParamInfo(func, idx, {
     type: "json"
   });
@@ -113,7 +115,6 @@ export const Json: ParameterDecorator = ((target, prop, idx) => {
 
 export const ReqEvent: ParameterDecorator = ((target, prop, idx) => {
   const func = (target as any)[prop!];
-  let o = initControllerInfo(func);
   setParamInfo(func, idx, {
     type: "event"
   });
@@ -121,7 +122,6 @@ export const ReqEvent: ParameterDecorator = ((target, prop, idx) => {
 
 export const Required: ParameterDecorator = ((target, prop, idx) => {
   const func = (target as any)[prop!];
-  let o = initControllerInfo(func);
   setParamInfo(func, idx, {
     required: true
   });
@@ -129,7 +129,7 @@ export const Required: ParameterDecorator = ((target, prop, idx) => {
 
 export const initializeHandlers = (app: H3) => {
   controllers.forEach((info) => {
-    app[info.method]("/api" + info.proto[s] + info.path, async (e) => {
+    app.on(info.method, "/api" + info.proto[s] + info.path, async (e) => {
       const args: unknown[] = await Promise.all(info.params.map(async (v) => {
         if (v.type === "event") {
           return e;

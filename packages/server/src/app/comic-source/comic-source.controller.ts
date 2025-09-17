@@ -1,8 +1,9 @@
 import { ComicSourceService } from "./comic-source.service";
-import { Controller, Delete, Get, Json, Path, Post, ReqEvent, Required } from "@/utils/decorators";
+import { Controller, Delete, Get, Json, Patch, Path, Post, ReqEvent, Required } from "@/utils/decorators";
 import type { Comic } from "@/venera-lib";
 import { HTTPError, type H3Event } from "h3";
-import type { InstallBody, InstalledSourceDetail } from "./comic-source.model";
+import type { InstallBody, InstalledSourceDetail, SourceModifyBody } from "./comic-source.model";
+import { ComicSourceData } from "./comic-source.db";
 
 
 @Controller("/comic-source")
@@ -45,14 +46,43 @@ export class ComicSourceHandler {
     @Path("id") id: string
   ) {
     const source = await ComicSourceService.get(id);
+    const settings = ComicSourceService.getSettings(id);
+    
     return {
       name: source.name,
       explore: source.explore?.map((v, id) => ({
         id,
         title: v.title,
         type: v.type
-      }))
+      })),
+      settings: source.settings,
+      settingValues: settings
     } satisfies InstalledSourceDetail;
+  }
+
+  @Patch("/:id")
+  async modify(
+    @Path("id") id: string,
+    @Json body: SourceModifyBody
+  ) {
+    if (!body.settingValues) return;
+    const source = await ComicSourceService.get(id);
+    for (const k in source.settings) {
+      if (k in body.settingValues) {
+        ComicSourceData.set("setting", id, k, String(body.settingValues[k]));
+      }
+    }
+  }
+
+  @Post("/:id/callback/:callback")
+  async execCallback(
+    @Path("id") id: string,
+    @Path("callback") callback: string,
+  ) {
+    const source = await ComicSourceService.get(id);
+    const cb = source.settings?.[callback];
+    if (!cb || cb.type !== "callback") throw HTTPError.status(404, undefined, { message: "callback " + callback + " not found in " + id });
+    await cb.callback();
   }
 
   @Get("/:id/explore/:explore")

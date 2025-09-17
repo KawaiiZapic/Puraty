@@ -86,7 +86,7 @@ interface CallbackSettingItem {
   callback(): void | Promise<void>;
 }
 
-type AnySettingItem = SelectSettingItem | SwitchSettingItem | InputSettingItem | CallbackSettingItem;
+export type AnySettingItem = SelectSettingItem | SwitchSettingItem | InputSettingItem | CallbackSettingItem;
 
 interface ComicLoader {
   loadInfo(id: string): Promise<ComicDetails>;
@@ -152,8 +152,8 @@ export abstract class ComicSource {
     translation: Record<string, Record<string, string>> = {}
 
     translate(key: string): string {
-        let locale = APP.locale;
-        return this.translation[locale]?.[key] ?? key;
+      let locale = APP.locale;
+      return this.translation[locale]?.[key] ?? key;
     }
 
     init() { }

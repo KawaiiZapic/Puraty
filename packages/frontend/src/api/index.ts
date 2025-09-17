@@ -23,7 +23,7 @@ export const Req = {
   },
   get<T>(url: string, params?: Record<string, string | number | boolean>) {
     return Req.send<T>(
-      "get", 
+      "GET", 
       url 
         + (
           params 
@@ -33,10 +33,13 @@ export const Req = {
       );
   },
   post<T>(url: string, body?: BodyInit) {
-    return Req.send<T>("post", url, body);
+    return Req.send<T>("POST", url, body);
+  },
+  patch<T>(url: string, body?: BodyInit) {
+    return Req.send<T>("PATCH", url, body);
   },
   delete<T>(url: string, params?: Record<string, string | number | boolean>) {return Req.send<T>(
-      "delete", 
+      "DELETE", 
       url 
         + (
           params 

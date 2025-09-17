@@ -1,4 +1,4 @@
-import { InstalledSource } from "@/app/comic-source/comic-source.db";
+import { ComicSourceData, InstalledSource } from "@/app/comic-source/comic-source.db";
 import { env } from "@/utils/env";
 import type { ComicSource } from "@/venera-lib";
 import path from "tjs:path";
@@ -71,5 +71,14 @@ export class ComicSourceService {
   static async available() {
     const data = new TextDecoder().decode(await(await fetch("https://cdn.jsdelivr.net/gh/venera-app/venera-configs@latest/index.json")).arrayBuffer());
     return JSON.parse(data) as NetworkSourceDetail[];
+  }
+
+  static getSettings(id: string) {
+    const r: Record<string, string> = {};
+    const keyLength = `setting_${id}_`.length;
+    ComicSourceData.getAll("setting", id).forEach(v => {
+      r[v.key.substring(keyLength)] = v.value;
+    });
+    return r;
   }
 }

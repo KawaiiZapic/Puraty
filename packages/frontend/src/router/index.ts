@@ -1,6 +1,7 @@
 import main from "@/pages/main";
 import SettingsIndex from "@/pages/settings";
 import ComicSourceList from "@/pages/settings/comic-source";
+import ComicSourceConfig from "@/pages/settings/comic-source/config";
 import ComicSourceDetail from "@/pages/comic-source/detail";
 import ComicSourceExplore from "@/pages/comic-source/explore";
 import Navigo, { type Match } from "navigo";
@@ -51,7 +52,11 @@ const routes: RouteRecord[] = [
   {
     path: "/settings/comic-sources",
     component: ComicSourceList
-  }, 
+  },
+  {
+    path: "/settings/comic-sources/:id",
+    component: ComicSourceConfig
+  },
   {
     path: "/source/:id",
     component: ComicSourceDetail

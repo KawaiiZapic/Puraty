@@ -9,9 +9,9 @@ export const watch = <T>(
   handler: () => void,
   options?: WatchOptions
 ) => {
-  isRef(v) && v[onUpdateSymbol](() => {
+  isRef(v) && setTimeout(() => v[onUpdateSymbol](() => {
     handler();
-  });
+  }))
   if (options?.immediate) {
     handler();
   }

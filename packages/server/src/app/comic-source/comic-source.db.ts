@@ -5,6 +5,8 @@ export interface SourceDetail {
   version: string;
 }
 
+export type DataType = "setting" | "data"
+
 export class InstalledSource extends BaseDB {
   protected VERSION: number = 0;
   private static _instance: InstalledSource;
@@ -78,20 +80,27 @@ export class ComicSourceData extends BaseDB {
 
   protected upgrade(): void { }
 
-  static get(type: string, id: string, name: string): string {
+  static get(type: DataType, id: string, name: string): string {
     const st = this.db.prepare("SELECT value from source_data where key=?;");
     const result = st.all(`${type}_${id}_${name}`)[0]?.value;
     st.finalize();
     return result;
   }
 
-  static set(type: string, id: string, name: string, data: string) {
+  static getAll(type: DataType, id: string): { key: string, value: string }[] {
+    const st = this.db.prepare("SELECT key,value from source_data where key like ? escape '\\'");
+    const result = st.all(`${type}\\_${id.replaceAll("_", "\\_")}\\_%`);
+    st.finalize();
+    return result;
+  }
+
+  static set(type: DataType, id: string, name: string, data: string) {
     const st = this.db.prepare("INSERT OR REPLACE INTO source_data (key, value) VALUES (?, ?);");
     st.run(`${type}_${id}_${name}`, data);
     st.finalize();
   }
 
-  static delete(type: string, id: string, name: string) {
+  static delete(type: DataType, id: string, name: string) {
     const st = this.db.prepare("DELETE from source_data where key=?;");
     st.run(`${type}_${id}_${name}`);
     st.finalize();

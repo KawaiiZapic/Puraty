@@ -1,15 +1,32 @@
 import style from "./source-item.module.css";
 import api from "@/api";
-import { computed, reactive } from "@puraty/reactivity";
+import { RouterLink } from "@/router/RouterLink";
+import { computed, reactive, watch } from "@puraty/reactivity";
 import type { NetworkSourceDetail } from "@puraty/server";
 
 export default ({ item, installedVersion }: { item: NetworkSourceDetail, installedVersion?: string }) => {
+  const state = reactive({
+    loading: false,
+    installedVersion
+  });
+  const ConfigBtn = () => {
+    let $: Node = document.createComment("");
+    watch(state, () => {
+      let $new: Node;
+      if (state.installedVersion) {
+        $new = <RouterLink href={ "/settings/comic-sources/" + item.key }>
+          设置
+        </RouterLink>
+      } else {
+        $new = document.createComment("");
+      }
+      $.parentNode?.replaceChild($new, $);
+      $ = $new;
+    }, { immediate: true });
+    return $;
+  }
   const InsBtn =
     () => {
-      const state = reactive({
-        loading: false,
-        installedVersion
-      });
       const updateBtnStateText = computed(({ loading, installedVersion }) => {
         let res = "";
         if (installedVersion === item.version) {
@@ -54,6 +71,7 @@ export default ({ item, installedVersion }: { item: NetworkSourceDetail, install
         (!installedVersion || item.version === installedVersion) ? item.version : "可升级: " + item.version
       } {item.description ? " - " + item.description : ""}</div>
     </div>
+    <ConfigBtn />
     <InsBtn />
   </div>;
 }

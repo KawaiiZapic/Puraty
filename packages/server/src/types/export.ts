@@ -5,7 +5,8 @@ type Abstraction<T> = {
 
 export type {
   InstalledSourceDetail,
-  NetworkSourceDetail
+  NetworkSourceDetail,
+  SourceModifyBody
 } from "@/app/comic-source/comic-source.model";
 
 export type ComicSourceHandler = Abstraction<import("@/app/comic-source/comic-source.controller").ComicSourceHandler>;

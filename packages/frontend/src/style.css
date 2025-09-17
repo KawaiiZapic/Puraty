@@ -12,13 +12,39 @@ html {
   font-size: 36px;
 }
 
-.clickable-item {
+.clickable-item, button {
   transition-delay: 0.1s;
   user-select: none;
 }
 
-.clickable-item:active {
+.clickable-item:active, button:active {
   filter: invert(1);
   background-color: white;
   transition-delay: 0s;
+}
+
+select, input {
+  font-size: 1rem;
+}
+
+button {
+  appearance: none;
+  background: transparent;
+  font-size: 0.75rem;
+  border: 3px black solid;
+  color: #333;
+  padding: 0 0.5rem;
+}
+button:active {
+  border: 3px white solid;
+}
+
+button:disabled {
+  border: 3px #999 solid;
+  color: #999;
+}
+
+input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
 }

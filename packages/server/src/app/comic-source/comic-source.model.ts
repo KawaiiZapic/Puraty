@@ -1,4 +1,5 @@
 import type { ComicSource } from "@/venera-lib";
+import type { AnySettingItem } from "@/venera-lib/Source";
 
 export interface NetworkSourceDetail {
   name: string;
@@ -20,4 +21,10 @@ export interface InstalledSourceDetail {
     title: string;
     type: Required<ComicSource>["explore"][number]["type"];
   }[];
+  settings?: Record<string, AnySettingItem>;
+  settingValues: Record<string, string>;
+}
+
+export interface SourceModifyBody {
+  settingValues?: Record<string, string>;
 }
