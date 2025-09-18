@@ -81,4 +81,12 @@ export class ComicSourceService {
     });
     return r;
   }
+
+  static setLoginStatus(id: string, isLogged: boolean) {
+    if (isLogged) {
+      ComicSourceData.set("setting", id, "__system_logged", "true");
+    } else {
+      ComicSourceData.delete("setting", id, "__system_logged");
+    }
+  }
 }

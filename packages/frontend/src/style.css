@@ -33,7 +33,7 @@ button {
   font-size: 0.75rem;
   border: 3px black solid;
   color: #333;
-  padding: 0 0.5rem;
+  padding: 0.25rem 0.75rem;
 }
 button:active {
   border: 3px white solid;

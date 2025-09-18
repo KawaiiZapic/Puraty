@@ -2,7 +2,7 @@ import { ComicSourceService } from "./comic-source.service";
 import { Controller, Delete, Get, Json, Patch, Path, Post, ReqEvent, Required } from "@/utils/decorators";
 import type { Comic } from "@/venera-lib";
 import { HTTPError, type H3Event } from "h3";
-import type { InstallBody, InstalledSourceDetail, SourceModifyBody } from "./comic-source.model";
+import type { InstallBody, InstalledSourceDetail, UAPLoginBody, SourceModifyBody } from "./comic-source.model";
 import { ComicSourceData } from "./comic-source.db";
 
 
@@ -56,16 +56,22 @@ export class ComicSourceHandler {
         type: v.type
       })),
       settings: source.settings,
-      settingValues: settings
+      settingValues: settings,
+      isLogged: source.isLogged,
+      features: {
+        UAPLogin: typeof source.account?.login === "function",
+        CookieLogin: source.account?.loginWithCookies?.fields,
+        logout: typeof source.account?.logout === "function",
+      }
     } satisfies InstalledSourceDetail;
   }
 
   @Patch("/:id")
   async modify(
     @Path("id") id: string,
-    @Json body: SourceModifyBody
+    @Json body?: SourceModifyBody
   ) {
-    if (!body.settingValues) return;
+    if (!body?.settingValues) return;
     const source = await ComicSourceService.get(id);
     for (const k in source.settings) {
       if (k in body.settingValues) {
@@ -83,6 +89,39 @@ export class ComicSourceHandler {
     const cb = source.settings?.[callback];
     if (!cb || cb.type !== "callback") throw HTTPError.status(404, undefined, { message: "callback " + callback + " not found in " + id });
     await cb.callback();
+  }
+
+  @Post("/:id/login")
+  async doUAPLogin(
+    @Path("id") id: string,
+    @Required @Json loginBody: UAPLoginBody
+  ) {
+    const s = await ComicSourceService.get(id);
+    if (typeof s.account?.login !== "function") throw new HTTPError(id + " does not support login via username and password.", { status: 400 });
+    await s.account.login(loginBody.username, loginBody.password);
+    ComicSourceService.setLoginStatus(id, true);
+  }
+
+  @Post("/:id/cookie-login")
+  async doCookieLogin(
+    @Path("id") id: string,
+    @Required @Json loginBody: Record<string, string>
+  ) {
+    const s = await ComicSourceService.get(id);
+    if (typeof s.account?.loginWithCookies?.validate !== "function") throw new HTTPError(id + " does not support login via cookies.", { status: 400 });
+    const fields = s.account.loginWithCookies.fields;
+    await s.account.loginWithCookies.validate(fields.map(f => loginBody[f]));
+    ComicSourceService.setLoginStatus(id, true);
+  }
+
+  @Post("/:id/logout")
+  async logout(
+    @Path("id") id: string,
+    @Required @Json loginBody: Record<string, string>
+  ) {
+    const s = await ComicSourceService.get(id);
+    s.account?.logout?.();
+    ComicSourceService.setLoginStatus(id, false);
   }
 
   @Get("/:id/explore/:explore")

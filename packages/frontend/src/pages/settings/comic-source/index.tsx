@@ -1,6 +1,6 @@
 import api from "@/api";
 import SourceItem from "./components/source-item";
-import LoadingWrapper from "@/pages/components/LoadingWrapper";
+import LoadingWrapper from "@/components/LoadingWrapper";
 
 export default () => {
   const load = () => {

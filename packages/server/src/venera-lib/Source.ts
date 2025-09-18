@@ -3,18 +3,18 @@ import { APP } from "./App";
 import type { Comic, ComicDetails, ImageLoadingConfig } from "./Data";
 
 interface AccountLogin {
-  login(account: string, pwd: string): Promise<unknown>;
-  loginWithWebview: {
+  login?: (account: string, pwd: string) => Promise<unknown>;
+  loginWithWebview?: {
     url: string;
     checkStatus(url: string, title: string): boolean;
     onLoginSuccess(): void;
   },
-  loginWithCookies: {
+  loginWithCookies?: {
     fields: string[];
     validate: (values: string[]) => Promise<unknown>;
   },
-  logout(): void;
-  registerWebsite: string;
+  logout?: () => void;
+  registerWebsite?: string;
 }
 
 export interface PageJumpTarget {
@@ -146,7 +146,7 @@ export abstract class ComicSource {
     }
 
     get isLogged(): boolean {
-      return true;
+      return ComicSourceData.get("setting", this.key, "__system_logged") === "true";
     }
 
     translation: Record<string, Record<string, string>> = {}

@@ -21,10 +21,21 @@ export interface InstalledSourceDetail {
     title: string;
     type: Required<ComicSource>["explore"][number]["type"];
   }[];
+  isLogged?: boolean;
+  features: {
+    UAPLogin: boolean;
+    CookieLogin?: string[];
+    logout: boolean;
+  };
   settings?: Record<string, AnySettingItem>;
   settingValues: Record<string, string>;
 }
 
 export interface SourceModifyBody {
   settingValues?: Record<string, string>;
+}
+
+export interface UAPLoginBody {
+  username: string;
+  password: string;
 }
