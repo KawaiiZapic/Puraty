@@ -9,10 +9,10 @@ export const ComicSource = {
     return Req.get("/api/comic-source/installed");
   },
   add(url: string, key: string) {
-    return Req.post("/api/comic-source/add", JSON.stringify({
+    return Req.post("/api/comic-source/add", {
       url,
       key
-    }));
+    });
   },
   delete(id: string){
     return Req.delete(`/api/comic-source/${id}`);
@@ -24,7 +24,7 @@ export const ComicSource = {
     return Req.get(`/api/comic-source/${id}/explore/${page}`);
   },
   modify(id: string, values: SourceModifyBody) {
-    return Req.patch(`/api/comic-source/${id}`, JSON.stringify(values));
+    return Req.patch(`/api/comic-source/${id}`, values);
   },
   execCallback(id: string, callback: string) {
     return Req.post(`/api/comic-source/${id}/callback/${callback}`);

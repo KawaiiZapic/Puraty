@@ -7,7 +7,15 @@ export default {
 };
 
 export const Req = {
-  async send<T>(method: string, url: string, body?: BodyInit): Promise<T> {
+  async send<T>(method: string, url: string, _body?: BodyInit | object): Promise<T> {
+    let body: BodyInit;
+    if ([ReadableStream, Blob, FormData, URLSearchParams ].some(t => _body instanceof t)) {
+      body = _body as any;
+    } else if (typeof _body !== "string") {
+      body = JSON.stringify(_body);
+    } else {
+      body = _body;
+    }
     const v = await fetch(url, {
       method,
       body
@@ -32,10 +40,10 @@ export const Req = {
         )
       );
   },
-  post<T>(url: string, body?: BodyInit) {
+  post<T>(url: string, body?: BodyInit | object) {
     return Req.send<T>("POST", url, body);
   },
-  patch<T>(url: string, body?: BodyInit) {
+  patch<T>(url: string, body?: BodyInit | object) {
     return Req.send<T>("PATCH", url, body);
   },
   delete<T>(url: string, params?: Record<string, string | number | boolean>) {return Req.send<T>(
