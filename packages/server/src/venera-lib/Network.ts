@@ -36,7 +36,7 @@ const headerFilter = (header?: Record<string, string>) => {
       "connection",
       "accept-encoding"
     ].includes(k.toLowerCase())) {
-      delete header[k];
+      delete res[k];
     }
   });
   return res;
