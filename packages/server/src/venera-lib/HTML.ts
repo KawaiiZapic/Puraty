@@ -5,6 +5,19 @@ export class HtmlDocument {
     private $: cheerio.CheerioAPI;
     constructor(html: string) {
         this.$ = cheerio.load(html);
+        this.$("table").each((i, el) => {
+            const e = this.$(el);
+            const firstChild = el.firstChild;
+            if (!firstChild || firstChild.nodeType !== 1) return;
+            if (firstChild.name !== "tbody") {
+                const tbody = this.$("<tbody></tbody>");
+                e.children().each((i, child) => {
+                    tbody.append(child);
+                });
+                e.children().remove();
+                e.prepend(tbody);
+            }
+        });
     }
 
     querySelector(query: string): HtmlElement | null {
@@ -25,6 +38,10 @@ export class HtmlDocument {
 
     getElementById(id: string) {
         return this.querySelector("#" + id);
+    }
+
+    get html() {
+        return this.$.html();
     }
 }
 
