@@ -11,7 +11,7 @@ interface AccountLogin {
   },
   loginWithCookies?: {
     fields: string[];
-    validate: (values: string[]) => Promise<unknown>;
+    validate: (values: string[]) => Promise<boolean>;
   },
   logout?: () => void;
   registerWebsite?: string;

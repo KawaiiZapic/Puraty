@@ -5,6 +5,7 @@ import { reactive, ref, toRef, watch, type Ref } from "@puraty/reactivity";
 import style from "./config.module.css"
 import { Prompt } from "@/components/Prompt";
 import type { InstalledSourceDetail } from "@puraty/server";
+import { Alert } from "@/components/Alert";
 export default () => {
   const id = getCurrentRoute()?.data?.id!;
   const loginGroup= <div></div>;
@@ -35,6 +36,10 @@ export default () => {
               await api.ComicSource.doUAPLogin(id, r.username, r.password);
               v.isLogged = true;
               updateLoginStatus(v);
+              Alert("登录成功");
+            } catch(e) {
+              
+              Alert("登录失败: " + api.normalizeError(e));
             } finally {
               isLoading.value = false;
             }
@@ -53,6 +58,9 @@ export default () => {
               await api.ComicSource.doCookieLogin(id, r);
               v.isLogged = true;
               updateLoginStatus(v);
+              Alert("登录成功");
+            } catch(e) {
+              Alert("登录失败: " + api.normalizeError(e));
             } finally {
               isLoading.value = false;
             }
@@ -70,7 +78,9 @@ export default () => {
           await api.ComicSource.logout(id);
           v.isLogged = false;
           updateLoginStatus(v);
+          Alert("已退出登录");
         } catch(e) {
+          Alert("无法退出登录: "  + api.normalizeError(e));
           console.error(e);
         } finally {
           isLoading.value = false;

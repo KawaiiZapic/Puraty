@@ -1,10 +1,18 @@
 import { ComicSource } from "./comic-source";
 import { Command } from "./command";
 
-export default {
-  Command,
-  ComicSource
-};
+export class NetworkError extends Error {
+  public data?: unknown;
+
+  constructor(res?: Response | TypeError, data?: unknown) {
+    if (res instanceof Response) {
+      super("Network request failed: " + res.status + " " + res.statusText);
+      this.data = data;
+    } else if (res instanceof TypeError) {
+      super("Network request failed: " + res.message);
+    }
+  }
+}
 
 export const Req = {
   async send<T>(method: string, url: string, _body?: BodyInit | object): Promise<T> {
@@ -16,13 +24,28 @@ export const Req = {
     } else {
       body = _body;
     }
-    const v = await fetch(url, {
-      method,
-      body
-    });
-    if (v.status >= 400) {
-      throw new Error("Network request failed with non-2xx status code");
+    let v: Response;
+    try {
+      v = await fetch(url, {
+        method,
+        body
+      });
+      if (v.status >= 400) {
+        let data: unknown;
+        try {
+          data = await v.json();
+        } catch (_) {
+          data = await v.text();
+        }
+        throw new NetworkError(v, data);
+      }
+    } catch (e) {
+      if (e instanceof TypeError) {
+        throw new NetworkError(e);
+      }
+      throw e;
     }
+
     if (v.headers.get("content-type")?.startsWith("application/json")) {
       return await v.json();
     } else {
@@ -55,5 +78,22 @@ export const Req = {
             : ""
         )
       );
+  },
+  normalizeError(e: unknown) {
+    if (e instanceof NetworkError) {
+      if (e.data) {
+        if (typeof e.data === "object" && "message" in e.data && typeof e.data.message === "string") {
+          return e.data.message;
+        }
+      }
+      return "网络错误";
+    }
+    return String(e);
   }
+};
+
+export default {
+  Command,
+  ComicSource,
+  normalizeError: Req.normalizeError
 };

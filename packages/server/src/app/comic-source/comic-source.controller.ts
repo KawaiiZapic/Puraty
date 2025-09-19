@@ -98,8 +98,18 @@ export class ComicSourceHandler {
   ) {
     const s = await ComicSourceService.get(id);
     if (typeof s.account?.login !== "function") throw new HTTPError(id + " does not support login via username and password.", { status: 400 });
-    await s.account.login(loginBody.username, loginBody.password);
-    ComicSourceService.setLoginStatus(id, true);
+    try {
+      const r= await s.account.login(loginBody.username, loginBody.password);
+      if (typeof (r) === "undefined") {
+        throw "Login failed.";
+      }
+      ComicSourceService.setLoginStatus(id, true);
+    } catch (e) {
+      throw new HTTPError({
+        status: 400,
+        message: String(e)
+      });
+    }
   }
 
   @Post("/:id/cookie-login")
@@ -110,8 +120,19 @@ export class ComicSourceHandler {
     const s = await ComicSourceService.get(id);
     if (typeof s.account?.loginWithCookies?.validate !== "function") throw new HTTPError(id + " does not support login via cookies.", { status: 400 });
     const fields = s.account.loginWithCookies.fields;
-    await s.account.loginWithCookies.validate(fields.map(f => loginBody[f]));
-    ComicSourceService.setLoginStatus(id, true);
+    try {
+      const f = fields.map(f => loginBody[f] ?? "");
+      const r= await s.account.loginWithCookies.validate(f);
+      if (!r) {
+        throw "Login failed.";
+      }
+      ComicSourceService.setLoginStatus(id, true);
+    } catch (e) {
+      throw new HTTPError({
+        status: 400,
+        message: String(e)
+      });
+    }
   }
 
   @Post("/:id/logout")
