@@ -4,12 +4,18 @@ import { Checkbox, Input, Select } from "@/components/InputModel";
 import { reactive, ref, toRef, watch, type Ref } from "@puraty/reactivity";
 import style from "./config.module.css"
 import { Prompt } from "@/components/Prompt";
+import type { InstalledSourceDetail } from "@puraty/server";
 export default () => {
   const id = getCurrentRoute()?.data?.id!;
+  const loginGroup= <div></div>;
   
   const $ = <div>
+    { loginGroup }
   </div>
-  api.ComicSource.get(id).then(v => {
+
+  const updateLoginStatus = (v: InstalledSourceDetail) => {
+    loginGroup.childNodes.forEach(v => loginGroup.removeChild(v));
+    const isLoading = ref(false);
     if (!v.isLogged) {
       if (v.features.UAPLogin) {
         const onClick = () => {
@@ -22,37 +28,62 @@ export default () => {
               key: "password",
               title: "密码"
             }
-          ], "登录").then(async (v) => {
-            if (!v.username || !v.password) return;
-            await api.ComicSource.doUAPLogin(id, v.username, v.password);
+          ], "登录").then(async (r) => {
+            if (!r.username || !r.password) return;
+            isLoading.value = true;
+            try {
+              await api.ComicSource.doUAPLogin(id, r.username, r.password);
+              v.isLogged = true;
+              updateLoginStatus(v);
+            } finally {
+              isLoading.value = false;
+            }
           });
         }
-        $.appendChild(<div class={style.sourceConfigItem}>
+        loginGroup.appendChild(<div class={style.sourceConfigItem}>
           用户名密码登录
-          <button onClick={onClick}>登录</button>
+          <button disabled={isLoading} onClick={onClick}>登录</button>
         </div>);
       }
       if (v.features.CookieLogin) {
         const onClick = () => {
-          Prompt(v.features.CookieLogin!.map(key => ({ key })), "Cookie 登录").then(async (v) => {
-            await api.ComicSource.doCookieLogin(id, v);
+          Prompt(v.features.CookieLogin!.map(key => ({ key })), "Cookie 登录").then(async (r) => {
+            isLoading.value = true;
+            try {
+              await api.ComicSource.doCookieLogin(id, r);
+              v.isLogged = true;
+              updateLoginStatus(v);
+            } finally {
+              isLoading.value = false;
+            }
           });
         }
-        $.appendChild(<div class={style.sourceConfigItem}>
+        loginGroup.appendChild(<div class={style.sourceConfigItem}>
           Cookie 登录
-          <button onClick={onClick}>登录</button>
+          <button disabled={isLoading} onClick={onClick}>登录</button>
         </div>);
       }
     } else if (v.features.logout) {
-      const onClick = () => {
-        api.ComicSource.logout(id);
+      const onClick = async () => {
+        isLoading.value = true;
+        try {
+          await api.ComicSource.logout(id);
+          v.isLogged = false;
+          updateLoginStatus(v);
+        } catch(e) {
+          console.error(e);
+        } finally {
+          isLoading.value = false;
+        }
       }
-      $.appendChild(<div class={style.sourceConfigItem}>
+      loginGroup.appendChild(<div class={style.sourceConfigItem}>
           已登录
-          <button onClick={onClick}>退出登录</button>
+          <button disabled={isLoading} onClick={onClick}>退出登录</button>
         </div>);
     }
-
+  }
+  api.ComicSource.get(id).then(v => {
+    updateLoginStatus(v);
     const result = reactive(v.settingValues) as Record<string, string>;
     for (const k in v.settings) {
       const s = v.settings[k];
