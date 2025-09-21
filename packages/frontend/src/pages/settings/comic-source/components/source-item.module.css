@@ -1,13 +1,13 @@
 .listItemWrapper {
   display: flex;
-  padding: 0.5rem;
+  padding: 0.75rem 0.5rem;
   align-items: center;
   border-bottom: 2px solid black;
 }
 
 .listItemDesc {
   font-size: 0.75rem;
-  min-height: 1rem;
+  margin-top: 0.25rem;
   color: #666;
 }
 

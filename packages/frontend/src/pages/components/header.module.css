@@ -2,6 +2,9 @@
   width: 100%;
   height: 120px;
   border-bottom: 4px black solid;
+  position: fixed;
+  top: 0;
+  background-color: white;
 }
 
 .iconBtn {

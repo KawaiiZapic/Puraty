@@ -5,11 +5,12 @@
 
 html, body {
   margin: 0;
-  max-width: 1246px;
 }
 
 html {
   font-size: 36px;
+  padding-top: 124px;
+  font-family: STHeiti;
 }
 
 .clickable-item, button {

@@ -22,7 +22,7 @@ export default (onRetry: () => void) => {
     return errorMsg || "正在加载...";
   }, state);
   const $ = <div style={wrapperStyle}>
-    <div class="padding: 1.5rem 0">{ tipText }</div>
+    <div style="padding: 1rem 0;">{ tipText }</div>
     <button style={ btnStyle } disabled={ disabled } onClick={() => {onRetry()}}>
       { btnText }
     </button>
