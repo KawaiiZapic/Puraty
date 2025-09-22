@@ -22,28 +22,34 @@ export interface PageJumpTarget {
   attributes: Record<string, string>;
 }
 
-interface BaseExplorePage {
+export interface BaseExplorePage {
+  type: string;
   title: string;
   load(page: number | null): Promise<unknown>;
 }
 
-interface MPPExplorePage extends BaseExplorePage {
+export interface MPPExplorePage extends BaseExplorePage {
   type: "multiPartPage";
   load(page: number | null): Promise<({title: string, comics: Comic[], viewMore: PageJumpTarget})[]>;
 }
 
-interface MPCLExplorePage extends BaseExplorePage {
+export interface MPCLExplorePage extends BaseExplorePage {
   type: "multiPageComicList";
   load(page: number | null): Promise<{comics: Comic[], maxPage: number}>;
   loadNext?: (next: unknown) => Promise<{comics: Comic[], next?: string}>;
 }
 
-interface MixedExplorePage extends BaseExplorePage {
+export interface MixedExplorePage extends BaseExplorePage {
   type: "mixed";
   load(page: number | null): Promise<{data: (Comic[] | {title: string, comics: Comic[], viewMore?: string})[], maxPage: number}>;
 }
 
-type AnyExplorePage = MPPExplorePage | MPCLExplorePage | MixedExplorePage;
+export interface SPWMPExplorePage extends BaseExplorePage {
+  type: "singlePageWithMultiPart";
+  load(): Promise<Record<string, Comic[]>>;
+}
+
+export type AnyExplorePage = MPPExplorePage | MPCLExplorePage | MixedExplorePage | SPWMPExplorePage;
 
 interface SearchOptionItem {
   type?: "select" | "multi-select" | "dropdown";

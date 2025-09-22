@@ -10,3 +10,5 @@ export type {
 } from "@/app/comic-source/comic-source.model";
 
 export type ComicSourceHandler = Abstraction<import("@/app/comic-source/comic-source.controller").ComicSourceHandler>;
+
+export type * from "@/venera-lib/Data";

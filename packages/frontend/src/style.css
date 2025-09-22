@@ -14,6 +14,7 @@ html {
   height: 100vh;
   overflow: hidden;
   box-sizing: border-box;
+  user-select: none;
 }
 
 .clickable-item, button {
@@ -29,6 +30,7 @@ html {
 
 select, input {
   font-size: 1rem;
+  user-select: initial;
 }
 
 button {

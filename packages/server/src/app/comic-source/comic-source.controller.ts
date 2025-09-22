@@ -1,8 +1,7 @@
 import { ComicSourceService } from "./comic-source.service";
 import { Controller, Delete, Get, Json, Patch, Path, Post, ReqEvent, Required } from "@/utils/decorators";
-import type { Comic } from "@/venera-lib";
 import { HTTPError, type H3Event } from "h3";
-import type { InstallBody, InstalledSourceDetail, UAPLoginBody, SourceModifyBody } from "./comic-source.model";
+import type { InstallBody, InstalledSourceDetail, UAPLoginBody, SourceModifyBody, ExplorePageResult } from "./comic-source.model";
 import { ComicSourceData } from "./comic-source.db";
 
 
@@ -105,6 +104,7 @@ export class ComicSourceHandler {
       }
       ComicSourceService.setLoginStatus(id, true);
     } catch (e) {
+      console.error(e);
       throw new HTTPError({
         status: 400,
         message: String(e)
@@ -128,6 +128,7 @@ export class ComicSourceHandler {
       }
       ComicSourceService.setLoginStatus(id, true);
     } catch (e) {
+      console.error(e);
       throw new HTTPError({
         status: 400,
         message: String(e)
@@ -161,11 +162,15 @@ export class ComicSourceHandler {
       if (explorePage.type === "multiPageComicList") {
         data = await (explorePage.loadNext ? (explorePage).loadNext(null) : explorePage.load(1));
       } else {
-        data = await explorePage.load(1);
+        data = await explorePage.load(null);
       }
-      return data;
-    } catch (_) {
-      throw new HTTPError("Comic source failed to load data: " + _, { status: 500 });
+      return {
+        data,
+        type: explorePage.type
+      } as ExplorePageResult;
+    } catch (e) {
+      console.error(e);
+      throw new HTTPError("Comic source failed to load data: " + e, { status: 500 });
     }
   }
 }

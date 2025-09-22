@@ -1,5 +1,5 @@
 import type { ComicSource } from "@/venera-lib";
-import type { AnySettingItem } from "@/venera-lib/Source";
+import type { AnySettingItem, BaseExplorePage, MixedExplorePage, MPCLExplorePage, MPPExplorePage, SPWMPExplorePage } from "@/venera-lib/Source";
 
 export interface NetworkSourceDetail {
   name: string;
@@ -39,3 +39,10 @@ export interface UAPLoginBody {
   username: string;
   password: string;
 }
+
+type _ExplorePageResult<T extends BaseExplorePage> = {
+  type: T["type"];
+  data: Awaited<ReturnType<T["load"]>>;
+}
+
+export type ExplorePageResult = _ExplorePageResult<MPPExplorePage> | _ExplorePageResult<MixedExplorePage> | _ExplorePageResult<MPCLExplorePage> | _ExplorePageResult<SPWMPExplorePage>;
