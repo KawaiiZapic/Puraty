@@ -3,8 +3,8 @@ import { RouterLink } from "@/router/RouterLink";
 
 export default () => {
   api.ComicSource.list().then((source) => {
-    Object.keys(source).forEach((key) => {
-      el.appendChild(<div><RouterLink href={ "/source/" + key }>{ key }</RouterLink></div>)
+    source.forEach((item) => {
+      el.appendChild(<div><RouterLink href={ "/source/" + item.key }>{ item.name }</RouterLink></div>)
     })
   });
   const el = <div></div>;
