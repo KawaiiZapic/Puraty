@@ -11,8 +11,8 @@ export const handleSwipe = ($: HTMLElement) => {
   setInterval(() => {
     if (lastScrollHeight === $.scrollHeight) return;
     lastScrollHeight = $.scrollHeight;
-    if (lastScrollHeight > elementHeight + TOP_BAR_HEIGHT) {
-      scrollThumbHeight = elementHeight / lastScrollHeight * elementHeight;
+    if (lastScrollHeight > elementHeight + TOP_BAR_HEIGHT + 1 /* element Height might be +- 0.5 */) {
+      scrollThumbHeight = elementHeight / (lastScrollHeight - TOP_BAR_HEIGHT) * elementHeight;
       $.style.paddingRight = "12px";
       scrollIndicator.style.display = "";
       scrollIndicator.style.setProperty("--scroll-height", scrollThumbHeight + "px");
@@ -21,7 +21,7 @@ export const handleSwipe = ($: HTMLElement) => {
       $.style.paddingRight = "";
       scrollIndicator.style.display = "none";
     }
-  });
+  }, 500);
   let currentTouch: Touch | undefined;
   let startTime = 0;
   ($ as HTMLElement).addEventListener("touchstart", (e) => {
