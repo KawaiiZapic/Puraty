@@ -2,7 +2,7 @@ import { ComicSourceData, InstalledSource } from "@/app/comic-source/comic-sourc
 import { env } from "@/utils/env";
 import type { ComicSource } from "@/venera-lib";
 import path from "tjs:path";
-import type { NetworkSourceDetail } from "./comic-source.model";
+import type { InstalledSourceDetail, NetworkSourceDetail } from "./comic-source.model";
 
 const IMPORT_TEMPLATE = `import { 
   APP, Cookie, Comic, ComicDetails, 
@@ -64,8 +64,17 @@ export class ComicSourceService {
     delete ComicSourceService._instances[id];
   }
 
-  static list() {
-    return InstalledSource.list();
+  static async list() {
+    const list = InstalledSource.list();
+    const result: InstalledSourceDetail[] = [];
+    for (const name in list) {
+      try {
+        result.push(await this.getSourceDetail(name));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    return result;
   }
 
   static async available() {
@@ -88,5 +97,29 @@ export class ComicSourceService {
     } else {
       ComicSourceData.delete("setting", id, "__system_logged");
     }
+  }
+
+  static async getSourceDetail(id: string) {
+    const source = await ComicSourceService.get(id);
+    const settings = ComicSourceService.getSettings(id);
+    
+    return {
+      name: source.name,
+      key: source.key,
+      version: source.version,
+      explore: source.explore?.map((v, id) => ({
+        id,
+        title: v.title,
+        type: v.type
+      })),
+      settings: source.settings,
+      settingValues: settings,
+      isLogged: source.isLogged,
+      features: {
+        UAPLogin: typeof source.account?.login === "function",
+        CookieLogin: source.account?.loginWithCookies?.fields,
+        logout: typeof source.account?.logout === "function",
+      }
+    } satisfies InstalledSourceDetail;
   }
 }

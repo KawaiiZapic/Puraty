@@ -15,7 +15,9 @@ export interface InstallBody {
 }
 
 export interface InstalledSourceDetail {
+  key: string;
   name: string;
+  version: string;
   explore?: {
     id: number;
     title: string;

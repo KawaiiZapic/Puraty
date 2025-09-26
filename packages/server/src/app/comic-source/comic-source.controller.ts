@@ -41,28 +41,10 @@ export class ComicSourceHandler {
   }
 
   @Get("/:id")
-  async get(
+  get(
     @Path("id") id: string
   ) {
-    const source = await ComicSourceService.get(id);
-    const settings = ComicSourceService.getSettings(id);
-    
-    return {
-      name: source.name,
-      explore: source.explore?.map((v, id) => ({
-        id,
-        title: v.title,
-        type: v.type
-      })),
-      settings: source.settings,
-      settingValues: settings,
-      isLogged: source.isLogged,
-      features: {
-        UAPLogin: typeof source.account?.login === "function",
-        CookieLogin: source.account?.loginWithCookies?.fields,
-        logout: typeof source.account?.logout === "function",
-      }
-    } satisfies InstalledSourceDetail;
+    return ComicSourceService.getSourceDetail(id);
   }
 
   @Patch("/:id")
