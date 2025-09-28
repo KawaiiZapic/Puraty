@@ -24,11 +24,15 @@ export class ComicSourceService {
     if (!(id in InstalledSource.list())) {
       throw new Error("Source not found: " + id);
     }
-    return await import(path.join(APP_DIR, `comic-source/${id}.js`)).then(({ default: source }) => {
+    try {
+      const source = (await import(path.join(APP_DIR, `comic-source/${id}.js`))).default;
       const s: ComicSource = new source();
       ComicSourceService._instances[id] = s;
+      await s.init?.();
       return s;
-    });
+    } catch (e) {
+      throw new Error("Failed to initialize source " + id + ": " + e);
+    }
   }
 
   static async install(url: string, key: string) {
