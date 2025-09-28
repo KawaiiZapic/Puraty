@@ -20,9 +20,6 @@ export const ComicSource = {
   get(id: string) {
     return Req.get(`/api/comic-source/${id}`);
   },
-  explore(id: string, page: string) {
-    return Req.get(`/api/comic-source/${id}/explore/${page}`);
-  },
   modify(id: string, values: SourceModifyBody) {
     return Req.patch(`/api/comic-source/${id}`, values);
   },

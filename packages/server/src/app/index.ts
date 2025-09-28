@@ -4,6 +4,7 @@ import { serve } from "h3-txikijs-adapter";
 import path from "tjs:path";
 
 import "./comic-source/comic-source.controller";
+import "./comic/comic.controller";
 import "./commands/commands.controller";
 import "./misc/misc.controller";
 

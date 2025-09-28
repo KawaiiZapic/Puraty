@@ -9,7 +9,7 @@ export default () => {
   const root = <div></div>;
   (async () => {
     if (!id || !explore) return;
-    const detail = await api.ComicSource.explore(id, explore);
+    const detail = await api.Comic.explore(id, explore);
     if (detail.type === "multiPageComicList") {
       detail.data.comics.forEach(comic => {
         root.appendChild(<ComicItem comic={ comic }></ComicItem>);

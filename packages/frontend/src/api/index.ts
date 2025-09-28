@@ -1,4 +1,5 @@
 import { ComicSource } from "./comic-source";
+import { Comic } from "./comic";
 import { Command } from "./command";
 
 export class NetworkError extends Error {
@@ -95,5 +96,6 @@ export const Req = {
 export default {
   Command,
   ComicSource,
+  Comic,
   normalizeError: Req.normalizeError
 };
