@@ -97,5 +97,8 @@ export default {
   Command,
   ComicSource,
   Comic,
+  proxy(url: string) {
+    return "/api/image/" + btoa(url);
+  },
   normalizeError: Req.normalizeError
 };

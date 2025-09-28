@@ -1,1 +1,1 @@
-declare module "vconsole";
+export {}

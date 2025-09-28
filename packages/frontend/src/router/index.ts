@@ -4,6 +4,7 @@ import ComicSourceList from "@/pages/settings/comic-source";
 import ComicSourceConfig from "@/pages/settings/comic-source/config";
 import ComicSourceDetail from "@/pages/comic-source/explore-list";
 import ComicExplore from "@/pages/comic/explore";
+import ComicDetail from "@/pages/comic/detail";
 import Navigo, { type Match } from "navigo";
 import type { FC } from "@puraty/render";
 
@@ -62,8 +63,12 @@ const routes: RouteRecord[] = [
     component: ComicSourceDetail
   }, 
   {
-    path: "/source/:id/explore/:explore",
+    path: "/comic/:id/explore/:explore",
     component: ComicExplore
+  }, 
+  {
+    path: "/comic/:id/detail/:comicId",
+    component: ComicDetail
   }
 ];
 const addRoutes = (routes: RouteRecord[], parents?: RouteRecord[]) => {

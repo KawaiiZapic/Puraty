@@ -2,6 +2,7 @@ import { ComicSourceService } from "@/app/comic-source/comic-source.service";
 import { Controller, Get, Path } from "@/utils/decorators";
 import { HTTPError } from "h3";
 import type { ExplorePageResult } from "./comic.model";
+import type { ComicDetails } from "@/venera-lib";
 
 
 @Controller("/comic")
@@ -28,6 +29,22 @@ export class ComicHandler {
         data,
         type: explorePage.type
       } as ExplorePageResult;
+    } catch (e) {
+      console.error(e);
+      throw new HTTPError("Comic source failed to load data: " + e, { status: 500 });
+    }
+  }
+
+  @Get("/:id/detail/:comicId")
+  async detail(
+    @Path("id") id: string,
+    @Path("comicId") comicId: string
+  ){
+    const source = await ComicSourceService.get(id);
+    try {
+      return {
+        ...await source.comic.loadInfo(decodeURIComponent(comicId))
+      } as ComicDetails;
     } catch (e) {
       console.error(e);
       throw new HTTPError("Comic source failed to load data: " + e, { status: 500 });

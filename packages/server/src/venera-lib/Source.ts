@@ -162,7 +162,7 @@ export abstract class ComicSource {
       return this.translation[locale]?.[key] ?? key;
     }
 
-    init() { }
+    init(): Promise<void> | void { }
 
     static sources = {}
 }

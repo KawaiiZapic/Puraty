@@ -10,7 +10,7 @@ export default () => {
     if (!id) return;
     const detail = await api.ComicSource.get(id);
     detail.explore?.forEach((e) => {
-      root.appendChild(<div><RouterLink href={ `/source/${id}/explore/${e.id}` } >{ e.title }</RouterLink></div>)
+      root.appendChild(<div><RouterLink href={ `/comic/${id}/explore/${e.id}` } >{ e.title }</RouterLink></div>)
     })
   })();
   return root;
