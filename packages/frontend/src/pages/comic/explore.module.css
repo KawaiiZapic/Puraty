@@ -3,6 +3,7 @@
   padding: 0.5rem 0.25rem;
   max-width: 100%;
   overflow: hidden;
+  align-items: center;
 }
 
 .comicItemImage {
@@ -18,12 +19,15 @@
 
 .comicItemMeta {
   width: calc(100% - 5.25rem);
+  min-height: 8rem;
 }
 
 .comicItemTitle {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
   overflow: hidden;
-  text-overflow: ellipsis;
-  line-height: 1;
 }
 
 .comicItemSubtitle {
