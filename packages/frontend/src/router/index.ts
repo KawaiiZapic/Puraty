@@ -67,7 +67,7 @@ const routes: RouteRecord[] = [
     component: ComicExplore
   }, 
   {
-    path: "/comic/:id/detail/:comicId",
+    path: "/comic/:id/manga/:comicId",
     component: ComicDetail
   }
 ];

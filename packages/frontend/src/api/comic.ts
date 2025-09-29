@@ -6,7 +6,7 @@ export const Comic = {
     return Req.get(`/api/comic/${id}/explore/${page}`);
   },
   detail(id: string, comicId: string) {
-    return Req.get(`/api/comic/${id}/detail/${encodeURIComponent(comicId)}`)
+    return Req.get(`/api/comic/${id}/manga/${encodeURIComponent(comicId)}`);
   }
 } satisfies ComicHandler;
 

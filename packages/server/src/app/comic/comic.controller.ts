@@ -37,7 +37,7 @@ export class ComicHandler {
     }
   }
 
-  @Get("/:id/detail/:comicId")
+  @Get("/:id/manga/:comicId")
   async detail(
     @Path("id") id: string,
     @Path("comicId") comicId: string
