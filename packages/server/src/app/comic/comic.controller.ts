@@ -5,10 +5,13 @@ import type { ExplorePageResult } from "./comic.model";
 import type { ComicDetails } from "@/venera-lib";
 import { ComicService } from "./comic.service";
 import path from "tjs:path";
+import { QueueLock } from "@/utils/QueueLock";
 
 
 @Controller("/comic")
 export class ComicHandler {
+  private queueLock = new QueueLock(5);
+
   @Get("/:id/explore/:explore")
   async explore(
     @Path("id") id: string,
@@ -80,20 +83,25 @@ export class ComicHandler {
   ) {
     const f = await ComicService.getImageCache(source, image, comicId, epId);
     if (!f) {
-      const res = await fetch(image);
-      if (res.ok) {
-        const buffer = await res.arrayBuffer();
-        const ubuffer = new Uint8Array(buffer);
-        await ComicService.saveImageCache(ubuffer, source, image, comicId, epId);
-        return new Response(buffer, {
-          status: 200,
-          headers: {
-            "content-type": res.headers.get("content-type") ?? "",
-            "content-length": res.headers.get("content-length") ?? ""
-          }
-        });
-      } else {
-        throw new HTTPError("Failed to load image, image url return a not ok status", { status: 500 });
+      this.queueLock.acquire();
+      try {
+        const res = await fetch(image);
+        if (res.ok) {
+          const buffer = await res.arrayBuffer();
+          const ubuffer = new Uint8Array(buffer);
+          await ComicService.saveImageCache(ubuffer, source, image, comicId, epId);
+          return new Response(buffer, {
+            status: 200,
+            headers: {
+              "content-type": res.headers.get("content-type") ?? "",
+              "content-length": res.headers.get("content-length") ?? ""
+            }
+          });
+        } else {
+          throw new HTTPError("Failed to load image, image url return a not ok status", { status: 500 });
+        }
+      } finally {
+        this.queueLock.release();
       }
     } else {
       const resp = new Response(f.readable, {

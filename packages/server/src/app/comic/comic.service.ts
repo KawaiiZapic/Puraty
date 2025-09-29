@@ -14,14 +14,17 @@ export class ComicService {
     const h2 = hash.substring(0, 2);
     const file = path.join(APP_DIR, "cache", h2, hash + getExt(url));
     try {
-      return await tjs.open(file, "r");
+      const f = await tjs.open(file, "r");
+      if ((await f.stat()).size === 0) {
+        return;
+      }
+      return f;
     } catch (_) {
       return;
     }
   }
 
   static async saveImageCache(data: Uint8Array, source: string, url: string, comicId?: string, chapter?: string) {
-    const ext = path.extname(url);
     const hash = CryptoJS.SHA1(`${source}_${comicId ?? ""}_${chapter ?? ""}_${url}`).toString(CryptoJS.enc.Hex);
     const h2 = hash.substring(0, 2);
     const file = path.join(APP_DIR, "cache", h2, hash + getExt(url));
