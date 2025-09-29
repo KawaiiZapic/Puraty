@@ -44,6 +44,14 @@ setInterval(() => {
 
   tjs.stderr.setEncoding('utf8');
   tjs.stderr.pipe(process.stderr);
+
+  tjs.on("exit", async (e, signal) => {
+    if (requireReload || signal === "SIGTERM") return;
+    console.warn(`server crashed(${e ?? signal}), restarting...`);
+    await new Promise((res) => setTimeout(res, 1000));
+    await ctx.rebuild();
+    requireReload = true;
+  });
 }, 100);
 
 for await (const _ of watcher) {
