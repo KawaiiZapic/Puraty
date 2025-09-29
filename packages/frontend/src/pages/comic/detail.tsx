@@ -42,9 +42,9 @@ const DetailMeta = ({ comic }: { comic: ComicDetails }) => {
   return root;
 };
 
-const DetailHeader = (comic: ComicDetails) => {
+const DetailHeader = (sourceId: string, comic: ComicDetails) => {
   return <div class={ style.comicHeaderWrapper }>
-    <img src={ api.proxy(comic.cover) }></img>
+    <img src={ api.proxy(sourceId, comic.cover) }></img>
     <div class={ style.comicHeaderRight }>
       <div class={ style.comicHeaderTitle }>{ comic.title }</div>
       <div class={ style.comicHeaderSub }>{ comic.subTitle ?? comic.subtitle }</div>
@@ -114,14 +114,14 @@ export default () => {
     try {
       if (!id || !comicId) { return }
       const data = await api.Comic.detail(id, comicId);
-      root.appendChild(DetailHeader(data));
+      root.appendChild(DetailHeader(id, data));
       root.appendChild(DetailDetails(data));
       state.loading = false;
     } catch (_) {
       console.error(_);
     }
   };
-  const { state, $: Wrapper} = LoadingWrapper(load);
+  const { state, $: Wrapper } = LoadingWrapper(load);
   load();
   const root = <div class={ style.comicDetailWrapper }>
     { Wrapper }

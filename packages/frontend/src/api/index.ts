@@ -97,8 +97,14 @@ export default {
   Command,
   ComicSource,
   Comic,
-  proxy(url: string) {
-    return "/api/image/" + btoa(url);
+  proxy(source: string, url: string, comicId?: string, epId?: string) {
+    const params = new URLSearchParams({
+      source,
+      comicId: comicId ?? "",
+      image: url,
+      epId: epId ?? ""
+    });
+    return "/api/comic/image?" + params;
   },
   normalizeError: Req.normalizeError
 };

@@ -7,7 +7,7 @@ import style from "./explore.module.css";
 const ComicItem = ({ comic, sourceId }: { comic: Comic, sourceId: string }) => {
   return <RouterLink href={ `/comic/${sourceId}/detail/${encodeURIComponent(comic.id)}` }>
     <div class={ [style.comicItemWrapper, "clickable-item"] }>
-      <img class={ style.comicItemImage } src={ api.proxy(comic.cover) }></img>
+      <img class={ style.comicItemImage } src={ api.proxy(sourceId, comic.cover) }></img>
       <div class={ style.comicItemMeta }>
         <div class={ style.comicItemTitle }>{ comic.title }</div>
         <div class={ style.comicItemSubtitle }>{ comic.subTitle ?? comic.subtitle }</div>
