@@ -17,6 +17,7 @@
   min-height: 240px;
   border-radius: 8px;
   border: 4px black solid;
+  background-color: white;
 }
 
 .promptTitle {
