@@ -57,7 +57,7 @@ export class ComicSourceService {
 
   static async install(url: string, key: string) {
     try {
-      let source = new TextDecoder().decode(await (await fetch("https://cdn.jsdelivr.net/gh/venera-app/venera-configs@latest/" + url)).arrayBuffer());
+      let source = await (await fetch("https://cdn.jsdelivr.net/gh/venera-app/venera-configs@latest/" + url)).text();
       source = IMPORT_TEMPLATE + source.replace(/class .*? extends ComicSource/gi, v => `export default ${v}`);
       await tjs.makeDir(path.join(APP_DIR, "comic-source"), { recursive: true });
       const f = await tjs.open(path.join(APP_DIR, `comic-source/${key}.js`), "w");
@@ -103,7 +103,7 @@ export class ComicSourceService {
   }
 
   static async available() {
-    const data = new TextDecoder().decode(await(await fetch("https://cdn.jsdelivr.net/gh/venera-app/venera-configs@latest/index.json")).arrayBuffer());
+    const data = await(await fetch("https://cdn.jsdelivr.net/gh/venera-app/venera-configs@latest/index.json")).text();
     return JSON.parse(data) as NetworkSourceDetail[];
   }
 

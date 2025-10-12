@@ -97,7 +97,7 @@ export const Network = {
     return {
       status: resp.status,
       headers: convertHeaders(resp.headers),
-      body: new TextDecoder().decode(await resp.arrayBuffer())
+      body: await resp.text()
     }
   },
 

@@ -1,3 +1,4 @@
+import "./utils/polyfills";
 import { launchUI } from "./utils/process";
 
 import initialize from "./utils/initialize";
