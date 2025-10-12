@@ -2,6 +2,7 @@ import { ComicSourceData, InstalledSource } from "@/app/comic-source/comic-sourc
 import type { ComicSource } from "@/venera-lib";
 import path from "tjs:path";
 import type { InstalledSourceDetail, NetworkSourceDetail } from "./comic-source.model";
+import type { AnySettingItem } from "@/venera-lib/Source";
 
 const IMPORT_TEMPLATE = `import { 
   APP, Cookie, Comic, ComicDetails, 
@@ -125,19 +126,38 @@ export class ComicSourceService {
 
   static async getSourceDetail(id: string, allowInitializeError = false) {
     const source = await ComicSourceService.get(id, allowInitializeError);
-    const settings = ComicSourceService.getSettings(id);
+    const settingValues = ComicSourceService.getSettings(id);
+    const translatedSettings: Record<string, AnySettingItem> = {};
     
+    for (const key in source.settings) {
+      const r = {
+        ...source.settings[key]
+      };
+      r.title = source.translate(r.title);
+      if (r.type === "select" && r.options) {
+        r.options = r.options.map(opt => {
+          return {
+            text: opt.text && source.translate(opt.text),
+            value: opt.value
+          }
+        })
+      }
+      if (r.type === "callback") {
+        r.buttonText = source.translate(r.buttonText);
+      }
+      translatedSettings[key] = r;
+    }
     return {
       name: source.name,
       key: source.key,
       version: source.version,
       explore: source.explore?.map((v, id) => ({
         id,
-        title: v.title,
+        title: source.translate(v.title),
         type: v.type
       })),
-      settings: source.settings,
-      settingValues: settings,
+      settings: translatedSettings,
+      settingValues: settingValues,
       isLogged: source.isLogged,
       features: {
         UAPLogin: typeof source.account?.login === "function",

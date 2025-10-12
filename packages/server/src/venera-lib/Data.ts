@@ -42,8 +42,8 @@ export class ComicDetails {
   public subTitle?: string;
   public cover: string;
   public description?: string;
-  public tags?: Record<string, string[]> | {};
-  public chapters?: Record<string, string> | {};
+  public tags?: Record<string, string[]>;
+  public chapters?: Record<string, string>;
   public isFavorite?: boolean;
   public subId?: string;
   public thumbnails?: string[];

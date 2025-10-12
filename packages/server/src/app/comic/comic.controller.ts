@@ -47,9 +47,17 @@ export class ComicHandler {
   ){
     const source = await ComicSourceService.get(id);
     try {
-      return {
+      const r = {
         ...await source.comic.loadInfo(decodeURIComponent(comicId))
       } as ComicDetails;
+      if (r.tags) {
+        const translateTags: Record<string, string[]> = {};
+        for (const tag in r.tags) {
+          translateTags[source.translate(tag)] = r.tags[tag];
+        }
+        r.tags = translateTags;
+      }
+      return r;
     } catch (e) {
       console.error(e);
       throw new HTTPError("Comic source failed to load data: " + e, { status: 500 });

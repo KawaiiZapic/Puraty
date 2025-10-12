@@ -30,7 +30,7 @@ const APP = {
   },
 
   get locale(): string {
-    return "zh-CN";
+    return "zh_CN";
   },
 
   get platform(): string {
