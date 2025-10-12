@@ -1,4 +1,4 @@
-export { APP } from "./App";
+export { APP, UI } from "./App";
 export { Convert } from "./Convert";
 export { Comic, ComicDetails, Comment, ImageLoadingConfig } from "./Data";
 export { HtmlDocument, HtmlElement, HtmlNode } from "./HTML";

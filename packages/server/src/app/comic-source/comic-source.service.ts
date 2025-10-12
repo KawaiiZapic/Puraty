@@ -9,7 +9,7 @@ const IMPORT_TEMPLATE = `import {
   ComicSource, Comment, Convert, HtmlDocument, 
   HtmlElement, HtmlNode, Image, ImageLoadingConfig, 
   Network, _Timer, console, createUuid, randomDouble, 
-  randomInt, setInterval, setTimeout 
+  randomInt, setInterval, setTimeout, UI
 } from "${path.dirname(new URL(import.meta.url).pathname)}/venera-lib/index.js";
 
 `;
