@@ -6,13 +6,14 @@ export default () => {
   const load = async () => {
     state.loading = true;
     try {
-      const installed = await api.ComicSource.list();
+      const installed = await api.ComicSource.list(true);
       installed.forEach(source => {
         list.prepend(SourceItem({ item: {
           key: source.key,
           name: source.name,
           version: source.version,
-          fileName: "" 
+          fileName: "",
+          initialized: !source.initializedError
         }, installedVersion: source.version }));
       });
       await api.ComicSource.available().then(available => {
@@ -24,7 +25,8 @@ export default () => {
             name: source.name,
             version: orig?.version || source.version,
             fileName: orig?.fileName || "",
-            description: orig?.description
+            description: orig?.description,
+            initialized: !source.initializedError
           }, installedVersion: source.version }));
         });
         available.forEach(item => {

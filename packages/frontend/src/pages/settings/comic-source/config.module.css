@@ -6,3 +6,19 @@
   padding: 0.5rem;
   box-sizing: border-box;
 }
+
+.sourceInitializeError {
+  overflow: hidden;
+  margin: 0.5rem;
+  padding: 0.25rem;
+  box-sizing: border-box;
+  border: 3px solid black;
+  border-radius: 5px;
+}
+
+.sourceInitializeError pre {
+  white-space: pre-wrap;
+  margin: 0;
+  margin-top: 0.5rem;
+  font-size: 0.5rem;
+}

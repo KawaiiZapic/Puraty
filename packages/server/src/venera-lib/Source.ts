@@ -1,6 +1,7 @@
 import { ComicSourceData } from "@/app/comic-source/comic-source.db";
 import { APP } from "./App";
 import type { Comic, ComicDetails, ImageLoadingConfig } from "./Data";
+import type initialize from "@/utils/initialize";
 
 interface AccountLogin {
   login?: (account: string, pwd: string) => Promise<unknown>;
@@ -121,6 +122,7 @@ export abstract class ComicSource {
     public version = "";
     public minAppVersion = "";
     public url = "";
+    public initializeError = "";
     public settings?: Record<string, AnySettingItem>;
     public account?: AccountLogin;
     public explore?: AnyExplorePage[];

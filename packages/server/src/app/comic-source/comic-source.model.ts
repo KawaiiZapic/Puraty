@@ -1,3 +1,4 @@
+import type initialize from "@/utils/initialize";
 import type { ComicSource } from "@/venera-lib";
 import type { AnySettingItem } from "@/venera-lib/Source";
 
@@ -31,6 +32,7 @@ export interface InstalledSourceDetail {
   };
   settings?: Record<string, AnySettingItem>;
   settingValues: Record<string, string>;
+  initializedError: string;
 }
 
 export interface SourceModifyBody {

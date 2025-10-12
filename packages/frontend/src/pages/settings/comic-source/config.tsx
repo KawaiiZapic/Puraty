@@ -12,7 +12,7 @@ export default () => {
   
   const $ = <div>
     { loginGroup }
-  </div>
+  </div> as HTMLDivElement;
 
   const updateLoginStatus = (v: InstalledSourceDetail) => {
     loginGroup.childNodes.forEach(v => loginGroup.removeChild(v));
@@ -93,6 +93,14 @@ export default () => {
     }
   }
   api.ComicSource.get(id).then(v => {
+    if (v.initializedError) {
+      $.prepend(
+        <div class={ style.sourceInitializeError }>
+          <div>警告：漫画源初始化失败</div>
+          <pre>{ v.initializedError }</pre>
+        </div>
+      );
+    }
     updateLoginStatus(v);
     const result = reactive(v.settingValues) as Record<string, string>;
     for (const k in v.settings) {

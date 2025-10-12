@@ -1,5 +1,4 @@
 import { ComicSourceData, InstalledSource } from "@/app/comic-source/comic-source.db";
-import { env } from "@/utils/env";
 import type { ComicSource } from "@/venera-lib";
 import path from "tjs:path";
 import type { InstalledSourceDetail, NetworkSourceDetail } from "./comic-source.model";
@@ -10,35 +9,55 @@ const IMPORT_TEMPLATE = `import {
   HtmlElement, HtmlNode, Image, ImageLoadingConfig, 
   Network, _Timer, console, createUuid, randomDouble, 
   randomInt, setInterval, setTimeout 
-} from "../../${env.DEV ? "dist" : "server"}/venera-lib/index.js";
+} from "${path.dirname(new URL(import.meta.url).pathname)}/venera-lib/index.js";
 
 `;
 
 export class ComicSourceService {
   static _instances: Record<string, ComicSource> = {};
 
-  static async get(id: string) {
+  static async get(id: string, allowInitializeError = false) {
     if (ComicSourceService._instances[id]) {
+      if (ComicSourceService._instances[id].initializeError && !allowInitializeError) {
+        throw new Error("Failed to initialize source " + id + ": " +ComicSourceService._instances[id].initializeError);
+      }
       return ComicSourceService._instances[id];
     }
     if (!(id in InstalledSource.list())) {
       throw new Error("Source not found: " + id);
     }
+    let dir = "";
     try {
-      const source = (await import(path.join(APP_DIR, `comic-source/${id}.js`))).default;
+      dir = await tjs.makeTempDir("/tmp/source-XXXXXXXX");
+      await tjs.copyFile(path.join(APP_DIR, `comic-source/${id}.js`), path.join(dir, `${id}.js`));
+      const source = (await import(path.join(dir, `${id}.js`))).default;
       const s: ComicSource = new source();
       ComicSourceService._instances[id] = s;
-      await s.init?.();
+      try {
+        await s.init?.();
+      } catch(e) {
+        s.initializeError = String(e) + (e instanceof Error ? `\n${e.stack}` : "");
+        if (!allowInitializeError) {
+          throw e;
+        }
+      }
       return s;
     } catch (e) {
+      if (e instanceof Error) {
+        throw new Error("Failed to initialize source " + id + ": " + e.message + "\n" + e.stack);
+      }
       throw new Error("Failed to initialize source " + id + ": " + e);
+    } finally {
+      if (dir) {
+        await tjs.remove(dir);
+      }
     }
   }
 
   static async install(url: string, key: string) {
     try {
-      let source = IMPORT_TEMPLATE + new TextDecoder().decode(await (await fetch("https://cdn.jsdelivr.net/gh/venera-app/venera-configs@latest/" + url)).arrayBuffer());
-      source = source.replace(/class .*? extends ComicSource/gi, v => `export default ${v}`);
+      let source = new TextDecoder().decode(await (await fetch("https://cdn.jsdelivr.net/gh/venera-app/venera-configs@latest/" + url)).arrayBuffer());
+      source = IMPORT_TEMPLATE + source.replace(/class .*? extends ComicSource/gi, v => `export default ${v}`);
       await tjs.makeDir(path.join(APP_DIR, "comic-source"), { recursive: true });
       const f = await tjs.open(path.join(APP_DIR, `comic-source/${key}.js`), "w");
       await f.write(new TextEncoder().encode(source));
@@ -47,7 +66,8 @@ export class ComicSourceService {
         const s: ComicSource = new source();
         return s.version;
       });
-      InstalledSource.install(key, v)
+      InstalledSource.install(key, v);
+      delete ComicSourceService._instances[key];
       return v;
     } catch (e) {
       try {
@@ -68,12 +88,12 @@ export class ComicSourceService {
     delete ComicSourceService._instances[id];
   }
 
-  static async list() {
+  static async list(allowInitializeError = false) {
     const list = InstalledSource.list();
     const result: InstalledSourceDetail[] = [];
     for (const name in list) {
       try {
-        result.push(await this.getSourceDetail(name));
+        result.push(await this.getSourceDetail(name, allowInitializeError));
       } catch (e) {
         console.error(e);
       }
@@ -103,8 +123,8 @@ export class ComicSourceService {
     }
   }
 
-  static async getSourceDetail(id: string) {
-    const source = await ComicSourceService.get(id);
+  static async getSourceDetail(id: string, allowInitializeError = false) {
+    const source = await ComicSourceService.get(id, allowInitializeError);
     const settings = ComicSourceService.getSettings(id);
     
     return {
@@ -123,7 +143,8 @@ export class ComicSourceService {
         UAPLogin: typeof source.account?.login === "function",
         CookieLogin: source.account?.loginWithCookies?.fields,
         logout: typeof source.account?.logout === "function",
-      }
+      },
+      initializedError: source.initializeError
     } satisfies InstalledSourceDetail;
   }
 }

@@ -1,8 +1,8 @@
 import { ComicSourceService } from "./comic-source.service";
-import { Controller, Delete, Get, Json, Patch, Path, Post, ReqEvent, Required } from "@/utils/decorators";
+import { Controller, Delete, Get, Json, Patch, Path, Post, Query, ReqEvent, Required } from "@/utils/decorators";
 import { HTTPError, type H3Event } from "h3";
 import type { InstallBody, UAPLoginBody, SourceModifyBody } from "./comic-source.model";
-import { ComicSourceData } from "./comic-source.db";
+import { ComicSourceData, InstalledSource } from "./comic-source.db";
 
 
 @Controller("/comic-source")
@@ -14,8 +14,10 @@ export class ComicSourceHandler {
   }
 
   @Get("/installed")
-  list() {
-    return ComicSourceService.list();
+  list(
+    @Query("allowInitializeError") allowErr = "false"
+  ) {
+    return ComicSourceService.list(allowErr === "true");
   }
 
   @Post("/add")
@@ -32,7 +34,7 @@ export class ComicSourceHandler {
   async delete(
     @Path("id") id: string
   ) {
-    const list = ComicSourceService.list();
+    const list = InstalledSource.list();
     if (id in list) {
       await ComicSourceService.uninstall(id);
     } else {
@@ -44,7 +46,7 @@ export class ComicSourceHandler {
   get(
     @Path("id") id: string
   ) {
-    return ComicSourceService.getSourceDetail(id);
+    return ComicSourceService.getSourceDetail(id, true);
   }
 
   @Patch("/:id")

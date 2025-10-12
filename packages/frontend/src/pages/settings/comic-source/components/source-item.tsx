@@ -3,8 +3,9 @@ import api from "@/api";
 import { RouterLink } from "@/router/RouterLink";
 import { computed, reactive, watch } from "@puraty/reactivity";
 import type { NetworkSourceDetail } from "@puraty/server";
+import WarningAmberOutlined from "@sicons/material/WarningAmberOutlined.svg";
 
-export default ({ item, installedVersion }: { item: NetworkSourceDetail, installedVersion?: string }) => {
+export default ({ item, installedVersion }: { item: NetworkSourceDetail & { initialized?: boolean }, installedVersion?: string }) => {
   const state = reactive({
     loading: false,
     installedVersion
@@ -64,9 +65,13 @@ export default ({ item, installedVersion }: { item: NetworkSourceDetail, install
         { updateBtnStateText }
       </div>;
     }
+  const initializedMark = item.initialized === false ? <img class={ style.listWarnMark } src={WarningAmberOutlined}></img> : undefined;
   return <div class={style.listItemWrapper}>
     <div class={style.listItemMeta}>
-      <div>{item.name}</div>
+      <div>
+        { initializedMark }
+        {item.name}
+      </div>
       <div class={style.listItemDesc}>{
         (!installedVersion || item.version === installedVersion) ? item.version : "可升级: " + item.version
       } {item.description ? " - " + item.description : ""}</div>

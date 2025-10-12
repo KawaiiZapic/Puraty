@@ -5,8 +5,8 @@ export const ComicSource = {
   available() {
     return Req.get("/api/comic-source/available");
   },
-  list() {
-    return Req.get("/api/comic-source/installed");
+  list(allowErr = false) {
+    return Req.get("/api/comic-source/installed?allowInitializeError=" + allowErr);
   },
   add(url: string, key: string) {
     return Req.post("/api/comic-source/add", {

@@ -17,3 +17,10 @@
 .listItemBtn {
   padding: 0.5rem;
 }
+
+.listWarnMark {
+  width: 1em;
+  height: 1em;
+  vertical-align: text-bottom;
+  margin-right: 0.25rem;
+}
