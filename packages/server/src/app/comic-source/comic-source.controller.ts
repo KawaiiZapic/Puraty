@@ -96,7 +96,11 @@ export class ComicSourceHandler {
 			if (typeof r === "undefined") {
 				throw "Login failed.";
 			}
-			ComicSourceService.setLoginStatus(id, true);
+
+			ComicSourceService.setLoginStatus(id, [
+				loginBody.username,
+				loginBody.password
+			]);
 		} catch (e) {
 			console.error(e);
 			throw new HTTPError({
@@ -123,7 +127,7 @@ export class ComicSourceHandler {
 			if (!r) {
 				throw "Login failed.";
 			}
-			ComicSourceService.setLoginStatus(id, true);
+			ComicSourceService.setLoginStatus(id, ["", ""]);
 		} catch (e) {
 			console.error(e);
 			throw new HTTPError({
@@ -137,6 +141,6 @@ export class ComicSourceHandler {
 	async logout(@Path("id") id: string) {
 		const s = await ComicSourceService.get(id);
 		s.account?.logout?.();
-		ComicSourceService.setLoginStatus(id, false);
+		ComicSourceService.setLoginStatus(id);
 	}
 }

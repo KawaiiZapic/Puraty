@@ -158,11 +158,11 @@ export class ComicSourceService {
 		return r;
 	}
 
-	static setLoginStatus(id: string, isLogged: boolean) {
-		if (isLogged) {
-			ComicSourceData.set("setting", id, "__system_logged", "true");
+	static setLoginStatus(id: string, account?: [string, string]) {
+		if (account) {
+			ComicSourceData.set("data", id, "account", account);
 		} else {
-			ComicSourceData.delete("setting", id, "__system_logged");
+			ComicSourceData.delete("data", id, "account");
 		}
 	}
 

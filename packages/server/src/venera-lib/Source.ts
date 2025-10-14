@@ -205,9 +205,7 @@ export abstract class ComicSource {
 	}
 
 	get isLogged(): boolean {
-		return (
-			ComicSourceData.get("setting", this.key, "__system_logged") === "true"
-		);
+		return !!ComicSourceData.get("data", this.key, "account");
 	}
 
 	translation: Record<string, Record<string, string>> = {};
