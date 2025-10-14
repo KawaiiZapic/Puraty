@@ -79,39 +79,43 @@ export class ComicSourceData extends BaseDB {
 
 	protected initialize(): void {
 		this.db.exec(
-			"CREATE TABLE source_data (key TEXT PRIMARY KEY, value TEXT);"
+			"CREATE TABLE source_data (key TEXT, id TEXT, type TEXT, value TEXT, PRIMARY KEY (key, id, type));"
 		);
 	}
 
 	protected upgrade(): void {}
 
-	static get(type: DataType, id: string, name: string): string {
-		const st = this.db.prepare("SELECT value from source_data where key=?;");
-		const result = st.all(`${type}_${id}_${name}`)[0]?.value;
+	static get<T>(type: DataType, id: string, key: string): T | undefined {
+		const st = this.db.prepare("SELECT value from source_data where key=? and id=? and type=?;");
+		const result = st.all(key, id, type)[0]?.value;
 		st.finalize();
+		return result ? JSON.parse(result) : undefined;
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	static getAll(type: DataType, id: string): { key: string; value: any }[] {
+		const st = this.db.prepare(
+			"SELECT key,value from source_data where id=? and type=?;"
+		);
+		const result = st.all(id, type);
+		st.finalize();
+		result.forEach(v => {
+			v.value = JSON.parse(v.value);
+		});
 		return result;
 	}
 
-	static getAll(type: DataType, id: string): { key: string; value: string }[] {
+	static set(type: DataType, id: string, key: string, data: unknown) {
 		const st = this.db.prepare(
-			"SELECT key,value from source_data where key like ? escape '\\'"
+			"INSERT OR REPLACE INTO source_data (key, value, id, type) VALUES (?, ?, ?, ?);"
 		);
-		const result = st.all(`${type}\\_${id.replaceAll("_", "\\_")}\\_%`);
-		st.finalize();
-		return result;
-	}
-
-	static set(type: DataType, id: string, name: string, data: string) {
-		const st = this.db.prepare(
-			"INSERT OR REPLACE INTO source_data (key, value) VALUES (?, ?);"
-		);
-		st.run(`${type}_${id}_${name}`, data);
+		st.run(key, JSON.stringify(data), id, type);
 		st.finalize();
 	}
 
-	static delete(type: DataType, id: string, name: string) {
-		const st = this.db.prepare("DELETE from source_data where key=?;");
-		st.run(`${type}_${id}_${name}`);
+	static delete(type: DataType, id: string, key: string) {
+		const st = this.db.prepare("DELETE from source_data where key=? and id=? and type=?;");
+		st.run(key, id, type);
 		st.finalize();
 	}
 }

@@ -185,11 +185,11 @@ export abstract class ComicSource {
 		}
 	};
 
-	loadData(dataKey: string): string {
+	loadData(dataKey: string): string | undefined {
 		return ComicSourceData.get("data", this.key, dataKey);
 	}
 
-	loadSetting(key: string): string {
+	loadSetting(key: string): string | undefined {
 		return (
 			ComicSourceData.get("setting", this.key, key) ??
 			(this.settings?.[key] as InputSettingItem)?.default
