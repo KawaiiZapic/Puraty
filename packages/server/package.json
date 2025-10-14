@@ -11,7 +11,8 @@
 		"dev": "node scripts/dev.js",
 		"lint": "eslint --max-warnings=0 . && pnpm prettier",
 		"lint:fix": "eslint --fix --max-warnings=0 . && pnpm prettier",
-		"prettier": "prettier --ignore-unknown --write ."
+		"prettier": "prettier --ignore-unknown --write .",
+		"lint-staged": "lint-staged"
 	},
 	"keywords": [],
 	"author": "",
@@ -35,9 +36,6 @@
 		"domhandler": "^5.0.3",
 		"h3": "2.0.0-beta.3",
 		"h3-txikijs-adapter": "^0.2.1"
-	},
-	"simple-git-hooks": {
-		"pre-commit": "pnpm exec lint-staged"
 	},
 	"lint-staged": {
 		"**/*.{js,ts,json}": [

@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "description": "",
   "scripts": {
-    "build": "pnpm -r build && ./scripts/packaging.sh"
+    "build": "pnpm -r build && ./scripts/packaging.sh",
+    "postinstall": "simple-git-hooks"
   },
   "keywords": [],
   "author": "",
@@ -19,5 +20,8 @@
     "typescript-eslint": "^8.46.1",
 		"lint-staged": "^16.2.4",
 		"simple-git-hooks": "^2.13.1"
-  }
+  },
+	"simple-git-hooks": {
+		"pre-commit": "pnpm -r --sequential run lint-staged"
+	}
 }

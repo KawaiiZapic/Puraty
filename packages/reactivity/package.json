@@ -19,6 +19,13 @@
 		"type-check": "tsc --noEmit",
 		"lint": "eslint --max-warnings=0 . && pnpm prettier",
 		"lint:fix": "eslint --fix --max-warnings=0 . && pnpm prettier",
-		"prettier": "prettier --ignore-unknown --write ."
+		"prettier": "prettier --ignore-unknown --write .",
+		"lint-staged": "lint-staged"
+	},
+	"lint-staged": {
+		"**/*.{js,ts,json}": [
+			"eslint --fix --cache",
+			"prettier --write"
+		]
 	}
 }
