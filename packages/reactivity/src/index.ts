@@ -8,6 +8,6 @@ export * from "./watch";
 export const onUpdateSymbol = Symbol();
 
 export interface Ref<T = unknown> {
-  value: T;
-  [onUpdateSymbol]: (fn: () => void) => void;
+	value: T;
+	[onUpdateSymbol]: (fn: () => void) => void;
 }

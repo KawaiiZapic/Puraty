@@ -1,107 +1,107 @@
 .comicDetailWrapper {
-  padding: 0.5rem 0.25rem;
+	padding: 0.5rem 0.25rem;
 }
 
 .comicHeaderWrapper {
-  display: flex;
-  align-items: center;
-  margin-bottom: 1rem;
+	display: flex;
+	align-items: center;
+	margin-bottom: 1rem;
 }
 
 .comicHeaderWrapper > img {
-  width: 5rem;
-  height: 8rem;
-  object-fit: cover;
-  object-position: center;
-  box-sizing: border-box;
-  border: 3px black solid;
-  background-color: #ccc;
-  flex-shrink: 0;
+	width: 5rem;
+	height: 8rem;
+	object-fit: cover;
+	object-position: center;
+	box-sizing: border-box;
+	border: 3px black solid;
+	background-color: #ccc;
+	flex-shrink: 0;
 }
 
 .comicHeaderRight {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  margin-left: 0.25rem;
-  min-height: 8rem;
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	margin-left: 0.25rem;
+	min-height: 8rem;
 }
 
 .comicHeaderTitle {
-  margin-bottom: 0.25rem;
+	margin-bottom: 0.25rem;
 }
 
 .comicHeaderSub {
-  font-size: 0.85rem;
-  color: #666;
-  margin-bottom: 0.25rem;
+	font-size: 0.85rem;
+	color: #666;
+	margin-bottom: 0.25rem;
 }
 
 .comicMetaWrapper {
-  opacity: 0.6;
-  margin-bottom: 0.25rem;
+	opacity: 0.6;
+	margin-bottom: 0.25rem;
 }
 
 .comicMetaItem {
-  display: inline-flex;
-  align-items: center;
-  font-size: 0.75rem;
-  margin-right: 0.25rem;
+	display: inline-flex;
+	align-items: center;
+	font-size: 0.75rem;
+	margin-right: 0.25rem;
 }
 
 .comicMetaItem img {
-  width: 1rem;
-  height: 1rem;
-  margin-right: 0.125rem;
+	width: 1rem;
+	height: 1rem;
+	margin-right: 0.125rem;
 }
 
 .comicDescription {
-  margin-bottom: 1rem;
-  font-size: 0.85rem;
+	margin-bottom: 1rem;
+	font-size: 0.85rem;
 }
 
 .comicTagGroup {
-  display: flex;
+	display: flex;
 }
 
 .comicTagList {
-  display: flex;
-  flex-wrap: wrap;
+	display: flex;
+	flex-wrap: wrap;
 }
 
 .comicTag {
-  border: black 1px solid;
-  padding: 0.25rem 0.5rem;
-  margin-right: 0.25rem;
-  margin-bottom: 0.25rem;
-  font-size: 0.85rem;
+	border: black 1px solid;
+	padding: 0.25rem 0.5rem;
+	margin-right: 0.25rem;
+	margin-bottom: 0.25rem;
+	font-size: 0.85rem;
 }
 
 .comicTagLeader {
-  background: #ccc;
-  height: 1em;
-  width: 5rem;
-  text-align: center;
-  flex-shrink: 0;
+	background: #ccc;
+	height: 1em;
+	width: 5rem;
+	text-align: center;
+	flex-shrink: 0;
 }
 
 .comicChapterTitle {
-  margin-bottom: 0.5rem;
-  padding-bottom: 0.5rem;
-  padding-left: 0.125rem;
-  margin-top: 1rem;
-  border-bottom: 2px black solid;
+	margin-bottom: 0.5rem;
+	padding-bottom: 0.5rem;
+	padding-left: 0.125rem;
+	margin-top: 1rem;
+	border-bottom: 2px black solid;
 }
 
 .comicChapterList {
-  display: grid;
-  grid-template-rows: 1fr;
-  grid-template-columns: 1fr 1fr;
-  grid-gap: 0.25rem;
+	display: grid;
+	grid-template-rows: 1fr;
+	grid-template-columns: 1fr 1fr;
+	grid-gap: 0.25rem;
 }
 
 .comicChapterItem {
-  text-align: center;
-  padding: 0.25rem;
-  border: 2px black solid;
+	text-align: center;
+	padding: 0.25rem;
+	border: 2px black solid;
 }

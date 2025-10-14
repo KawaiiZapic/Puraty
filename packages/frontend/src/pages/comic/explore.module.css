@@ -1,50 +1,50 @@
 .comicItemWrapper {
-  display: flex;
-  padding: 0.5rem 0.25rem;
-  max-width: 100%;
-  overflow: hidden;
-  align-items: center;
+	display: flex;
+	padding: 0.5rem 0.25rem;
+	max-width: 100%;
+	overflow: hidden;
+	align-items: center;
 }
 
 .comicItemImage {
-  width: 5rem;
-  height: 8rem;
-  object-fit: cover;
-  object-position: center;
-  margin-right: 0.25rem;
-  box-sizing: border-box;
-  border: 3px black solid;
-  background-color: #ccc;
+	width: 5rem;
+	height: 8rem;
+	object-fit: cover;
+	object-position: center;
+	margin-right: 0.25rem;
+	box-sizing: border-box;
+	border: 3px black solid;
+	background-color: #ccc;
 }
 
 .comicItemMeta {
-  width: calc(100% - 5.25rem);
-  min-height: 8rem;
+	width: calc(100% - 5.25rem);
+	min-height: 8rem;
 }
 
 .comicItemTitle {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
-  overflow: hidden;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3;
+	line-clamp: 3;
+	overflow: hidden;
 }
 
 .comicItemSubtitle {
-  color: #666;
-  margin-top: 0.25rem;
-  font-size: 0.75rem;
+	color: #666;
+	margin-top: 0.25rem;
+	font-size: 0.75rem;
 }
 
 .comicItemTagWrapper {
-  margin-top: 0.5rem;
+	margin-top: 0.5rem;
 }
 
 .comicItemTag {
-  display: inline-block;
-  font-size: 0.75rem;
-  border: 1px solid black;
-  padding: 0.1rem 0.25rem;
-  margin-right: 0.25rem;
-  margin-bottom: 0.1rem;
+	display: inline-block;
+	font-size: 0.75rem;
+	border: 1px solid black;
+	padding: 0.1rem 0.25rem;
+	margin-right: 0.25rem;
+	margin-bottom: 0.1rem;
 }

@@ -1,9 +1,8 @@
 import "./utils/polyfills";
-import { launchUI } from "./utils/process";
-
-import initialize from "./utils/initialize";
-import { ac } from "./app/commands/commands.controller";
 import { App } from "./app";
+import { ac } from "./app/commands/commands.controller";
+import initialize from "./utils/initialize";
+import { launchUI } from "./utils/process";
 
 await initialize();
 const app = new App();

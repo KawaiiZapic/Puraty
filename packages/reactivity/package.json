@@ -1,14 +1,24 @@
 {
-  "name": "@puraty/reactivity",
-  "version": "0.1.0",
-  "description": "",
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "packageManager": "pnpm@10.11.0",
-  "type": "module",
-  "exports": {
-    ".": "./src/index.ts"
-  },
-  "main": "src/index.ts"
+	"name": "@puraty/reactivity",
+	"prettier": "@puraty/tools/prettier.config.json",
+	"version": "0.1.0",
+	"description": "",
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"packageManager": "pnpm@10.11.0",
+	"type": "module",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"main": "src/index.ts",
+	"devDependencies": {
+		"@puraty/tools": "workspace:"
+	},
+	"scripts": {
+		"type-check": "tsc --noEmit",
+		"lint": "eslint --max-warnings=0 . && pnpm prettier",
+		"lint:fix": "eslint --fix --max-warnings=0 . && pnpm prettier",
+		"prettier": "prettier --ignore-unknown --write ."
+	}
 }

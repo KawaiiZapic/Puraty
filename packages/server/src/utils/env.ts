@@ -1,3 +1,3 @@
 export const env = {
-  DEV: !!tjs.env.DEV
+	DEV: !!tjs.env.DEV
 };

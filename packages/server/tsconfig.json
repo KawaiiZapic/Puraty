@@ -1,29 +1,24 @@
 {
-  "compilerOptions": {
-    "target": "ES2023",
-    "module": "ES2022",
-    "composite": true,
-    "useDefineForClassFields": true,
-    "strict": true,
-    "sourceMap": true,
-    "moduleResolution": "bundler",
-    "isolatedModules": true,
-    "esModuleInterop": true,
-    "lib": ["ES2023", "DOM"],
-    "skipLibCheck": true,
-    "resolveJsonModule": true,
-    "baseUrl": ".",
-    "experimentalDecorators": true,
-    "paths": {
-      "@/*": ["src/*"]
-    },
-    "typeRoots": [
-	    "node_modules/@txikijs/types",
-	    "node_modules/@types"
-    ]
-  },
-  "include": [
-    "src/**/*",
-    "tests/**/*"
-  ]
+	"compilerOptions": {
+		"target": "ES2023",
+		"module": "ES2022",
+		"composite": true,
+		"useDefineForClassFields": true,
+		"strict": true,
+		"sourceMap": true,
+		"moduleResolution": "bundler",
+		"isolatedModules": true,
+		"esModuleInterop": true,
+		"lib": ["ES2023", "DOM"],
+		"skipLibCheck": true,
+		"resolveJsonModule": true,
+		"baseUrl": ".",
+		"experimentalDecorators": true,
+		"paths": {
+			"@/*": ["src/*"]
+		},
+		"outDir": "dist",
+		"typeRoots": ["node_modules/@txikijs/types", "node_modules/@types"]
+	},
+	"include": ["src/**/*", "tests/**/*"]
 }

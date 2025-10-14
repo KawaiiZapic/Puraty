@@ -1,26 +1,26 @@
 .listItemWrapper {
-  display: flex;
-  padding: 0.75rem 0.5rem;
-  align-items: center;
+	display: flex;
+	padding: 0.75rem 0.5rem;
+	align-items: center;
 }
 
 .listItemDesc {
-  font-size: 0.75rem;
-  margin-top: 0.25rem;
-  color: #666;
+	font-size: 0.75rem;
+	margin-top: 0.25rem;
+	color: #666;
 }
 
 .listItemMeta {
-  flex-grow: 1;
+	flex-grow: 1;
 }
 
 .listItemBtn {
-  padding: 0.5rem;
+	padding: 0.5rem;
 }
 
 .listWarnMark {
-  width: 1em;
-  height: 1em;
-  vertical-align: text-bottom;
-  margin-right: 0.25rem;
+	width: 1em;
+	height: 1em;
+	vertical-align: text-bottom;
+	margin-right: 0.25rem;
 }

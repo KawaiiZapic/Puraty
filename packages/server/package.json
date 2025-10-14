@@ -1,29 +1,48 @@
 {
-  "name": "@puraty/server",
-  "version": "0.1.0",
-  "description": "",
-  "type": "module",
-  "scripts": {
-    "build": "node scripts/build.js",
-    "test": "node scripts/build-test.js && cd dist/tests && tjs test .",
-    "type-check": "tsc --noEmit",
-    "dev": "node scripts/dev.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "packageManager": "pnpm@10.11.0",
-  "devDependencies": {
-    "@txikijs/types": "^24.12.0",
-    "esbuild": "^0.25.9"
-  },
-  "dependencies": {
-    "@types/crypto-js": "^4.2.2",
-    "base64-js": "^1.5.1",
-    "cheerio": "^1.1.2",
-    "crypto-js": "^4.2.0",
-    "domhandler": "^5.0.3",
-    "h3": "2.0.0-beta.3",
-    "h3-txikijs-adapter": "^0.2.1"
-  }
+	"name": "@puraty/server",
+	"version": "0.1.0",
+	"description": "",
+	"type": "module",
+	"prettier": "@puraty/tools/prettier.config.json",
+	"scripts": {
+		"build": "node scripts/build.js",
+		"test": "node scripts/build-test.js && cd dist/tests && tjs test .",
+		"type-check": "tsc --noEmit",
+		"dev": "node scripts/dev.js",
+		"lint": "eslint --max-warnings=0 . && pnpm prettier",
+		"lint:fix": "eslint --fix --max-warnings=0 . && pnpm prettier",
+		"prettier": "prettier --ignore-unknown --write ."
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"exports": {
+		".": {
+			"types": "./src/types/export.ts"
+		}
+	},
+	"packageManager": "pnpm@10.11.0",
+	"devDependencies": {
+		"@txikijs/types": "^24.12.0",
+		"esbuild": "^0.25.9",
+		"@puraty/tools": "workspace:"
+	},
+	"dependencies": {
+		"@types/crypto-js": "^4.2.2",
+		"base64-js": "^1.5.1",
+		"cheerio": "^1.1.2",
+		"crypto-js": "^4.2.0",
+		"domhandler": "^5.0.3",
+		"h3": "2.0.0-beta.3",
+		"h3-txikijs-adapter": "^0.2.1"
+	},
+	"simple-git-hooks": {
+		"pre-commit": "pnpm exec lint-staged"
+	},
+	"lint-staged": {
+		"**/*.{js,ts,json}": [
+			"eslint --fix --cache",
+			"prettier --write"
+		]
+	}
 }

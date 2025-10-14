@@ -1,23 +1,21 @@
 {
-  "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "composite": true,
-    "useDefineForClassFields": true,
-    "strict": true,
-    "sourceMap": true,
-    "moduleResolution": "bundler",
-    "isolatedModules": true,
-    "esModuleInterop": true,
-    "lib": ["ES2019", "DOM"],
-    "skipLibCheck": true,
-    "resolveJsonModule": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"]
-    }
-  },
-  "include": [
-	  "src/**/*"
-	]
+	"compilerOptions": {
+		"target": "ESNext",
+		"module": "ESNext",
+		"composite": true,
+		"useDefineForClassFields": true,
+		"strict": true,
+		"sourceMap": true,
+		"moduleResolution": "bundler",
+		"isolatedModules": true,
+		"esModuleInterop": true,
+		"lib": ["ES2019", "DOM"],
+		"skipLibCheck": true,
+		"resolveJsonModule": true,
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["src/*"]
+		}
+	},
+	"include": ["src/**/*"]
 }

@@ -1,8 +1,8 @@
 .listItem {
-  display: block;
-  padding: 1rem 0.5rem;
-  user-select: none;
-  background: url("@sicons/material/ChevronRightFilled.svg") no-repeat;
-  background-size: auto 1.5rem;
-  background-position: calc(100% - 0.5rem) center;
+	display: block;
+	padding: 1rem 0.5rem;
+	user-select: none;
+	background: url("@sicons/material/ChevronRightFilled.svg") no-repeat;
+	background-size: auto 1.5rem;
+	background-position: calc(100% - 0.5rem) center;
 }
