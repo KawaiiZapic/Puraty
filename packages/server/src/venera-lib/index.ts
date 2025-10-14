@@ -5,5 +5,5 @@ export { HtmlDocument, HtmlElement, HtmlNode } from "./HTML";
 export { Image } from "./Image";
 export { Network } from "./Network";
 export { ComicSource } from "./Source";
-export { _Timer, console, createUuid, randomDouble, randomInt, setInterval, setTimeout } from "./utils";
+export { _Timer, console, createUuid, randomDouble, randomInt, setInterval, setTimeout, compute, getClipboard, setClipboard } from "./utils";
 export { Cookie } from "@/db/Cookies";

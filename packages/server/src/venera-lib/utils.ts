@@ -71,3 +71,15 @@ export const console = {
     globalThis.console.error('[ComicSource]', content)
   },
 };
+
+export const getClipboard = (): Promise<string> => {
+  throw new Error("Calling not implemented function getClipboard: (): Promise<string>");
+}
+
+export const setClipboard = (text: string): Promise<void> => {
+  throw new Error("Calling not implemented function setClipboard: (text: string): Promise<void>");
+}
+
+export const compute = (func: string, ...args: unknown[]) => {
+    throw new Error("Calling not implemented function compute: (func: string, ...args: unknown[]): Promise<any>");
+}

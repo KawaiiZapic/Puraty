@@ -4,13 +4,9 @@ import path from "tjs:path";
 import type { InstalledSourceDetail, NetworkSourceDetail } from "./comic-source.model";
 import type { AnySettingItem } from "@/venera-lib/Source";
 
-const IMPORT_TEMPLATE = `import { 
-  APP, Cookie, Comic, ComicDetails, 
-  ComicSource, Comment, Convert, HtmlDocument, 
-  HtmlElement, HtmlNode, Image, ImageLoadingConfig, 
-  Network, _Timer, console, createUuid, randomDouble, 
-  randomInt, setInterval, setTimeout, UI
-} from "${path.dirname(new URL(import.meta.url).pathname)}/venera-lib/index.js";
+import * as VeneraLib from "@/venera-lib";
+
+const IMPORT_TEMPLATE = `import { ${ Object.keys(VeneraLib).join(", ") } } from "${path.dirname(new URL(import.meta.url).pathname)}/venera-lib/index.js";
 
 `;
 
