@@ -8,8 +8,8 @@
 		"dev": "vite",
 		"preview": "vite preview --host",
 		"type-check": "pnpm -F server exec tsc -b --emitDeclarationOnly && tsc --noEmit",
-		"lint": "eslint --max-warnings=0 . && pnpm prettier",
-		"lint:fix": "eslint --fix --max-warnings=0 . && pnpm prettier",
+		"lint": "eslint --cache --max-warnings=0 . && pnpm prettier",
+		"lint:fix": "eslint --cache --fix --max-warnings=0 . && pnpm prettier",
 		"prettier": "prettier --ignore-unknown --write .",
 		"lint-staged": "lint-staged"
 	},

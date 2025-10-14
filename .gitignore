@@ -5,3 +5,4 @@ dist
 *.tsbuildinfo
 packages/launcher/bin/tjs
 packages/server/data
+.eslintcache

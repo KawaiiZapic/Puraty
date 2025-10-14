@@ -9,8 +9,8 @@
 		"test": "node scripts/build-test.js && cd dist/tests && tjs test .",
 		"type-check": "tsc --noEmit",
 		"dev": "node scripts/dev.js",
-		"lint": "eslint --max-warnings=0 . && pnpm prettier",
-		"lint:fix": "eslint --fix --max-warnings=0 . && pnpm prettier",
+		"lint": "eslint --cache --max-warnings=0 . && pnpm prettier",
+		"lint:fix": "eslint --cache --fix --max-warnings=0 . && pnpm prettier",
 		"prettier": "prettier --ignore-unknown --write .",
 		"lint-staged": "lint-staged"
 	},

@@ -86,7 +86,9 @@ export class ComicSourceData extends BaseDB {
 	protected upgrade(): void {}
 
 	static get<T>(type: DataType, id: string, key: string): T | undefined {
-		const st = this.db.prepare("SELECT value from source_data where key=? and id=? and type=?;");
+		const st = this.db.prepare(
+			"SELECT value from source_data where key=? and id=? and type=?;"
+		);
 		const result = st.all(key, id, type)[0]?.value;
 		st.finalize();
 		return result ? JSON.parse(result) : undefined;
@@ -114,7 +116,9 @@ export class ComicSourceData extends BaseDB {
 	}
 
 	static delete(type: DataType, id: string, key: string) {
-		const st = this.db.prepare("DELETE from source_data where key=? and id=? and type=?;");
+		const st = this.db.prepare(
+			"DELETE from source_data where key=? and id=? and type=?;"
+		);
 		st.run(key, id, type);
 		st.finalize();
 	}
