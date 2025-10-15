@@ -26,7 +26,10 @@ export default ({
 				let $new: Node;
 				if (state.installedVersion) {
 					$new = (
-						<RouterLink href={"/settings/comic-sources/" + item.key}>
+						<RouterLink
+							class={["clickable-item", style.listItemBtn]}
+							href={"/settings/comic-sources/" + item.key}
+						>
 							设置
 						</RouterLink>
 					);
