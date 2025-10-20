@@ -11,6 +11,9 @@ export const reactive = <T extends object>(value: T): T => {
 			...value,
 			[onUpdateSymbol]: (fn: () => void) => {
 				updateHandler.push(fn);
+				return () => {
+					updateHandler.splice(updateHandler.indexOf(fn), 1);
+				};
 			}
 		},
 		{

@@ -10,6 +10,9 @@ export const ref = <T>(value: T): Ref<T> => {
 			value,
 			[onUpdateSymbol]: fn => {
 				updateHandler.push(fn);
+				return () => {
+					updateHandler.splice(updateHandler.indexOf(fn), 1);
+				};
 			}
 		},
 		{

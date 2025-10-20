@@ -9,5 +9,5 @@ export const onUpdateSymbol = Symbol();
 
 export interface Ref<T = unknown> {
 	value: T;
-	[onUpdateSymbol]: (fn: () => void) => void;
+	[onUpdateSymbol]: (fn: () => void) => () => void;
 }
