@@ -1,3 +1,5 @@
+import { getCurrentEffectScope } from "./effectScope";
+import { track } from "./tracker";
 import { delayed } from "./utils";
 
 import { onUpdateSymbol } from ".";
@@ -6,7 +8,7 @@ export const reactive = <T extends object>(value: T): T => {
 	if (typeof (value as never)[onUpdateSymbol] === "function") return value;
 	const updateHandler: (() => void)[] = [];
 	const flush = delayed(() => updateHandler.forEach(fn => fn()));
-	return new Proxy(
+	const v = new Proxy(
 		{
 			...value,
 			[onUpdateSymbol]: (fn: () => void) => {
@@ -22,7 +24,14 @@ export const reactive = <T extends object>(value: T): T => {
 				(target as any)[p] = newValue;
 				flush();
 				return true;
+			},
+			get(t, k) {
+				if (k !== onUpdateSymbol) {
+					track(v);
+				}
+				return (t as never)[k];
 			}
 		}
 	);
+	return v as T;
 };

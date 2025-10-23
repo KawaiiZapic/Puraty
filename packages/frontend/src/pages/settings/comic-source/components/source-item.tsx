@@ -44,18 +44,18 @@ export default ({
 		return $;
 	};
 	const InsBtn = () => {
-		const updateBtnStateText = computed(({ loading, installedVersion }) => {
+		const updateBtnStateText = computed(() => {
 			let res = "";
-			if (installedVersion === item.version) {
+			if (state.installedVersion === item.version) {
 				res = "卸载";
 			} else {
-				res = installedVersion ? "升级" : "安装";
+				res = state.installedVersion ? "升级" : "安装";
 			}
-			if (loading) {
+			if (state.loading) {
 				res = "正在" + res;
 			}
 			return res;
-		}, state);
+		});
 		const doInstall = () => {
 			if (state.loading) return;
 			state.loading = true;

@@ -1,4 +1,4 @@
-import { watch, type WatchOptions } from "@puraty/reactivity";
+import { createEffectScope } from "@puraty/reactivity";
 
 export class Scope {
 	private ac = new AbortController();
@@ -45,11 +45,13 @@ export class Scope {
 			options
 		);
 	}
-
-	watch<T>(v: T, handler: () => void, options?: WatchOptions) {
-		return watch(v, handler, {
-			...options,
-			signal: this.ac.signal
-		});
-	}
 }
+
+export const withScope = <T extends (...args: never[]) => unknown>(fn: T) => {
+	return ((...args) => {
+		const scope = createEffectScope();
+		const v = fn(...args);
+		scope.end();
+		return v;
+	}) as T;
+};
