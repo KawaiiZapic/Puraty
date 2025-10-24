@@ -16,7 +16,7 @@ export const launchUI = (signal?: AbortSignal) => {
 			"--disable-gpu-compositing",
 			"--enable-dom-distiller",
 			"--enable-distillability-service",
-			"--force-device-scale-factor=1",
+			"--force-device-scale-factor=2",
 			"--js-flags=jitless",
 			"--content-shell-hide-toolbar",
 			"--force-gpu-mem-available-mb=40",
