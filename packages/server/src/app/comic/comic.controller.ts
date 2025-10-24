@@ -104,7 +104,7 @@ export class ComicHandler {
 			page
 		);
 		if (!f) {
-			this.queueLock.acquire();
+			await this.queueLock.acquire();
 			try {
 				const res = await fetch(image);
 				if (res.ok) {
