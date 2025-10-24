@@ -2,9 +2,8 @@ import { reactive, ref, toRef, watch, type Ref } from "@puraty/reactivity";
 import type { InstalledSourceDetail } from "@puraty/server";
 
 import api from "@/api";
-import { Alert } from "@/components/Alert";
+import { Prompt, Alert } from "@/components";
 import { Checkbox, Input, Select } from "@/components/InputModel";
-import { Prompt } from "@/components/Prompt";
 import { getCurrentRoute } from "@/router";
 
 import style from "./config.module.css";

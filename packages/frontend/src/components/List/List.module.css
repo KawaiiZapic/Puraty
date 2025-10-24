@@ -1,0 +1,9 @@
+.listItem {
+	padding: 1rem 0.5rem;
+}
+
+.listWrapper {
+	margin: 0;
+	list-style: none;
+	padding: 0;
+}

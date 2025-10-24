@@ -1,21 +1,17 @@
 import api from "@/api";
+import { List, ListItem } from "@/components";
 import { getCurrentRoute } from "@/router";
-import { RouterLink } from "@/router/RouterLink";
 
 export default () => {
 	const route = getCurrentRoute();
 	const id = route?.data?.id;
-	const root = <div></div>;
+	const root = <List></List>;
 	(async () => {
 		if (!id) return;
 		const detail = await api.ComicSource.get(id);
 		detail.explore?.forEach(e => {
 			root.appendChild(
-				<div>
-					<RouterLink href={`/comic/${id}/explore/${e.id}`}>
-						{e.title}
-					</RouterLink>
-				</div>
+				<ListItem href={`/comic/${id}/explore/${e.id}`}>{e.title}</ListItem>
 			);
 		});
 	})();

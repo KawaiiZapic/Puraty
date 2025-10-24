@@ -1,16 +1,14 @@
 import api from "@/api";
-import { RouterLink } from "@/router/RouterLink";
+import { List, ListItem } from "@/components";
 
 export default () => {
 	api.ComicSource.list().then(source => {
 		source.forEach(item => {
 			el.appendChild(
-				<div>
-					<RouterLink href={"/source/" + item.key}>{item.name}</RouterLink>
-				</div>
+				<ListItem href={"/source/" + item.key}>{item.name}</ListItem>
 			);
 		});
 	});
-	const el = <div></div>;
+	const el = <List></List>;
 	return el;
 };
