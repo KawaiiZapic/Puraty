@@ -5,7 +5,7 @@ import ImageFilled from "@sicons/material/ImageFilled.svg";
 
 import api from "@/api";
 import LoadingWrapper from "@/components/LoadingWrapper";
-import { getCurrentRoute } from "@/router";
+import { getCurrentRoute, router } from "@/router";
 
 import style from "./detail.module.css";
 
@@ -51,10 +51,14 @@ const DetailMeta = ({ comic }: { comic: ComicDetails }) => {
 	return root;
 };
 
-const DetailHeader = (sourceId: string, comic: ComicDetails) => {
+const DetailHeader = (
+	sourceId: string,
+	comicId: string,
+	comic: ComicDetails
+) => {
 	return (
 		<div class={style.comicHeaderWrapper}>
-			<img src={api.proxy(sourceId, comic.cover)}></img>
+			<img src={api.proxy(sourceId, comic.cover, comicId)}></img>
 			<div class={style.comicHeaderRight}>
 				<div class={style.comicHeaderTitle}>{comic.title}</div>
 				<div class={style.comicHeaderSub}>
@@ -63,7 +67,7 @@ const DetailHeader = (sourceId: string, comic: ComicDetails) => {
 				<DetailMeta comic={comic} />
 				<div style="flex-grow: 1;"></div>
 				<div>
-					<button>阅读</button>
+					<button onClick={() => openManga(comic)}>阅读</button>
 				</div>
 			</div>
 		</div>
@@ -94,15 +98,18 @@ const DetailTags = (tags?: Record<string, string[]>) => {
 	return <div> {r} </div>;
 };
 
-const DetailChapters = (chapters: Record<string, string>) => {
+const DetailChapters = (comic: ComicDetails) => {
 	const list = <div class={style.comicChapterList}></div>;
-	for (const chapter in chapters) {
+	const chapterList = comic.chapters as Record<string, string>;
+	if (!chapterList) return list;
+	for (const chapter in chapterList) {
 		list.appendChild(
 			<div
 				class={[style.comicChapterItem, "clickable-item"]}
 				data-chapter={chapter}
+				onClick={() => openManga(comic, chapter)}
 			>
-				{chapters[chapter]}
+				{chapterList[chapter]}
 			</div>
 		);
 	}
@@ -128,10 +135,27 @@ const DetailDetails = (comic: ComicDetails) => {
 	}
 
 	if (comic.chapters) {
-		root.appendChild(DetailChapters(comic.chapters));
+		root.appendChild(DetailChapters(comic));
 	}
 
 	return root;
+};
+
+const openManga = (comic: ComicDetails, _chapter?: string) => {
+	const route = getCurrentRoute();
+	const id = route?.data?.id;
+	const comicId = route?.data?.comicId;
+	let chapter = _chapter;
+	if (!chapter) {
+		if (!comic.chapters) {
+			chapter = "1";
+		} else {
+			chapter = Object.keys(comic.chapters)[0];
+		}
+	}
+	router.navigate(
+		`/comic/${id}/manga/${encodeURIComponent(comicId!)}/${chapter}`
+	);
 };
 
 export default () => {
@@ -145,7 +169,7 @@ export default () => {
 				return;
 			}
 			const data = await api.Comic.detail(id, comicId);
-			root.appendChild(DetailHeader(id, data));
+			root.appendChild(DetailHeader(id, comicId, data));
 			root.appendChild(DetailDetails(data));
 			state.loading = false;
 		} catch (_) {

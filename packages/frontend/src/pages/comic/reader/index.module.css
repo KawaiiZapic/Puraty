@@ -1,0 +1,6 @@
+.image {
+	width: 100%;
+	height: calc(100vh - 128px);
+	object-fit: contain;
+	object-position: center;
+}

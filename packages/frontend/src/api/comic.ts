@@ -8,5 +8,10 @@ export const Comic = {
 	},
 	detail(id: string, comicId: string) {
 		return Req.get(`/api/comic/${id}/manga/${encodeURIComponent(comicId)}`);
+	},
+	pages(id: string, comicId: string, chapter?: string) {
+		return Req.get(
+			`/api/comic/${id}/manga/${encodeURIComponent(comicId)}/${chapter}`
+		);
 	}
 } satisfies ComicHandler;

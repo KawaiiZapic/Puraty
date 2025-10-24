@@ -13,10 +13,11 @@ export class ComicService {
 		source: string,
 		url: string,
 		comicId?: string,
-		chapter?: string
+		chapter?: string,
+		page?: string
 	) {
 		const hash = CryptoJS.SHA1(
-			`${source}_${comicId ?? ""}_${chapter ?? ""}_${url}`
+			`${source}_${comicId ?? ""}_${chapter ?? ""}_${page ?? ""}`
 		).toString(CryptoJS.enc.Hex);
 		const h2 = hash.substring(0, 2);
 		const file = path.join(APP_DIR, "cache", h2, hash + getExt(url));
@@ -36,10 +37,11 @@ export class ComicService {
 		source: string,
 		url: string,
 		comicId?: string,
-		chapter?: string
+		chapter?: string,
+		page?: string
 	) {
 		const hash = CryptoJS.SHA1(
-			`${source}_${comicId ?? ""}_${chapter ?? ""}_${url}`
+			`${source}_${comicId ?? ""}_${chapter ?? ""}_${page ?? ""}`
 		).toString(CryptoJS.enc.Hex);
 		const h2 = hash.substring(0, 2);
 		const file = path.join(APP_DIR, "cache", h2, hash + getExt(url));

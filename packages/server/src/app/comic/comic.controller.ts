@@ -93,9 +93,16 @@ export class ComicHandler {
 		@Required @Query("source") source: string,
 		@Query("comicId") comicId: string,
 		@Query("epId") epId: string,
+		@Query("page") page: string,
 		@Required @Query("image") image: string
 	) {
-		const f = await ComicService.getImageCache(source, image, comicId, epId);
+		const f = await ComicService.getImageCache(
+			source,
+			image,
+			comicId,
+			epId,
+			page
+		);
 		if (!f) {
 			this.queueLock.acquire();
 			try {
@@ -108,7 +115,8 @@ export class ComicHandler {
 						source,
 						image,
 						comicId,
-						epId
+						epId,
+						page
 					);
 					return new Response(buffer, {
 						status: 200,

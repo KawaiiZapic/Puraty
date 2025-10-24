@@ -14,7 +14,7 @@ const ComicItem = ({ comic, sourceId }: { comic: Comic; sourceId: string }) => {
 			<div class={[style.comicItemWrapper, "clickable-item"]}>
 				<img
 					class={style.comicItemImage}
-					src={api.proxy(sourceId, comic.cover)}
+					src={api.proxy(sourceId, comic.cover, comic.id)}
 				></img>
 				<div class={style.comicItemMeta}>
 					<div class={style.comicItemTitle}>{comic.title}</div>

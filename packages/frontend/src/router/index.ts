@@ -3,6 +3,7 @@ import Navigo, { type Match } from "navigo";
 
 import ComicDetail from "@/pages/comic/detail";
 import ComicExplore from "@/pages/comic/explore";
+import ComicReader from "@/pages/comic/reader";
 import ComicSourceDetail from "@/pages/comic-source/explore-list";
 import main from "@/pages/main";
 import SettingsIndex from "@/pages/settings";
@@ -70,6 +71,10 @@ const routes: RouteRecord[] = [
 	{
 		path: "/comic/:id/manga/:comicId",
 		component: ComicDetail
+	},
+	{
+		path: "/comic/:id/manga/:comicId/:chapter",
+		component: ComicReader
 	}
 ];
 const addRoutes = (routes: RouteRecord[], parents?: RouteRecord[]) => {

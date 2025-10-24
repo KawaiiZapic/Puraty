@@ -108,12 +108,19 @@ export default {
 	Command,
 	ComicSource,
 	Comic,
-	proxy(source: string, url: string, comicId?: string, epId?: string) {
+	proxy(
+		source: string,
+		url: string,
+		comicId: string,
+		epId?: string,
+		page?: string
+	) {
 		const params = new URLSearchParams({
 			source,
 			comicId: comicId ?? "",
 			image: url,
-			epId: epId ?? ""
+			epId: epId ?? "",
+			page: page ?? ""
 		});
 		return "/api/comic/image?" + params;
 	},
