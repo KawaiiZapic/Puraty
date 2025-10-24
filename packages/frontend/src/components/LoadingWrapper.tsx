@@ -1,4 +1,4 @@
-import { computed, reactive, toRef, watch } from "@puraty/reactivity";
+import { computed, reactive, toRef } from "@puraty/reactivity";
 
 export default (onRetry: () => void) => {
 	const state = reactive({

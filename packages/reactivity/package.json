@@ -23,8 +23,11 @@
 		"lint-staged": "lint-staged"
 	},
 	"lint-staged": {
-		"**/*.{js,ts,json}": [
-			"eslint --fix --cache",
+		"**/*.{js,ts}": [
+			"eslint --fix --cache --max-warnings=0",
+			"prettier --write"
+		],
+		"**/*.json": [
 			"prettier --write"
 		]
 	}
