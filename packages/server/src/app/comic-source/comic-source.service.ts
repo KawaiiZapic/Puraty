@@ -47,6 +47,16 @@ export class ComicSourceService {
 			);
 			const source = (await import(path.join(dir, `${id}.js`))).default;
 			const s: ComicSource = new source();
+			if (typeof s.settings === "object") {
+				s.settings = new Proxy(s.settings, {
+					get(target, key) {
+						return target[key as never];
+					},
+					set() {
+						return true;
+					}
+				});
+			}
 			ComicSourceService._instances[id] = s;
 			try {
 				await s.init?.();
