@@ -1,14 +1,19 @@
 import api from "@/api";
-import { List, ListItem } from "@/components";
+import { List, ListItem, ListTitle } from "@/components";
 
 export default () => {
 	api.ComicSource.list().then(source => {
 		source.forEach(item => {
-			el.appendChild(
+			comicSourceList.appendChild(
 				<ListItem href={"/source/" + item.key}>{item.name}</ListItem>
 			);
 		});
 	});
-	const el = <List></List>;
+	const comicSourceList = (
+		<List>
+			<ListTitle>探索</ListTitle>
+		</List>
+	);
+	const el = <div>{comicSourceList}</div>;
 	return el;
 };

@@ -30,3 +30,7 @@ export const ListItem = (attr: ListItemProps) => {
 		</li>
 	);
 };
+
+export const ListTitle = (attr: BaseProps) => {
+	return <div class={style.listTitle}>{attr.children}</div>;
+};
