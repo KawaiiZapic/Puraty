@@ -11,6 +11,12 @@ export default () => {
 			>
 				管理漫画源
 			</RouterLink>
+			<RouterLink
+				href="/settings/cache"
+				class={[style.listItem, "clickable-item"]}
+			>
+				管理缓存
+			</RouterLink>
 		</div>
 	);
 };

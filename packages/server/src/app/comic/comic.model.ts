@@ -16,3 +16,10 @@ export type ExplorePageResult =
 	| _ExplorePageResult<MixedExplorePage>
 	| _ExplorePageResult<MPCLExplorePage>
 	| _ExplorePageResult<SPWMPExplorePage>;
+
+export interface ComicCacheItem {
+	id: string;
+	lastAccess: number;
+	size: number;
+	referenceCount: number;
+}

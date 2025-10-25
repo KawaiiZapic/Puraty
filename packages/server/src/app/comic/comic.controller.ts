@@ -2,10 +2,18 @@ import { HTTPError } from "h3";
 import path from "tjs:path";
 
 import { ComicSourceService } from "@/app/comic-source/comic-source.service";
-import { Controller, Get, Path, Query, Required } from "@/utils/decorators";
+import {
+	Controller,
+	Delete,
+	Get,
+	Path,
+	Query,
+	Required
+} from "@/utils/decorators";
 import { QueueLock } from "@/utils/QueueLock";
 import type { ComicDetails } from "@/venera-lib";
 
+import { ComicCache } from "./comic.db";
 import type { ExplorePageResult } from "./comic.model";
 import { ComicService } from "./comic.service";
 
@@ -106,8 +114,17 @@ export class ComicHandler {
 		if (!f) {
 			await this.queueLock.acquire();
 			try {
-				const res = await fetch(image);
-				if (res.ok) {
+				let res: Response | undefined = undefined;
+				let retry = 0;
+				while (!res && retry < 3) {
+					try {
+						res = await fetch(image);
+					} catch (e) {
+						retry++;
+						console.error(e);
+					}
+				}
+				if (res?.ok) {
 					const buffer = await res.arrayBuffer();
 					const ubuffer = new Uint8Array(buffer);
 					await ComicService.saveImageCache(
@@ -144,5 +161,29 @@ export class ComicHandler {
 			});
 			return resp;
 		}
+	}
+	@Get("/image/cache")
+	async cache() {
+		const size = ComicCache.totalSize();
+		const D3 = ComicCache.sizeBetweenDate(Date.now() - 1000 * 60 * 60 * 24 * 3);
+		const D7 = ComicCache.sizeBetweenDate(Date.now() - 1000 * 60 * 60 * 24 * 7);
+		const D30 = ComicCache.sizeBetweenDate(
+			Date.now() - 1000 * 60 * 60 * 24 * 30
+		);
+		const D365 = ComicCache.sizeBetweenDate(
+			Date.now() - 1000 * 60 * 60 * 24 * 365
+		);
+		return {
+			size,
+			D3,
+			D7,
+			D30,
+			D365
+		};
+	}
+
+	@Delete("/image/cache")
+	async cleanCache(@Required @Query("before") before: string) {
+		await ComicService.cleanCache(parseInt(before));
 	}
 }

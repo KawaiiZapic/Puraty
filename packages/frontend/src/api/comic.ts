@@ -13,5 +13,11 @@ export const Comic = {
 		return Req.get(
 			`/api/comic/${id}/manga/${encodeURIComponent(comicId)}/${chapter}`
 		);
+	},
+	cache() {
+		return Req.get("/api/comic/image/cache");
+	},
+	cleanCache(before: number) {
+		return Req.delete("/api/comic/image/cache", { before });
 	}
 } satisfies ComicHandler;

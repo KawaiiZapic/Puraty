@@ -7,6 +7,7 @@ import ComicReader from "@/pages/comic/reader";
 import ComicSourceDetail from "@/pages/comic-source/explore-list";
 import main from "@/pages/main";
 import SettingsIndex from "@/pages/settings";
+import ComicCache from "@/pages/settings/cache";
 import ComicSourceList from "@/pages/settings/comic-source";
 import ComicSourceConfig from "@/pages/settings/comic-source/config";
 
@@ -51,6 +52,10 @@ const routes: RouteRecord[] = [
 	{
 		path: "/settings",
 		component: SettingsIndex
+	},
+	{
+		path: "/settings/cache",
+		component: ComicCache
 	},
 	{
 		path: "/settings/comic-sources",
