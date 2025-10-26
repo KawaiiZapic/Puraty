@@ -1,7 +1,18 @@
+import path from "tjs:path";
+
 import { env } from "./env";
 
-export const launchUI = (signal?: AbortSignal) => {
-	if (env.DEV) return;
+const exists = async (path: string) => {
+	try {
+		await tjs.stat(path);
+		return true;
+	} catch {
+		return false;
+	}
+};
+
+export const launchUI = async (signal?: AbortSignal) => {
+	if (env.DEV || (await exists(path.join(APP_DIR, "browser.pid")))) return;
 	runWmctrl();
 	const p = tjs.spawn(
 		[
@@ -45,13 +56,16 @@ export const launchUI = (signal?: AbortSignal) => {
 	signal?.addEventListener("abort", () => {
 		p.kill();
 	});
+	const f = await tjs.open(path.join(APP_DIR, "browser.pid"), "w");
+	await f.write(new TextEncoder().encode(p.pid.toString()));
+	await f.close();
 	return p;
 };
 
 export const runWmctrl = () => {
 	const int = setInterval(() => {
 		tjs.spawn([
-			"/mnt/us/extensions/Puraty/bin/wmctrl",
+			path.join(APP_DIR, "..", "bin/wmctrl"),
 			"-r",
 			"L:A_N:application_PC:TS_ID:com.lab126.browser_WT:true",
 			"-N",
