@@ -7,3 +7,11 @@ globalThis.fetch = async function (...args) {
 	};
 	return res;
 };
+
+globalThis.AbortSignal.timeout = (timeout: number) => {
+	const ab = new AbortController();
+	setTimeout(() => {
+		ab.abort();
+	}, timeout);
+	return ab.signal;
+};

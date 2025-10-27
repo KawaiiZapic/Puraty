@@ -81,7 +81,7 @@ export class ComicCache extends BaseDB {
 
 	static insert(id: string, size: number): void {
 		const st = this.db.prepare(
-			"INSERT INTO comic_cache (id, lastAccess, size, referenceCount) VALUES (?, ?, ?, ?);"
+			"INSERT OR REPLACE INTO comic_cache (id, lastAccess, size, referenceCount) VALUES (?, ?, ?, ?);"
 		);
 		st.run(id, Date.now(), size, 0);
 		st.finalize();

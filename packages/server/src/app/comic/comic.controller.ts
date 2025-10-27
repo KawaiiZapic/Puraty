@@ -104,21 +104,23 @@ export class ComicHandler {
 		@Query("page") page: string,
 		@Required @Query("image") image: string
 	) {
-		const f = await ComicService.getImageCache(
-			source,
-			image,
-			comicId,
-			epId,
-			page
-		);
-		if (!f) {
-			await this.queueLock.acquire();
-			try {
+		await this.queueLock.acquire();
+		try {
+			const f = await ComicService.getImageCache(
+				source,
+				image,
+				comicId,
+				epId,
+				page
+			);
+			if (!f) {
 				let res: Response | undefined = undefined;
 				let retry = 0;
 				while (!res && retry < 3) {
 					try {
-						res = await fetch(image);
+						res = await fetch(image, {
+							signal: AbortSignal.timeout(30000)
+						});
 					} catch (e) {
 						retry++;
 						console.error(e);
@@ -148,18 +150,18 @@ export class ComicHandler {
 						{ status: 500 }
 					);
 				}
-			} finally {
-				this.queueLock.release();
+			} else {
+				const resp = new Response(f.readable, {
+					status: 200,
+					headers: {
+						"content-type": "image/" + path.extname(f.path).substring(1),
+						"content-length": (await f.stat()).size.toString()
+					}
+				});
+				return resp;
 			}
-		} else {
-			const resp = new Response(f.readable, {
-				status: 200,
-				headers: {
-					"content-type": "image/" + path.extname(f.path).substring(1),
-					"content-length": (await f.stat()).size.toString()
-				}
-			});
-			return resp;
+		} finally {
+			this.queueLock.release();
 		}
 	}
 	@Get("/image/cache")
