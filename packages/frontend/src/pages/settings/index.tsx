@@ -1,3 +1,4 @@
+import api from "@/api";
 import { RouterLink } from "@/router/RouterLink";
 
 import style from "./index.module.css";
@@ -17,6 +18,12 @@ export default () => {
 			>
 				管理缓存
 			</RouterLink>
+			<div
+				onClick={() => api.Command.exit()}
+				class={[style.listItem, "clickable-item"]}
+			>
+				退出 Puraty
+			</div>
 		</div>
 	);
 };

@@ -1,4 +1,4 @@
-const TOP_BAR_HEIGHT = 124;
+const TOP_BAR_HEIGHT = 100;
 
 export const handleSwipe = ($: HTMLElement) => {
 	const scrollIndicator = (
@@ -15,7 +15,10 @@ export const handleSwipe = ($: HTMLElement) => {
 	});
 	let lastScrollHeight = 0;
 	let scrollThumbHeight = 0;
-	const elementHeight = $.getBoundingClientRect().height - TOP_BAR_HEIGHT;
+	let elementHeight = $.getBoundingClientRect().height - TOP_BAR_HEIGHT;
+	window.addEventListener("resize", () => {
+		elementHeight = $.getBoundingClientRect().height - TOP_BAR_HEIGHT;
+	});
 	setInterval(() => {
 		if (lastScrollHeight === $.scrollHeight) return;
 		lastScrollHeight = $.scrollHeight;
@@ -71,7 +74,7 @@ export const handleSwipe = ($: HTMLElement) => {
 			const availableMoveSpace = elementHeight - scrollThumbHeight;
 			scrollIndicator.style.setProperty(
 				"--scroll-top",
-				124 +
+				TOP_BAR_HEIGHT +
 					($.scrollTop / (lastScrollHeight - elementHeight - TOP_BAR_HEIGHT)) *
 						availableMoveSpace +
 					"px"

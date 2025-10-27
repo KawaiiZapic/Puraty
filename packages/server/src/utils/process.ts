@@ -13,7 +13,6 @@ const exists = async (path: string) => {
 
 export const launchUI = async (signal?: AbortSignal) => {
 	if (env.DEV || (await exists(path.join(APP_DIR, "browser.pid")))) return;
-	runWmctrl();
 	const p = tjs.spawn(
 		[
 			"/usr/bin/chromium/bin/kindle_browser",
@@ -62,17 +61,32 @@ export const launchUI = async (signal?: AbortSignal) => {
 	return p;
 };
 
-export const runWmctrl = () => {
-	const int = setInterval(() => {
+export const findUIWindowId = async () => {
+	const finder = tjs.spawn([path.join(APP_DIR, "..", "bin/wmctrl"), "-l"], {
+		stdout: "pipe"
+	});
+	if (!finder.stdout) return undefined;
+	const buf = new Uint8Array(1024);
+	await finder.stdout.read(buf);
+	const lines = new TextDecoder().decode(buf).split("\n");
+	return lines
+		.find(line => line.includes("com.lab126.browser"))
+		?.split(" ")?.[0];
+};
+
+export const runWmctrl = async () => {
+	const id = await findUIWindowId();
+	console.log(id);
+	if (!id) return;
+	for (let i = 0; i < 10; i++) {
 		tjs.spawn([
 			path.join(APP_DIR, "..", "bin/wmctrl"),
+			"-i",
 			"-r",
-			"L:A_N:application_PC:TS_ID:com.lab126.browser_WT:true",
+			id,
 			"-N",
 			"L:A_N:application_ID:com.lab126.browser_WT:true"
 		]);
-	}, 500);
-	setTimeout(() => {
-		clearInterval(int);
-	}, 10000);
+		await new Promise(res => setTimeout(res, 100));
+	}
 };

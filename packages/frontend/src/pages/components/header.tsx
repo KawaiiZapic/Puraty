@@ -1,9 +1,7 @@
 import { ref } from "@puraty/reactivity";
 import ChevronLeftFilled from "@sicons/material/ChevronLeftFilled.svg";
-import CloseFilled from "@sicons/material/CloseFilled.svg";
 import SettingsFilled from "@sicons/material/SettingsFilled.svg";
 
-import api from "@/api";
 import { lastMatched, router } from "@/router";
 import { RouterLink } from "@/router/RouterLink";
 
@@ -11,33 +9,42 @@ import style from "./header.module.css";
 
 export default () => {
 	const toHome = () => {
-		if (isBack) {
-			if (history.length === 0) {
-				router.navigate("/");
-			} else {
-				history.go(-1);
-			}
+		if (history.length === 0) {
+			router.navigate("/");
 		} else {
-			api.Command.exit();
+			history.go(-1);
 		}
 	};
 	let isBack = false;
-	const backIconUrl = ref(CloseFilled);
+	const hideOnHome = ref("");
+	const hideOnNotHome = ref("");
 	const onRouteUpdate = () => {
 		isBack = lastMatched?.path !== "/";
 		if (isBack) {
-			backIconUrl.value = ChevronLeftFilled;
+			hideOnNotHome.value = "display: none";
+			hideOnHome.value = "";
 		} else {
-			backIconUrl.value = CloseFilled;
+			hideOnHome.value = "display: none";
+			hideOnNotHome.value = "";
 		}
 	};
 	window.addEventListener("route-update", onRouteUpdate);
 	onRouteUpdate();
 	return (
 		<div class={style.wrapper}>
-			<div onClick={toHome} class={[style.iconBtn, "clickable-item"]}>
-				<img src={backIconUrl}></img>
+			<div
+				onClick={toHome}
+				class={[style.iconBtn, "clickable-item"]}
+				style={hideOnHome}
+			>
+				<img src={ChevronLeftFilled}></img>
 			</div>
+			<input
+				class={style.searchBar}
+				placeholder="搜索"
+				style={hideOnNotHome}
+			></input>
+			<div class={style.searchBarPlaceholder} style={hideOnHome}></div>
 			<RouterLink href="/settings" class={[style.iconBtn, "clickable-item"]}>
 				<img src={SettingsFilled}></img>
 			</RouterLink>

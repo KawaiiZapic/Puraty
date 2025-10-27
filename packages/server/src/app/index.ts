@@ -2,12 +2,12 @@ import { H3, HTTPError } from "h3";
 import { serve } from "h3-txikijs-adapter";
 import path from "tjs:path";
 
-import { initializeHandlers } from "@/utils/decorators";
-
 import "./comic-source/comic-source.controller";
 import "./comic/comic.controller";
 import "./commands/commands.controller";
 import "./misc/misc.controller";
+import { initializeHandlers } from "@/utils/decorators";
+import { runWmctrl } from "@/utils/process";
 
 const assertBase = "./frontend";
 const serveStatic = async (fp: string) => {
@@ -31,6 +31,7 @@ export class App {
 		this.app = new H3();
 
 		this.app.get("/", async e => {
+			runWmctrl();
 			e.res.headers.set("content-type", "text/html");
 			const { body, size } = await serveStatic("index.html");
 			e.res.headers.set("content-length", size);

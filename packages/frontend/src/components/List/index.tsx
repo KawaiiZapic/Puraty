@@ -4,8 +4,12 @@ import { router } from "@/router";
 
 import style from "./List.module.css";
 
-export const List = (attr: BaseProps) => {
-	return <ul class={style.listWrapper}>{attr.children}</ul>;
+export const List = (attr: BaseProps & { withIcon?: boolean }) => {
+	return (
+		<ul class={[style.listWrapper, attr.withIcon && style.listWithIcon]}>
+			{attr.children}
+		</ul>
+	);
 };
 
 interface ListItemProps extends BaseProps {
@@ -33,4 +37,8 @@ export const ListItem = (attr: ListItemProps) => {
 
 export const ListTitle = (attr: BaseProps) => {
 	return <div class={style.listTitle}>{attr.children}</div>;
+};
+
+export const ListIcon = (attr: { icon: string }) => {
+	return <img src={attr.icon} class={style.listIcon}></img>;
 };

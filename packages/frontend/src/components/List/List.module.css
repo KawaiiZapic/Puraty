@@ -1,5 +1,9 @@
 .listItem {
-	padding: 1rem 0.5rem;
+	padding: 1rem 0.75rem;
+}
+
+.listWithIcon .listItem {
+	padding-left: 1rem;
 }
 
 .listWrapper {
@@ -9,6 +13,19 @@
 }
 
 .listTitle {
-	font-size: 1.5rem;
-	padding: 0.75rem 0.5rem;
+	font-size: 1.25rem;
+	padding: 0.75rem 0.25rem;
+	margin: 0 0.5rem;
+	display: flex;
+	border-bottom: 3px solid #ccc;
+}
+
+.listTitle:first-child {
+	padding-top: 0.5rem;
+}
+
+.listIcon {
+	margin-right: 0.5rem;
+	width: 1.25rem;
+	height: 1.25rem;
 }

@@ -1,5 +1,7 @@
+import ExploreOutlined from "@sicons/material/ExploreOutlined.svg";
+
 import api from "@/api";
-import { List, ListItem, ListTitle } from "@/components";
+import { List, ListIcon, ListItem, ListTitle } from "@/components";
 
 export default () => {
 	api.ComicSource.list().then(source => {
@@ -10,8 +12,10 @@ export default () => {
 		});
 	});
 	const comicSourceList = (
-		<List>
-			<ListTitle>探索</ListTitle>
+		<List withIcon>
+			<ListTitle>
+				<ListIcon icon={ExploreOutlined}></ListIcon>探索
+			</ListTitle>
 		</List>
 	);
 	const el = <div>{comicSourceList}</div>;
