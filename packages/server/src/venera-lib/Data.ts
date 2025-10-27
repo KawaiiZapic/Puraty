@@ -1,14 +1,3 @@
-const mapConvertor = <T>(input: T): Record<string, never> => {
-	if (input instanceof Map) {
-		const r: Record<string, T> = {};
-		input.forEach((v, k) => {
-			r[k] = v;
-		});
-		return r as Record<string, never>;
-	}
-	return input as Record<string, never>;
-};
-
 export class Comic {
 	public id: string;
 	public title: string;
@@ -54,8 +43,8 @@ export class ComicDetails {
 	public subTitle?: string;
 	public cover: string;
 	public description?: string;
-	public tags?: Record<string, string[]>;
-	public chapters?: Record<string, string>;
+	public tags?: Record<string, string[] | string>;
+	public chapters?: Record<string, string | Record<string, string>>;
 	public isFavorite?: boolean;
 	public subId?: string;
 	public thumbnails?: string[];
@@ -98,8 +87,8 @@ export class ComicDetails {
 		this.subtitle = subtitle ?? subTitle;
 		this.cover = cover;
 		this.description = description;
-		this.tags = mapConvertor(tags);
-		this.chapters = mapConvertor(chapters);
+		this.tags = tags;
+		this.chapters = chapters;
 		this.isFavorite = isFavorite;
 		this.subId = subId;
 		this.thumbnails = thumbnails;

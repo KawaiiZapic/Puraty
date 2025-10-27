@@ -87,31 +87,47 @@ const TagGroup = (name: string, tags: string[]) => {
 	) as HTMLElement;
 };
 
-const DetailTags = (tags?: Record<string, string[]>) => {
+const DetailTags = (tags?: Record<string, string[] | string>) => {
 	if (!tags) {
 		return <div></div>;
 	}
 	const r: Element[] = [];
 	for (const group in tags) {
-		r.push(TagGroup(group, tags[group]));
+		r.push(
+			TagGroup(group, Array.isArray(tags[group]) ? tags[group] : [tags[group]])
+		);
 	}
 	return <div> {r} </div>;
 };
 
 const DetailChapters = (comic: ComicDetails) => {
 	const list = <div class={style.comicChapterList}></div>;
-	const chapterList = comic.chapters as Record<string, string>;
+	const chapterList = comic.chapters!;
 	if (!chapterList) return list;
 	for (const chapter in chapterList) {
-		list.appendChild(
-			<div
-				class={[style.comicChapterItem, "clickable-item"]}
-				data-chapter={chapter}
-				onClick={() => openManga(comic, chapter)}
-			>
-				{chapterList[chapter]}
-			</div>
-		);
+		if (typeof chapterList[chapter] === "string") {
+			list.appendChild(
+				<div
+					class={[style.comicChapterItem, "clickable-item"]}
+					data-chapter={chapter}
+					onClick={() => openManga(comic, chapter)}
+				>
+					{chapterList[chapter]}
+				</div>
+			);
+		} else {
+			for (const subChapter in chapterList[chapter]) {
+				list.appendChild(
+					<div
+						class={[style.comicChapterItem, "clickable-item"]}
+						data-chapter={subChapter}
+						onClick={() => openManga(comic, subChapter)}
+					>
+						{chapter} - {chapterList[chapter][subChapter]}
+					</div>
+				);
+			}
+		}
 	}
 	return (
 		<div>
@@ -150,7 +166,7 @@ const openManga = (comic: ComicDetails, _chapter?: string) => {
 		if (!comic.chapters) {
 			chapter = "1";
 		} else {
-			chapter = Object.keys(comic.chapters)[0];
+			chapter = Object.keys(comic.chapters)[0] ?? "1";
 		}
 	}
 	router.navigate(

@@ -15,3 +15,21 @@ globalThis.AbortSignal.timeout = (timeout: number) => {
 	}, timeout);
 	return ab.signal;
 };
+
+declare global {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	interface Map<K, V> {
+		toJSON(): Record<string, unknown>;
+	}
+}
+
+globalThis.Map.prototype.toJSON = function () {
+	const r: Record<string, unknown> = {};
+	for (const [k, v] of this) {
+		if (typeof k !== "string") return {};
+		r[k] = v;
+	}
+	return r;
+};
+
+export {};

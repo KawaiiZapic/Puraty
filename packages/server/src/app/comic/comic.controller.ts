@@ -61,7 +61,7 @@ export class ComicHandler {
 				...(await source.comic.loadInfo(decodeURIComponent(comicId)))
 			} as ComicDetails;
 			if (r.tags) {
-				const translateTags: Record<string, string[]> = {};
+				const translateTags: Record<string, string[] | string> = {};
 				for (const tag in r.tags) {
 					translateTags[source.translate(tag)] = r.tags[tag];
 				}
