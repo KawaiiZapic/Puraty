@@ -1,6 +1,7 @@
 import type { Comic } from "@puraty/server";
 
 import api from "@/api";
+import { LazyImg } from "@/components/LazyImg";
 import { getCurrentRoute } from "@/router";
 import { RouterLink } from "@/router/RouterLink";
 
@@ -12,10 +13,10 @@ const ComicItem = ({ comic, sourceId }: { comic: Comic; sourceId: string }) => {
 			href={`/comic/${sourceId}/manga/${encodeURIComponent(comic.id)}`}
 		>
 			<div class={[style.comicItemWrapper, "clickable-item"]}>
-				<img
+				<LazyImg
 					class={style.comicItemImage}
 					src={api.proxy(sourceId, comic.cover, comic.id)}
-				></img>
+				></LazyImg>
 				<div class={style.comicItemMeta}>
 					<div class={style.comicItemTitle}>{comic.title}</div>
 					<div class={style.comicItemSubtitle}>

@@ -9,6 +9,10 @@ export const handleSwipe = ($: HTMLElement) => {
 		</div>
 	) as HTMLElement;
 	$.appendChild(scrollIndicator);
+	Object.assign($.style, {
+		overflow: "hidden",
+		maxHeight: "100vh"
+	});
 	let lastScrollHeight = 0;
 	let scrollThumbHeight = 0;
 	const elementHeight = $.getBoundingClientRect().height - TOP_BAR_HEIGHT;

@@ -12,10 +12,9 @@ html {
 	font-size: 36px;
 	padding-top: 124px;
 	font-family: STHeiti;
-	height: 100vh;
-	overflow: hidden;
 	box-sizing: border-box;
 	user-select: none;
+	height: 100vh;
 }
 
 .clickable-item,

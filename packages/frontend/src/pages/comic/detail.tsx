@@ -4,6 +4,7 @@ import FileUploadFilled from "@sicons/material/FileUploadFilled.svg";
 import ImageFilled from "@sicons/material/ImageFilled.svg";
 
 import api from "@/api";
+import { LazyImg } from "@/components/LazyImg";
 import LoadingWrapper from "@/components/LoadingWrapper";
 import { getCurrentRoute, router } from "@/router";
 
@@ -58,7 +59,7 @@ const DetailHeader = (
 ) => {
 	return (
 		<div class={style.comicHeaderWrapper}>
-			<img src={api.proxy(sourceId, comic.cover, comicId)}></img>
+			<LazyImg src={api.proxy(sourceId, comic.cover, comicId)}></LazyImg>
 			<div class={style.comicHeaderRight}>
 				<div class={style.comicHeaderTitle}>{comic.title}</div>
 				<div class={style.comicHeaderSub}>
