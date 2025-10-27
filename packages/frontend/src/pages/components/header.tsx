@@ -7,6 +7,9 @@ import { RouterLink } from "@/router/RouterLink";
 
 import style from "./header.module.css";
 
+const title = ref("");
+export const setTitle = (v: string) => (title.value = v);
+
 export default () => {
 	const toHome = () => {
 		if (history.length === 0) {
@@ -19,6 +22,8 @@ export default () => {
 	const hideOnHome = ref("");
 	const hideOnNotHome = ref("");
 	const onRouteUpdate = () => {
+		title.value = lastMatched?.title || "";
+		const isFullScreen = lastMatched?.fullscreen ?? false;
 		isBack = lastMatched?.path !== "/";
 		if (isBack) {
 			hideOnNotHome.value = "display: none";
@@ -26,6 +31,11 @@ export default () => {
 		} else {
 			hideOnHome.value = "display: none";
 			hideOnNotHome.value = "";
+		}
+		if (!isFullScreen) {
+			document.documentElement.classList.remove("fullscreen");
+		} else {
+			document.documentElement.classList.add("fullscreen");
 		}
 	};
 	window.addEventListener("route-update", onRouteUpdate);
@@ -44,7 +54,9 @@ export default () => {
 				placeholder="搜索"
 				style={hideOnNotHome}
 			></input>
-			<div class={style.searchBarPlaceholder} style={hideOnHome}></div>
+			<div class={style.pageTitle} style={hideOnHome}>
+				{title}
+			</div>
 			<RouterLink href="/settings" class={[style.iconBtn, "clickable-item"]}>
 				<img src={SettingsFilled}></img>
 			</RouterLink>

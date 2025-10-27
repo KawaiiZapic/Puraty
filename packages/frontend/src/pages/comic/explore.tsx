@@ -1,5 +1,6 @@
 import type { Comic } from "@puraty/server";
 
+import { setTitle } from "../components/header";
 import api from "@/api";
 import { LazyImg } from "@/components/LazyImg";
 import { getCurrentRoute } from "@/router";
@@ -46,6 +47,7 @@ export default () => {
 	(async () => {
 		if (!id || !explore) return;
 		const detail = await api.Comic.explore(id, explore);
+		setTitle(detail.title);
 		if (detail.type === "multiPageComicList") {
 			detail.data.comics.forEach(comic => {
 				root.appendChild(<ComicItem sourceId={id} comic={comic}></ComicItem>);

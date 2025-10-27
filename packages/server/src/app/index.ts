@@ -7,7 +7,7 @@ import "./comic/comic.controller";
 import "./commands/commands.controller";
 import "./misc/misc.controller";
 import { initializeHandlers } from "@/utils/decorators";
-import { runWmctrl } from "@/utils/process";
+import { requestExitFullscreen } from "@/utils/process";
 
 const assertBase = "./frontend";
 const serveStatic = async (fp: string) => {
@@ -31,7 +31,7 @@ export class App {
 		this.app = new H3();
 
 		this.app.get("/", async e => {
-			runWmctrl();
+			requestExitFullscreen();
 			e.res.headers.set("content-type", "text/html");
 			const { body, size } = await serveStatic("index.html");
 			e.res.headers.set("content-length", size);

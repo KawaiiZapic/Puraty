@@ -9,6 +9,7 @@ import type {
 type _ExplorePageResult<T extends BaseExplorePage> = {
 	type: T["type"];
 	data: Awaited<ReturnType<T["load"]>>;
+	title: string;
 };
 
 export type ExplorePageResult =

@@ -29,6 +29,12 @@
 	margin-left: 0.75rem;
 }
 
-.searchBarPlaceholder {
+.pageTitle {
 	flex-grow: 1;
+	margin-left: 0.5rem;
+	font-weight: bold;
+}
+
+:global(html.fullscreen) .wrapper {
+	display: none;
 }

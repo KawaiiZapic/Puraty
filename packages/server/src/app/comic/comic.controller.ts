@@ -43,7 +43,8 @@ export class ComicHandler {
 			}
 			return {
 				data,
-				type: explorePage.type
+				type: explorePage.type,
+				title: source.translate(explorePage.title)
 			} as ExplorePageResult;
 		} catch (e) {
 			console.error(e);

@@ -1,6 +1,7 @@
 import type { FC } from "@puraty/render";
 import Navigo, { type Match } from "navigo";
 
+import api from "@/api";
 import ComicDetail from "@/pages/comic/detail";
 import ComicExplore from "@/pages/comic/explore";
 import ComicReader from "@/pages/comic/reader";
@@ -35,6 +36,8 @@ interface RouteRecord {
 	component: FC;
 	name?: string;
 	children?: RouteRecord[];
+	title?: string;
+	fullscreen?: boolean;
 }
 
 router.notFound(() => {
@@ -51,19 +54,23 @@ const routes: RouteRecord[] = [
 	},
 	{
 		path: "/settings",
-		component: SettingsIndex
+		component: SettingsIndex,
+		title: "设置"
 	},
 	{
 		path: "/settings/cache",
-		component: ComicCache
+		component: ComicCache,
+		title: "管理缓存"
 	},
 	{
 		path: "/settings/comic-sources",
-		component: ComicSourceList
+		component: ComicSourceList,
+		title: "管理漫画源"
 	},
 	{
 		path: "/settings/comic-sources/:id",
-		component: ComicSourceConfig
+		component: ComicSourceConfig,
+		title: "漫画源设置"
 	},
 	{
 		path: "/source/:id",
@@ -75,13 +82,16 @@ const routes: RouteRecord[] = [
 	},
 	{
 		path: "/comic/:id/manga/:comicId",
-		component: ComicDetail
+		component: ComicDetail,
+		title: "漫画详情"
 	},
 	{
 		path: "/comic/:id/manga/:comicId/:chapter",
-		component: ComicReader
+		component: ComicReader,
+		fullscreen: true
 	}
 ];
+let isCurrentFullscreen = false;
 const addRoutes = (routes: RouteRecord[], parents?: RouteRecord[]) => {
 	routes.forEach(route => {
 		router.on({
@@ -93,6 +103,12 @@ const addRoutes = (routes: RouteRecord[], parents?: RouteRecord[]) => {
 					currentMatched = [...p, route];
 					lastMatched = route;
 					window.dispatchEvent(new RouteUpdateEvent());
+					if (lastMatched.fullscreen === true && !isCurrentFullscreen) {
+						api.Command.fullscreen();
+					} else {
+						api.Command.exitFullscreen();
+					}
+					isCurrentFullscreen = lastMatched.fullscreen === true;
 				}
 			}
 		});

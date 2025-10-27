@@ -23,8 +23,9 @@ export const handleSwipe = ($: HTMLElement) => {
 		if (lastScrollHeight === $.scrollHeight) return;
 		lastScrollHeight = $.scrollHeight;
 		if (
+			!document.documentElement.classList.contains("fullscreen") &&
 			lastScrollHeight >
-			elementHeight + TOP_BAR_HEIGHT + 1 /* element Height might be +- 0.5 */
+				elementHeight + TOP_BAR_HEIGHT + 1 /* element Height might be +- 0.5 */
 		) {
 			scrollThumbHeight =
 				(elementHeight / (lastScrollHeight - TOP_BAR_HEIGHT)) * elementHeight;

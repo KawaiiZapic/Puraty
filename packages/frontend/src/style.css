@@ -17,6 +17,10 @@ html {
 	height: 100vh;
 }
 
+html.fullscreen {
+	padding-top: 0;
+}
+
 .clickable-item,
 button {
 	transition-delay: 0.1s;

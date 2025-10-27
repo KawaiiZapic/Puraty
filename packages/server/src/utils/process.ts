@@ -74,9 +74,8 @@ export const findUIWindowId = async () => {
 		?.split(" ")?.[0];
 };
 
-export const runWmctrl = async () => {
+export const requestExitFullscreen = async () => {
 	const id = await findUIWindowId();
-	console.log(id);
 	if (!id) return;
 	for (let i = 0; i < 10; i++) {
 		tjs.spawn([
@@ -85,7 +84,23 @@ export const runWmctrl = async () => {
 			"-r",
 			id,
 			"-N",
-			"L:A_N:application_ID:com.lab126.browser_WT:true"
+			"L:A_N:application_PC:T_ID:com.lab126.browser_WT:true"
+		]);
+		await new Promise(res => setTimeout(res, 100));
+	}
+};
+
+export const requestFullscreen = async () => {
+	const id = await findUIWindowId();
+	if (!id) return;
+	for (let i = 0; i < 10; i++) {
+		tjs.spawn([
+			path.join(APP_DIR, "..", "bin/wmctrl"),
+			"-i",
+			"-r",
+			id,
+			"-N",
+			"L:A_N:application_PC:N_ID:com.lab126.browser_WT:true"
 		]);
 		await new Promise(res => setTimeout(res, 100));
 	}
