@@ -104,8 +104,10 @@ const addRoutes = (routes: RouteRecord[], parents?: RouteRecord[]) => {
 					lastMatched = route;
 					window.dispatchEvent(new RouteUpdateEvent());
 					if (lastMatched.fullscreen === true && !isCurrentFullscreen) {
+						document.documentElement.classList.add("fullscreen");
 						api.Command.fullscreen();
 					} else {
+						document.documentElement.classList.remove("fullscreen");
 						api.Command.exitFullscreen();
 					}
 					isCurrentFullscreen = lastMatched.fullscreen === true;

@@ -23,7 +23,6 @@ export default () => {
 	const hideOnNotHome = ref("");
 	const onRouteUpdate = () => {
 		title.value = lastMatched?.title || "";
-		const isFullScreen = lastMatched?.fullscreen ?? false;
 		isBack = lastMatched?.path !== "/";
 		if (isBack) {
 			hideOnNotHome.value = "display: none";
@@ -31,11 +30,6 @@ export default () => {
 		} else {
 			hideOnHome.value = "display: none";
 			hideOnNotHome.value = "";
-		}
-		if (!isFullScreen) {
-			document.documentElement.classList.remove("fullscreen");
-		} else {
-			document.documentElement.classList.add("fullscreen");
 		}
 	};
 	window.addEventListener("route-update", onRouteUpdate);
