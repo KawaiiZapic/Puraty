@@ -63,8 +63,14 @@ export class ComicHandler {
 			} as ComicDetails;
 			if (r.tags) {
 				const translateTags: Record<string, string[] | string> = {};
-				for (const tag in r.tags) {
-					translateTags[source.translate(tag)] = r.tags[tag];
+				if (r.tags instanceof Map) {
+					r.tags.forEach((v, k) => {
+						translateTags[source.translate(k)] = v;
+					});
+				} else {
+					for (const tag in r.tags) {
+						translateTags[source.translate(tag)] = r.tags[tag];
+					}
 				}
 				r.tags = translateTags;
 			}
