@@ -40,12 +40,10 @@ export const Req = {
 				body
 			});
 			if (v.status >= 400) {
-				let data: unknown;
+				let data: unknown = await v.text();
 				try {
-					data = await v.json();
-				} catch (_) {
-					data = await v.text();
-				}
+					data = JSON.parse(data as string);
+				} catch (_) {}
 				throw new NetworkError(v, data);
 			}
 		} catch (e) {
