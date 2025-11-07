@@ -23,13 +23,16 @@ declare global {
 	}
 }
 
-globalThis.Map.prototype.toJSON = function () {
-	const r: Record<string, unknown> = {};
-	for (const [k, v] of this) {
-		if (typeof k !== "string") return {};
-		r[k] = v;
+Object.defineProperty(globalThis.Map.prototype, "toJSON", {
+	enumerable: false,
+	value: function () {
+		const r: Record<string, unknown> = {};
+		for (const [k, v] of this) {
+			if (typeof k !== "string") return {};
+			r[k] = v;
+		}
+		return r;
 	}
-	return r;
-};
+});
 
 export {};
