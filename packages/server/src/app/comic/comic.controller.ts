@@ -11,7 +11,7 @@ import {
 } from "@/utils/decorators";
 import { createHttpError } from "@/utils/error";
 import { QueueLock } from "@/utils/QueueLock";
-import type { ComicDetails } from "@/venera-lib";
+import type { ComicDetails, ImageLoadingConfig } from "@/venera-lib";
 
 import { ComicCache } from "./comic.db";
 import type { ExplorePageResult } from "./comic.model";
@@ -99,16 +99,17 @@ export class ComicHandler {
 
 	@Get("/image")
 	async image(
-		@Required @Query("source") source: string,
+		@Required @Query("source") id: string,
 		@Query("comicId") comicId: string,
 		@Query("epId") epId: string,
 		@Query("page") page: string,
 		@Required @Query("image") image: string
 	) {
 		await this.queueLock.acquire();
+		const source = await ComicSourceService.get(id);
 		try {
 			const f = await ComicService.getImageCache(
-				source,
+				id,
 				image,
 				comicId,
 				epId,
@@ -119,7 +120,29 @@ export class ComicHandler {
 				let retry = 0;
 				while (!res && retry < 3) {
 					try {
-						res = await fetch(image, {
+						let realUrl = image;
+						let imageLoadingConfig: ImageLoadingConfig | null = null;
+						if (source.comic.onImageLoad && comicId && epId) {
+							imageLoadingConfig = await source.comic.onImageLoad(
+								image,
+								comicId,
+								epId
+							);
+						} else if (source.comic.onThumbnailLoad && comicId) {
+							imageLoadingConfig = await source.comic.onThumbnailLoad(image);
+						}
+						if (imageLoadingConfig) {
+							if (imageLoadingConfig.url) {
+								realUrl = imageLoadingConfig.url;
+							}
+							if (imageLoadingConfig.modifyImage) {
+								// TODO: image load hooks
+								console.warn(
+									"Source required image load hooks, but not implemented yet."
+								);
+							}
+						}
+						res = await fetch(realUrl, {
 							signal: AbortSignal.timeout(30000)
 						});
 					} catch (e) {
@@ -132,7 +155,7 @@ export class ComicHandler {
 					const ubuffer = new Uint8Array(buffer);
 					await ComicService.saveImageCache(
 						ubuffer,
-						source,
+						id,
 						image,
 						comicId,
 						epId,
