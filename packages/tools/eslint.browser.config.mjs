@@ -18,6 +18,7 @@ export default defineConfig(
   ImportPlugin.flatConfigs.typescript,
   {
     rules: {
+      "no-console": ["warn", { allow: ["warn", "error"] }],
       "no-debugger": "warn",
       "no-mixed-spaces-and-tabs": "off",
       "no-empty": ["error", { allowEmptyCatch: true }],
