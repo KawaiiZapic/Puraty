@@ -7,6 +7,7 @@ import "./comic/comic.controller";
 import "./commands/commands.controller";
 import "./misc/misc.controller";
 import { initializeHandlers } from "@/utils/decorators";
+import { env } from "@/utils/env";
 import { requestExitFullscreen } from "@/utils/process";
 
 const assertBase = "./frontend";
@@ -28,7 +29,9 @@ const serveStatic = async (fp: string) => {
 export class App {
 	app: H3;
 	constructor() {
-		this.app = new H3();
+		this.app = new H3({
+			debug: env.DEV
+		});
 
 		this.app.get("/", async e => {
 			requestExitFullscreen();

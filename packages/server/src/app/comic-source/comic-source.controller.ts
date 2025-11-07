@@ -12,6 +12,7 @@ import {
 	ReqEvent,
 	Required
 } from "@/utils/decorators";
+import { createHttpError } from "@/utils/error";
 
 import { ComicSourceData, InstalledSource } from "./comic-source.db";
 import type {
@@ -46,7 +47,7 @@ export class ComicSourceHandler {
 		if (id in list) {
 			await ComicSourceService.uninstall(id);
 		} else {
-			throw new HTTPError("Comic source not found: " + id, { status: 404 });
+			throw createHttpError(404, "Comic source not found: " + id);
 		}
 	}
 
@@ -87,9 +88,9 @@ export class ComicSourceHandler {
 	) {
 		const s = await ComicSourceService.get(id);
 		if (typeof s.account?.login !== "function")
-			throw new HTTPError(
-				id + " does not support login via username and password.",
-				{ status: 400 }
+			throw createHttpError(
+				400,
+				id + " does not support login via username and password."
 			);
 		try {
 			const r = await s.account.login(loginBody.username, loginBody.password);
@@ -103,10 +104,7 @@ export class ComicSourceHandler {
 			]);
 		} catch (e) {
 			console.error(e);
-			throw new HTTPError({
-				status: 400,
-				message: String(e)
-			});
+			throw createHttpError(400, String(e));
 		}
 	}
 
@@ -117,9 +115,7 @@ export class ComicSourceHandler {
 	) {
 		const s = await ComicSourceService.get(id);
 		if (typeof s.account?.loginWithCookies?.validate !== "function")
-			throw new HTTPError(id + " does not support login via cookies.", {
-				status: 400
-			});
+			throw createHttpError(400, id + " does not support login via cookies.");
 		const fields = s.account.loginWithCookies.fields;
 		try {
 			const f = fields.map(f => loginBody[f] ?? "");
@@ -130,10 +126,7 @@ export class ComicSourceHandler {
 			ComicSourceService.setLoginStatus(id, ["", ""]);
 		} catch (e) {
 			console.error(e);
-			throw new HTTPError({
-				status: 400,
-				message: String(e)
-			});
+			throw createHttpError(400, String(e));
 		}
 	}
 

@@ -1,4 +1,3 @@
-import { HTTPError } from "h3";
 import path from "tjs:path";
 
 import { ComicSourceService } from "@/app/comic-source/comic-source.service";
@@ -10,6 +9,7 @@ import {
 	Query,
 	Required
 } from "@/utils/decorators";
+import { createHttpError } from "@/utils/error";
 import { QueueLock } from "@/utils/QueueLock";
 import type { ComicDetails } from "@/venera-lib";
 
@@ -27,9 +27,9 @@ export class ComicHandler {
 		const source = await ComicSourceService.get(id);
 		const explorePage = source.explore?.[explore];
 		if (!explorePage) {
-			throw new HTTPError(
-				"Comic source explore page not found: " + id + ":" + explore,
-				{ status: 404 }
+			throw createHttpError(
+				404,
+				"Comic source explore page not found: " + id + ":" + explore
 			);
 		}
 		try {
@@ -48,9 +48,7 @@ export class ComicHandler {
 			} as ExplorePageResult;
 		} catch (e) {
 			console.error(e);
-			throw new HTTPError("Comic source failed to load data: " + e, {
-				status: 500
-			});
+			throw createHttpError(500, "Comic source failed to load data: " + e, e);
 		}
 	}
 
@@ -77,9 +75,7 @@ export class ComicHandler {
 			return r;
 		} catch (e) {
 			console.error(e);
-			throw new HTTPError("Comic source failed to load data: " + e, {
-				status: 500
-			});
+			throw createHttpError(500, "Comic source failed to load data: " + e, e);
 		}
 	}
 
@@ -97,9 +93,7 @@ export class ComicHandler {
 			};
 		} catch (e) {
 			console.error(e);
-			throw new HTTPError("Comic source failed to load data: " + e, {
-				status: 500
-			});
+			throw createHttpError(500, "Comic source failed to load data: " + e, e);
 		}
 	}
 
@@ -152,9 +146,9 @@ export class ComicHandler {
 						}
 					});
 				} else {
-					throw new HTTPError(
-						"Failed to load image, image url return a not ok status",
-						{ status: 500 }
+					throw createHttpError(
+						500,
+						"Failed to load image, image url return a not ok status"
 					);
 				}
 			} else {

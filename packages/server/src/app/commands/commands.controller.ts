@@ -1,7 +1,6 @@
-import { HTTPError } from "h3";
-
 import { Controller, Delete, Post } from "@/utils/decorators";
 import { env } from "@/utils/env";
+import { createHttpError } from "@/utils/error";
 import { requestExitFullscreen, requestFullscreen } from "@/utils/process";
 
 export const ac = new AbortController();
@@ -13,9 +12,7 @@ export class CommandHandler {
 		if (!env.DEV) {
 			ac.abort();
 		} else {
-			throw new HTTPError("Exit command is ignore in dev mode", {
-				status: 500
-			});
+			throw createHttpError(500, "Exit command is ignore in dev mode");
 		}
 	}
 
