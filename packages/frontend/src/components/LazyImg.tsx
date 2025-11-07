@@ -1,5 +1,23 @@
 import type { BaseProps } from "@puraty/render";
 
+const io = new IntersectionObserver(
+	e => {
+		e.forEach(v => {
+			if (!v.isIntersecting) return;
+			const img = v.target;
+			const src = img.getAttribute("data-lazy-src");
+			if (src) {
+				img.setAttribute("src", src);
+				img.removeAttribute("data-lazy-src");
+			}
+			io.unobserve(img);
+		});
+	},
+	{
+		threshold: 0
+	}
+);
+
 export const LazyImg = (
 	attr: Partial<HTMLImageElement> & BaseProps & { class?: string }
 ) => {
@@ -16,27 +34,8 @@ export const LazyImg = (
 			img[key] = attr[key];
 		}
 	}
-	setTimeout(() => {
-		const scrollingView =
-			document.scrollingElement!.scrollTop + window.innerHeight;
-		const boundingTop = img.offsetTop;
-		if (scrollingView > boundingTop) {
-			img.src = attr.src!;
-		} else {
-			img.setAttribute("data-lazy-src", attr.src!);
-		}
-	});
+
+	img.setAttribute("data-lazy-src", attr.src!);
+	io.observe(img);
 	return img;
 };
-
-window.addEventListener("scroll", () => {
-	const scrollingView =
-		document.scrollingElement!.scrollTop + window.innerHeight;
-	document.querySelectorAll("img[data-lazy-src]").forEach(img => {
-		const boundingTop = (img as HTMLElement).offsetTop;
-		if (scrollingView > boundingTop) {
-			img.setAttribute("src", img.getAttribute("data-lazy-src")!);
-			img.removeAttribute("data-lazy-src");
-		}
-	});
-});
