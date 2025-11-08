@@ -19,6 +19,16 @@ export const handleSwipe = ($: HTMLElement) => {
 	window.addEventListener("resize", () => {
 		elementHeight = $.getBoundingClientRect().height - TOP_BAR_HEIGHT;
 	});
+	const updateThumbPosition = () => {
+		const availableMoveSpace = elementHeight - scrollThumbHeight;
+		scrollIndicator.style.setProperty(
+			"--scroll-top",
+			TOP_BAR_HEIGHT +
+				($.scrollTop / (lastScrollHeight - elementHeight - TOP_BAR_HEIGHT)) *
+					availableMoveSpace +
+				"px"
+		);
+	};
 	setInterval(() => {
 		if (lastScrollHeight === $.scrollHeight) return;
 		lastScrollHeight = $.scrollHeight;
@@ -35,7 +45,7 @@ export const handleSwipe = ($: HTMLElement) => {
 				"--scroll-height",
 				scrollThumbHeight + "px"
 			);
-			scrollIndicator.style.setProperty("--scroll-top", TOP_BAR_HEIGHT + "px");
+			updateThumbPosition();
 		} else {
 			$.style.paddingRight = "";
 			scrollIndicator.style.display = "none";
@@ -72,14 +82,7 @@ export const handleSwipe = ($: HTMLElement) => {
 			} else if (result === "-y") {
 				$.scrollTop += scroll;
 			}
-			const availableMoveSpace = elementHeight - scrollThumbHeight;
-			scrollIndicator.style.setProperty(
-				"--scroll-top",
-				TOP_BAR_HEIGHT +
-					($.scrollTop / (lastScrollHeight - elementHeight - TOP_BAR_HEIGHT)) *
-						availableMoveSpace +
-					"px"
-			);
+			updateThumbPosition();
 		}
 	});
 
