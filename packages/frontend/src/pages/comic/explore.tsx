@@ -1,4 +1,4 @@
-import type { Comic } from "@puraty/server";
+import type { Comic, ExplorePageResult } from "@puraty/server";
 
 import { setTitle } from "../components/header";
 import api from "@/api";
@@ -7,6 +7,10 @@ import { getCurrentRoute } from "@/router";
 import { RouterLink } from "@/router/RouterLink";
 
 import style from "./explore.module.css";
+
+let lastTimestamp = 0;
+let lastData: ExplorePageResult[] = [];
+let lastPage = 1;
 
 const ComicItem = ({ comic, sourceId }: { comic: Comic; sourceId: string }) => {
 	return (
@@ -43,14 +47,35 @@ export default () => {
 	const route = getCurrentRoute();
 	const id = route?.data?.id;
 	const explore = route?.data?.explore;
-	const root = <div></div>;
-	(async () => {
+	const ts = parseInt(route?.params?.t ?? "0");
+	const placeholder = document.createComment("");
+	const bottom = <div class={style.comicListLastPlaceholder}>正在加载</div>;
+	const root = (
+		<div>
+			{placeholder}
+			{bottom}
+		</div>
+	);
+	let isLoading = false;
+	let isEnded = false;
+	const io = new IntersectionObserver(
+		entries => {
+			if (!isLoading && !isEnded && entries[0].isIntersecting) {
+				lastPage++;
+				getData(lastPage);
+			}
+		},
+		{
+			rootMargin: "0px 0px 100px 0px"
+		}
+	);
+	io.observe(bottom as Element);
+
+	const handleData = (detail: ExplorePageResult) => {
 		if (!id || !explore) return;
-		const detail = await api.Comic.explore(id, explore);
-		setTitle(detail.title);
 		if (detail.type === "multiPageComicList") {
 			detail.data.comics.forEach(comic => {
-				root.appendChild(<ComicItem sourceId={id} comic={comic}></ComicItem>);
+				placeholder.before(<ComicItem sourceId={id} comic={comic}></ComicItem>);
 			});
 		} else if (detail.type === "singlePageWithMultiPart") {
 			Object.keys(detail.data).forEach(partId => {
@@ -66,7 +91,7 @@ export default () => {
 						<ComicItem sourceId={id} comic={comic}></ComicItem>
 					);
 				});
-				root.appendChild(partRoot);
+				placeholder.before(partRoot);
 			});
 		} else if (detail.type === "multiPartPage") {
 			detail.data.forEach(part => {
@@ -82,9 +107,57 @@ export default () => {
 						<ComicItem sourceId={id} comic={comic}></ComicItem>
 					);
 				});
-				root.appendChild(partRoot);
+				placeholder.before(partRoot);
 			});
 		}
+	};
+	const isEnd = (detail: ExplorePageResult) => {
+		if (detail.type === "multiPageComicList") {
+			if (typeof detail.data.maxPage === "number") {
+				return detail.data.maxPage >= lastPage;
+			} else {
+				const lastRecord = lastData[lastData.length - 1];
+				if (!lastRecord) return false;
+				return (
+					lastRecord.type === "multiPageComicList" &&
+					lastRecord.data.comics[0].id === detail.data.comics[0]?.id
+				);
+			}
+		}
+		return false;
+	};
+	const getData = async (page = 1) => {
+		if (!id || !explore || isLoading) return;
+		isLoading = true;
+		try {
+			let next: string | undefined = undefined;
+			const last = lastData[page - 2];
+			if (last && last.type === "multiPageComicList") {
+				next = last.data?.next;
+			}
+			const detail = await api.Comic.explore(id, explore, page, next);
+			if (isEnd(detail)) {
+				isEnded = true;
+				bottom.textContent = "没有更多了";
+				return;
+			}
+			setTitle(detail.title);
+			handleData(detail);
+			lastData.push(detail);
+		} catch {}
+		isLoading = false;
+	};
+	(async () => {
+		if (!id || !explore) return;
+		if (lastTimestamp === ts) {
+			lastData.forEach(handleData);
+			setTitle(lastData[0]?.title);
+			return;
+		}
+		lastData = [];
+		lastTimestamp = ts;
+		lastPage = 1;
+		getData(lastPage);
 	})();
 	return root;
 };

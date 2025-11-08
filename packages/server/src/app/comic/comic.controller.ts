@@ -22,10 +22,16 @@ export class ComicHandler {
 	private queueLock = new QueueLock(5);
 
 	@Get("/:id/explore/:explore")
-	async explore(@Path("id") id: string, @Path("explore") _explore: string) {
+	async explore(
+		@Path("id") id: string,
+		@Path("explore") _explore: string,
+		@Query("page") _page: string,
+		@Query("next") next: string
+	) {
 		const explore = parseInt(_explore);
 		const source = await ComicSourceService.get(id);
 		const explorePage = source.explore?.[explore];
+		const page = parseInt(_page);
 		if (!explorePage) {
 			throw createHttpError(
 				404,
@@ -36,10 +42,10 @@ export class ComicHandler {
 			let data;
 			if (explorePage.type === "multiPageComicList") {
 				data = await (explorePage.loadNext
-					? explorePage.loadNext(null)
-					: explorePage.load(1));
+					? explorePage.loadNext(next ?? null)
+					: explorePage.load(page));
 			} else {
-				data = await explorePage.load(null);
+				data = await explorePage.load(page);
 			}
 			return {
 				data,

@@ -9,11 +9,14 @@ export default () => {
 	const root = <List></List>;
 	(async () => {
 		if (!id) return;
+		const timestamp = Date.now();
 		const detail = await api.ComicSource.get(id);
 		setTitle(detail.name);
 		detail.explore?.forEach(e => {
 			root.appendChild(
-				<ListItem href={`/comic/${id}/explore/${e.id}`}>{e.title}</ListItem>
+				<ListItem href={`/comic/${id}/explore/${e.id}?t=${timestamp}`}>
+					{e.title}
+				</ListItem>
 			);
 		});
 	})();

@@ -25,3 +25,4 @@ export type CommandHandler = Abstraction<
 >;
 
 export type * from "@/venera-lib/Data";
+export type * from "@/app/comic/comic.model";

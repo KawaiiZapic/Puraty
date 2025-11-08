@@ -12,11 +12,17 @@ type _ExplorePageResult<T extends BaseExplorePage> = {
 	title: string;
 };
 
+type _MPCLExplorePageResult = {
+	type: MPCLExplorePage["type"];
+	data: Awaited<ReturnType<MPCLExplorePage["load"]>> & { next?: string };
+	title: string;
+};
+
 export type ExplorePageResult =
 	| _ExplorePageResult<MPPExplorePage>
 	| _ExplorePageResult<MixedExplorePage>
-	| _ExplorePageResult<MPCLExplorePage>
-	| _ExplorePageResult<SPWMPExplorePage>;
+	| _ExplorePageResult<SPWMPExplorePage>
+	| _MPCLExplorePageResult;
 
 export interface ComicCacheItem {
 	id: string;
