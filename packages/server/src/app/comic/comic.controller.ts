@@ -5,9 +5,10 @@ import {
 	Controller,
 	Delete,
 	Get,
+	NotRequired,
+	Integer,
 	Path,
-	Query,
-	Required
+	Query
 } from "@/utils/decorators";
 import { createHttpError } from "@/utils/error";
 import { QueueLock } from "@/utils/QueueLock";
@@ -24,14 +25,12 @@ export class ComicHandler {
 	@Get("/:id/explore/:explore")
 	async explore(
 		@Path("id") id: string,
-		@Path("explore") _explore: string,
-		@Query("page") _page: string,
-		@Query("next") next: string
+		@Integer @Path("explore") explore: number,
+		@NotRequired @Integer @Query("page") page: number = 1,
+		@NotRequired @Query("next") next?: string
 	) {
-		const explore = parseInt(_explore);
 		const source = await ComicSourceService.get(id);
 		const explorePage = source.explore?.[explore];
-		const page = parseInt(_page);
 		if (!explorePage) {
 			throw createHttpError(
 				404,
@@ -105,11 +104,11 @@ export class ComicHandler {
 
 	@Get("/image")
 	async image(
-		@Required @Query("source") id: string,
+		@Query("source") id: string,
 		@Query("comicId") comicId: string,
 		@Query("epId") epId: string,
 		@Query("page") page: string,
-		@Required @Query("image") image: string
+		@Query("image") image: string
 	) {
 		await this.queueLock.acquire();
 		const source = await ComicSourceService.get(id);
@@ -215,7 +214,7 @@ export class ComicHandler {
 	}
 
 	@Delete("/image/cache")
-	async cleanCache(@Required @Query("before") before: string) {
-		await ComicService.cleanCache(parseInt(before));
+	async cleanCache(@Integer @Query("before") before: number) {
+		await ComicService.cleanCache(before);
 	}
 }

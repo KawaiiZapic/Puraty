@@ -3,6 +3,7 @@ import { getQuery, HTTPError, type H3 } from "h3";
 
 const s = Symbol();
 
+type ExtraParamInfo = { notRequired?: boolean; convert?: "integer" };
 type ParamInfo = (
 	| {
 			type: "path" | "query";
@@ -11,7 +12,8 @@ type ParamInfo = (
 	| {
 			type: "json" | "event";
 	  }
-) & { required?: boolean };
+) &
+	ExtraParamInfo;
 
 const controllers: Map<
 	unknown,
@@ -44,7 +46,7 @@ const initControllerInfo = (func: unknown) => {
 const setParamInfo = (
 	func: unknown,
 	idx: number,
-	info: ParamInfo | { required: boolean }
+	info: ParamInfo | ExtraParamInfo
 ) => {
 	const { params } = initControllerInfo(func);
 	if (!params[idx]) {
@@ -134,11 +136,34 @@ export const ReqEvent: ParameterDecorator = (target, prop, idx) => {
 	});
 };
 
-export const Required: ParameterDecorator = (target, prop, idx) => {
+export const NotRequired: ParameterDecorator = (target, prop, idx) => {
 	const func = (target as any)[prop!];
 	setParamInfo(func, idx, {
-		required: true
+		notRequired: true
 	});
+};
+
+export const Integer: ParameterDecorator = (target, prop, idx) => {
+	const func = (target as any)[prop!];
+	setParamInfo(func, idx, {
+		convert: "integer"
+	});
+};
+
+const typeConvert = (v: unknown, convert: ExtraParamInfo["convert"]) => {
+	if (typeof v === "undefined") {
+		return v;
+	}
+	if (convert === "integer") {
+		if (typeof v === "string") {
+			const r = parseInt(v, 10);
+			if (isNaN(r) || r.toString() !== v) {
+				return undefined;
+			}
+			return r;
+		}
+	}
+	return v;
 };
 
 export const initializeHandlers = (app: H3) => {
@@ -150,25 +175,28 @@ export const initializeHandlers = (app: H3) => {
 						return e;
 					} else if (v.type === "json") {
 						try {
-							return await e.req.json();
+							const r = typeConvert(await e.req.json(), v.convert);
+							if (typeof r === "undefined") {
+								throw new Error();
+							}
 						} catch {
-							if (v.required) {
+							if (!v.notRequired) {
 								throw HTTPError.status(400, undefined, {
 									message: "Required parameter JSON@body not existed"
 								});
 							}
 						}
 					} else if (v.type === "path") {
-						const r = e.context.params?.[v.id];
-						if (v.required && typeof r === "undefined") {
+						const r = typeConvert(e.context.params?.[v.id], v.convert);
+						if (v.notRequired && typeof r === "undefined") {
 							throw HTTPError.status(400, undefined, {
 								message: "Required parameter " + v.id + "@path not existed"
 							});
 						}
 						return r;
 					} else if (v.type === "query") {
-						const r = getQuery(e)[v.id];
-						if (v.required && typeof r === "undefined") {
+						const r = typeConvert(getQuery(e)[v.id], v.convert);
+						if (v.notRequired && typeof r === "undefined") {
 							throw HTTPError.status(400, undefined, {
 								message: "Required parameter " + v.id + "@query not existed"
 							});

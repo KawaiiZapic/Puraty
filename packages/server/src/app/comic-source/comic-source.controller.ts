@@ -5,12 +5,12 @@ import {
 	Delete,
 	Get,
 	Json,
+	NotRequired,
 	Patch,
 	Path,
 	Post,
 	Query,
-	ReqEvent,
-	Required
+	ReqEvent
 } from "@/utils/decorators";
 import { createHttpError } from "@/utils/error";
 
@@ -30,12 +30,12 @@ export class ComicSourceHandler {
 	}
 
 	@Get("/installed")
-	list(@Query("allowInitializeError") allowErr = "false") {
+	list(@NotRequired @Query("allowInitializeError") allowErr = "false") {
 		return ComicSourceService.list(allowErr === "true");
 	}
 
 	@Post("/add")
-	async add(@Required @Json body: InstallBody, @ReqEvent e: H3Event) {
+	async add(@Json body: InstallBody, @ReqEvent e: H3Event) {
 		const v = await ComicSourceService.install(body.url, body.key);
 		e.res.status = 201;
 		return { key: body.key, version: v };
@@ -57,7 +57,10 @@ export class ComicSourceHandler {
 	}
 
 	@Patch("/:id")
-	async modify(@Path("id") id: string, @Json body?: SourceModifyBody) {
+	async modify(
+		@Path("id") id: string,
+		@NotRequired @Json body?: SourceModifyBody
+	) {
 		if (!body?.settingValues) return;
 		const source = await ComicSourceService.get(id);
 		for (const k in source.settings) {
@@ -82,10 +85,7 @@ export class ComicSourceHandler {
 	}
 
 	@Post("/:id/login")
-	async doUAPLogin(
-		@Path("id") id: string,
-		@Required @Json loginBody: UAPLoginBody
-	) {
+	async doUAPLogin(@Path("id") id: string, @Json loginBody: UAPLoginBody) {
 		const s = await ComicSourceService.get(id);
 		if (typeof s.account?.login !== "function")
 			throw createHttpError(
@@ -111,7 +111,7 @@ export class ComicSourceHandler {
 	@Post("/:id/cookie-login")
 	async doCookieLogin(
 		@Path("id") id: string,
-		@Required @Json loginBody: Record<string, string>
+		@Json loginBody: Record<string, string>
 	) {
 		const s = await ComicSourceService.get(id);
 		if (typeof s.account?.loginWithCookies?.validate !== "function")
