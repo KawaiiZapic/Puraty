@@ -66,7 +66,8 @@ export default () => {
 			}
 		},
 		{
-			rootMargin: "0px 0px 100px 0px"
+			rootMargin: "0px 0px 3000px 0px",
+			threshold: 0
 		}
 	);
 	io.observe(bottom as Element);
