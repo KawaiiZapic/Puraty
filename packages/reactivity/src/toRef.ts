@@ -1,4 +1,4 @@
-import { ref } from "./ref";
+import { shallowRef } from "./ref";
 import { delayed } from "./utils";
 
 import { onUpdateSymbol, type Ref } from ".";
@@ -7,7 +7,7 @@ export const toRef = <T extends object, K extends keyof T>(
 	object: T,
 	key: K
 ): Ref<T[K]> => {
-	const res = ref(object[key]);
+	const res = shallowRef(object[key]);
 	if (typeof (object as never)[onUpdateSymbol] === "function") {
 		const flush = delayed(() => {
 			if (res.value === object[key]) return;

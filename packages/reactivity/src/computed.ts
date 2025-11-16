@@ -2,11 +2,11 @@ import { getCurrentEffectScope } from "./effectScope";
 import { createTracker } from "./tracker";
 import { delayed } from "./utils";
 
-import { onUpdateSymbol, ref, type ReadOnlyRef } from ".";
+import { onUpdateSymbol, shallowRef, type ReadOnlyRef } from ".";
 
 export const computed = <T>(fn: () => T): ReadOnlyRef<T> => {
 	const scope = getCurrentEffectScope();
-	const value = ref<T>(undefined as T);
+	const value = shallowRef<T>(undefined as T);
 	const watchers: (() => void)[] = [];
 	const cleanWatchers = () => {
 		watchers.forEach(fn => fn());

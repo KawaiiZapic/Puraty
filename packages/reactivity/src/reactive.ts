@@ -1,10 +1,9 @@
-import { getCurrentEffectScope } from "./effectScope";
 import { track } from "./tracker";
 import { delayed } from "./utils";
 
 import { onUpdateSymbol } from ".";
 
-export const reactive = <T extends object>(value: T): T => {
+export const shallowReactive = <T extends object>(value: T): T => {
 	if (typeof (value as never)[onUpdateSymbol] === "function") return value;
 	const updateHandler: (() => void)[] = [];
 	const flush = delayed(() => updateHandler.forEach(fn => fn()));

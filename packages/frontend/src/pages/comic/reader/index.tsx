@@ -1,4 +1,4 @@
-import { computed, ref } from "@puraty/reactivity";
+import { computed, shallowRef } from "@puraty/reactivity";
 
 import api from "@/api";
 import { getCurrentRoute } from "@/router";
@@ -11,8 +11,8 @@ export default () => {
 	const comicId = route?.data?.comicId;
 	const chapter = route?.data?.chapter;
 
-	const images = ref<string[]>([]);
-	const currentPage = ref(0);
+	const images = shallowRef<string[]>([]);
+	const currentPage = shallowRef(0);
 
 	const handleClick = (e: MouseEvent) => {
 		e.preventDefault();

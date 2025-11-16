@@ -1,4 +1,10 @@
-import { reactive, ref, toRef, watch, type Ref } from "@puraty/reactivity";
+import {
+	shallowReactive,
+	shallowRef,
+	toRef,
+	watch,
+	type Ref
+} from "@puraty/reactivity";
 import type { InstalledSourceDetail } from "@puraty/server";
 
 import api from "@/api";
@@ -16,7 +22,7 @@ export default () => {
 
 	const updateLoginStatus = (v: InstalledSourceDetail) => {
 		loginGroup.childNodes.forEach(v => loginGroup.removeChild(v));
-		const isLoading = ref(false);
+		const isLoading = shallowRef(false);
 		if (!v.isLogged) {
 			if (v.features.UAPLogin) {
 				const onClick = () => {
@@ -119,7 +125,7 @@ export default () => {
 			);
 		}
 		updateLoginStatus(v);
-		const result = reactive(v.settingValues) as Record<string, string>;
+		const result = shallowReactive(v.settingValues) as Record<string, string>;
 		for (const k in v.settings) {
 			const s = v.settings[k];
 			if (!(k in result) && s.type !== "callback" && s.default) {
@@ -159,7 +165,7 @@ export default () => {
 					</div>
 				);
 			} else if (s.type === "callback") {
-				const isRunning = ref(false);
+				const isRunning = shallowRef(false);
 				const cb = async () => {
 					if (isRunning.value) return;
 					isRunning.value = true;

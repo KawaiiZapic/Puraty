@@ -6,6 +6,7 @@ export * from "./toRef";
 export * from "./watch";
 export * from "./effectScope";
 export * from "./tracker";
+export * from "./user-utils";
 
 export const onUpdateSymbol = Symbol("onUpdate");
 

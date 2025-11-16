@@ -1,4 +1,4 @@
-import { computed, reactive, watch } from "@puraty/reactivity";
+import { computed, shallowReactive, watch } from "@puraty/reactivity";
 import type { NetworkSourceDetail } from "@puraty/server";
 import WarningAmberOutlined from "@sicons/material/WarningAmberOutlined.svg";
 
@@ -14,7 +14,7 @@ export default ({
 	item: NetworkSourceDetail & { initialized?: boolean };
 	installedVersion?: string;
 }) => {
-	const state = reactive({
+	const state = shallowReactive({
 		loading: false,
 		installedVersion
 	});

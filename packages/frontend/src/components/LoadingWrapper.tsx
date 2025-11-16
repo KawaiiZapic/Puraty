@@ -1,7 +1,7 @@
-import { computed, reactive, toRef } from "@puraty/reactivity";
+import { computed, shallowReactive, toRef } from "@puraty/reactivity";
 
 export default (onRetry: () => void) => {
-	const state = reactive({
+	const state = shallowReactive({
 		loading: true,
 		errorMsg: ""
 	});
