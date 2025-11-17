@@ -10,6 +10,12 @@ const startNextTick = () => {
 	});
 };
 
+export const nextTick = <T extends () => void>(fn: T): Promise<void> => {
+	tasks.add(() => fn());
+	startNextTick();
+	return nextTickHandler!;
+};
+
 export const delayed = <T extends () => void>(fn: T): T => {
 	return ((...args) => {
 		tasks.add(() => fn(...args));
