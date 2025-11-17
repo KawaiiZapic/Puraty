@@ -1,9 +1,18 @@
+const tasks = new Set<() => void>();
+let nextTickHandler: Promise<void> | null = null;
+
+const startNextTick = () => {
+	if (nextTickHandler != null) return;
+	nextTickHandler = Promise.resolve().then(() => {
+		tasks.forEach(fn => fn());
+		tasks.clear();
+		nextTickHandler = null;
+	});
+};
+
 export const delayed = <T extends () => void>(fn: T): T => {
-	let im: number | null = null;
 	return ((...args) => {
-		im != null && clearTimeout(im);
-		im = setTimeout(() => {
-			fn(...args);
-		});
+		tasks.add(() => fn(...args));
+		startNextTick();
 	}) as T;
 };
