@@ -4,3 +4,39 @@
 	object-fit: contain;
 	object-position: center;
 }
+
+.wrapper {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: 100vh;
+}
+
+.pageIndicator {
+	position: absolute;
+	bottom: 20px;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+.layer {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100vh;
+}
+
+.layerTop {
+	background: white;
+	border-bottom: 2px solid rgba(0, 0, 0);
+}
+
+.iconBtn {
+	width: 100px;
+	height: 100px;
+	padding: 0.75rem;
+	box-sizing: border-box;
+	display: inline-block;
+}
