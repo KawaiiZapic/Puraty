@@ -1,3 +1,4 @@
+import { nextTick } from "@puraty/reactivity";
 import type { ComicDetails } from "@puraty/server";
 import AccessTimeOutlined from "@sicons/material/AccessTimeOutlined.svg";
 import FileUploadFilled from "@sicons/material/FileUploadFilled.svg";
@@ -186,9 +187,11 @@ export default () => {
 				return;
 			}
 			const data = await api.Comic.detail(id, comicId);
-			root.appendChild(DetailHeader(id, comicId, data));
-			root.appendChild(DetailDetails(data));
 			state.loading = false;
+			nextTick(() => {
+				root.appendChild(DetailHeader(id, comicId, data));
+				root.appendChild(DetailDetails(data));
+			});
 		} catch (_) {
 			console.error(_);
 		}

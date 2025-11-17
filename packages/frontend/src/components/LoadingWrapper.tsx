@@ -13,18 +13,15 @@ export default (onRetry: () => void) => {
 	const btnStyle = computed(() => {
 		return !state.errorMsg ? "display: none" : "";
 	});
-
-	const wrapperStyle = computed(() => {
-		return !!state.errorMsg || state.loading
-			? "padding: 2rem 0; text-align: center"
-			: "display: none";
+	const showWrapper = computed(() => {
+		return !!state.errorMsg || state.loading;
 	});
 
 	const tipText = computed(() => {
 		return state.errorMsg || "正在加载...";
 	});
 	const $ = (
-		<div style={wrapperStyle}>
+		<div style={"padding: 2rem 0; text-align: center"} p-show={showWrapper}>
 			<div style="padding: 1rem 0;">{tipText}</div>
 			<button
 				style={btnStyle}
