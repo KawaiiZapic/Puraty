@@ -1,3 +1,5 @@
+import { lastMatched } from "@/router";
+
 const TOP_BAR_HEIGHT = 100;
 
 export const handleSwipe = ($: HTMLElement) => {
@@ -54,6 +56,7 @@ export const handleSwipe = ($: HTMLElement) => {
 	let currentTouch: Touch | undefined;
 	let startTime = 0;
 	($ as HTMLElement).addEventListener("touchstart", e => {
+		if (lastMatched?.disableSwipe) return;
 		currentTouch = e.touches[0];
 		startTime = Date.now();
 	});

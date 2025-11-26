@@ -38,6 +38,7 @@ interface RouteRecord {
 	children?: RouteRecord[];
 	title?: string;
 	fullscreen?: boolean;
+	disableSwipe?: boolean;
 }
 
 router.notFound(() => {
@@ -88,7 +89,8 @@ const routes: RouteRecord[] = [
 	{
 		path: "/comic/:id/manga/:comicId/:chapter",
 		component: ComicReader,
-		fullscreen: true
+		fullscreen: true,
+		disableSwipe: true
 	}
 ];
 let isCurrentFullscreen = false;
