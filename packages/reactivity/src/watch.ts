@@ -1,6 +1,6 @@
 import { getCurrentEffectScope } from "./effectScope";
 
-import { isRefLike, onUpdateSymbol } from ".";
+import { isRefLike, nextTick, onUpdateSymbol } from ".";
 
 export interface WatchOptions {
 	immediate?: boolean;
@@ -10,7 +10,7 @@ export interface WatchOptions {
 export const watch = <T>(v: T, handler: () => void, options?: WatchOptions) => {
 	if (isRefLike(v)) {
 		const scope = getCurrentEffectScope();
-		setTimeout(() => {
+		nextTick(() => {
 			if (options?.signal?.aborted) return;
 			const s = v[onUpdateSymbol](() => {
 				handler();
