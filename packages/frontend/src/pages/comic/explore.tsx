@@ -5,12 +5,9 @@ import api from "@/api";
 import { LazyImg } from "@/components/LazyImg";
 import { router } from "@/router";
 import { RouterLink } from "@/router/RouterLink";
+import { useSharedData } from "@/utils/SharedData";
 
 import style from "./explore.module.css";
-
-let lastTimestamp = 0;
-let lastData: ExplorePageResult[] = [];
-let lastPage = 1;
 
 const ComicItem = ({ comic, sourceId }: { comic: Comic; sourceId: string }) => {
 	return (
@@ -47,7 +44,6 @@ export default () => {
 	const route = router.current;
 	const id = route?.params?.id;
 	const explore = route?.params?.explore;
-	const ts = parseInt(route?.query?.t ?? "0");
 	const placeholder = document.createComment("");
 	const bottom = <div class={style.comicListLastPlaceholder}>正在加载</div>;
 	const root = (
@@ -56,13 +52,19 @@ export default () => {
 			{bottom}
 		</div>
 	);
+
+	const shared = useSharedData("comic-list-data", {
+		results: [] as ExplorePageResult[],
+		page: 0
+	}).value;
+
 	let isLoading = false;
 	let isEnded = false;
 	const io = new IntersectionObserver(
 		entries => {
 			if (!isLoading && !isEnded && entries[0].isIntersecting) {
-				lastPage++;
-				getData(lastPage);
+				shared.page++;
+				getData(shared.page);
 			}
 		},
 		{
@@ -74,6 +76,7 @@ export default () => {
 
 	const handleData = (detail: ExplorePageResult) => {
 		if (!id || !explore) return;
+		setTitle(detail.title);
 		if (detail.type === "multiPageComicList") {
 			detail.data.comics.forEach(comic => {
 				placeholder.before(<ComicItem sourceId={id} comic={comic}></ComicItem>);
@@ -115,9 +118,9 @@ export default () => {
 	const isEnd = (detail: ExplorePageResult) => {
 		if (detail.type === "multiPageComicList") {
 			if (typeof detail.data.maxPage === "number") {
-				return detail.data.maxPage >= lastPage;
+				return detail.data.maxPage >= shared.page;
 			} else {
-				const lastRecord = lastData[lastData.length - 1];
+				const lastRecord = shared.results[shared.results.length - 1];
 				if (!lastRecord) return false;
 				return (
 					lastRecord.type === "multiPageComicList" &&
@@ -132,7 +135,7 @@ export default () => {
 		isLoading = true;
 		try {
 			let next: string | undefined = undefined;
-			const last = lastData[page - 2];
+			const last = shared.results[page - 2];
 			if (last && last.type === "multiPageComicList") {
 				next = last.data?.next;
 			}
@@ -142,23 +145,19 @@ export default () => {
 				bottom.textContent = "没有更多了";
 				return;
 			}
-			setTitle(detail.title);
 			handleData(detail);
-			lastData.push(detail);
+			shared.results.push(detail);
 		} catch {}
 		isLoading = false;
 	};
 	(async () => {
 		if (!id || !explore) return;
-		if (lastTimestamp === ts) {
-			lastData.forEach(handleData);
-			setTitle(lastData[0]?.title);
+		if (shared.page !== 0) {
+			shared.results.forEach(handleData);
 			return;
 		}
-		lastData = [];
-		lastTimestamp = ts;
-		lastPage = 1;
-		getData(lastPage);
+		shared.page = 1;
+		getData(shared.page);
 	})();
 	return root;
 };

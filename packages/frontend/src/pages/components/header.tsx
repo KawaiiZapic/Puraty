@@ -8,7 +8,9 @@ import { RouterLink } from "@/router/RouterLink";
 import style from "./header.module.css";
 
 const title = shallowRef("");
-export const setTitle = (v: string) => (title.value = v);
+export const setTitle = (v: string) => {
+	title.value = v;
+};
 
 export default () => {
 	const toHome = () => {
@@ -23,7 +25,7 @@ export default () => {
 		title.value = router.current?.title ?? router.current?.name ?? "";
 		isBack.value = router.current?.path !== "/";
 	};
-	router.onEnter(onRouteUpdate);
+	router.beforeEnter(onRouteUpdate);
 	return (
 		<div class={style.wrapper}>
 			<div

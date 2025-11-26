@@ -102,12 +102,31 @@ export const createRouter = (
 		onNotFound(hook) {
 			return bindLifeCycleHook("notFound", hook);
 		},
-		navigate: __router.navigate.bind(__router),
+		navigate(to, opt) {
+			history.pushState(null, "");
+			history.replaceState(
+				{
+					historyIndex: history.length - 1
+				},
+				""
+			);
+			__router.navigate(to, {
+				...opt,
+				historyAPIMethod: "replaceState",
+				stateObj: history.state
+			});
+		},
 		with(fn: RouterPlugin) {
 			fn(router);
 			return router;
 		},
 		ready() {
+			history.replaceState(
+				{
+					historyIndex: history.length - 1
+				},
+				""
+			);
 			__router.resolve();
 		}
 	};
