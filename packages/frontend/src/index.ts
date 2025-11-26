@@ -5,7 +5,7 @@ import { handleSwipe } from "./utils/swipe";
 
 const AppRoot = document.body;
 
-router.resolve();
 AppRoot.appendChild(App());
+router.ready();
 
 handleSwipe(document.scrollingElement! as HTMLElement);

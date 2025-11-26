@@ -1,11 +1,11 @@
 import { setTitle } from "../components/header";
 import api from "@/api";
 import { List, ListItem } from "@/components";
-import { getCurrentRoute } from "@/router";
+import { router } from "@/router";
 
 export default () => {
-	const route = getCurrentRoute();
-	const id = route?.data?.id;
+	const route = router.current;
+	const id = route?.params?.id;
 	const root = <List></List>;
 	(async () => {
 		if (!id) return;

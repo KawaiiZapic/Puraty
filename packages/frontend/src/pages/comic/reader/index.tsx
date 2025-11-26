@@ -3,15 +3,15 @@ import ChevronLeftFilled from "@sicons/material/ChevronLeftFilled.svg";
 
 import api from "@/api";
 import LoadingWrapper from "@/components/LoadingWrapper";
-import { getCurrentRoute, router } from "@/router";
+import { router } from "@/router";
 
 import style from "./index.module.css";
 
 export default () => {
-	const route = getCurrentRoute();
-	const id = route?.data?.id;
-	const comicId = route?.data?.comicId;
-	const chapter = route?.data?.chapter;
+	const params = router.current?.params;
+	const id = params?.id;
+	const comicId = params?.comicId;
+	const chapter = params?.chapter;
 
 	const images = shallowRef<string[]>([]);
 	const imageCount = computed(() => images.value.length);

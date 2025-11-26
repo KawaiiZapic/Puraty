@@ -10,12 +10,12 @@ import type { InstalledSourceDetail } from "@puraty/server";
 import api from "@/api";
 import { Prompt, Alert } from "@/components";
 import { Checkbox, Input, Select } from "@/components/InputModel";
-import { getCurrentRoute } from "@/router";
+import { router } from "@/router";
 
 import style from "./config.module.css";
 
 export default () => {
-	const id = getCurrentRoute()!.data!.id;
+	const id = router.current!.params!.id;
 	const loginGroup = <div></div>;
 
 	const $ = (<div>{loginGroup}</div>) as HTMLDivElement;

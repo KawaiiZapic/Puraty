@@ -7,7 +7,7 @@ import ImageFilled from "@sicons/material/ImageFilled.svg";
 import api from "@/api";
 import { LazyImg } from "@/components/LazyImg";
 import LoadingWrapper from "@/components/LoadingWrapper";
-import { getCurrentRoute, router } from "@/router";
+import { router } from "@/router";
 
 import style from "./detail.module.css";
 
@@ -160,9 +160,9 @@ const DetailDetails = (comic: ComicDetails) => {
 };
 
 const openManga = (comic: ComicDetails, _chapter?: string) => {
-	const route = getCurrentRoute();
-	const id = route?.data?.id;
-	const comicId = route?.data?.comicId;
+	const route = router.current;
+	const id = route?.params?.id;
+	const comicId = route?.params?.comicId;
 	let chapter = _chapter;
 	if (!chapter) {
 		if (!comic.chapters) {
@@ -177,9 +177,9 @@ const openManga = (comic: ComicDetails, _chapter?: string) => {
 };
 
 export default () => {
-	const route = getCurrentRoute();
-	const id = route?.data?.id;
-	const comicId = route?.data?.comicId;
+	const route = router.current;
+	const id = route?.params?.id;
+	const comicId = route?.params?.comicId;
 	const load = async () => {
 		state.loading = true;
 		try {

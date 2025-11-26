@@ -3,7 +3,7 @@ import type { Comic, ExplorePageResult } from "@puraty/server";
 import { setTitle } from "../components/header";
 import api from "@/api";
 import { LazyImg } from "@/components/LazyImg";
-import { getCurrentRoute } from "@/router";
+import { router } from "@/router";
 import { RouterLink } from "@/router/RouterLink";
 
 import style from "./explore.module.css";
@@ -44,10 +44,10 @@ const ComicItem = ({ comic, sourceId }: { comic: Comic; sourceId: string }) => {
 };
 
 export default () => {
-	const route = getCurrentRoute();
-	const id = route?.data?.id;
-	const explore = route?.data?.explore;
-	const ts = parseInt(route?.params?.t ?? "0");
+	const route = router.current;
+	const id = route?.params?.id;
+	const explore = route?.params?.explore;
+	const ts = parseInt(route?.query?.t ?? "0");
 	const placeholder = document.createComment("");
 	const bottom = <div class={style.comicListLastPlaceholder}>正在加载</div>;
 	const root = (

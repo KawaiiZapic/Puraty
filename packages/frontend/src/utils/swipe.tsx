@@ -1,4 +1,10 @@
-import { lastMatched } from "@/router";
+import { router } from "@/router";
+
+declare global {
+	interface RouteMeta {
+		disableSwipe: boolean;
+	}
+}
 
 const TOP_BAR_HEIGHT = 100;
 
@@ -56,7 +62,7 @@ export const handleSwipe = ($: HTMLElement) => {
 	let currentTouch: Touch | undefined;
 	let startTime = 0;
 	($ as HTMLElement).addEventListener("touchstart", e => {
-		if (lastMatched?.disableSwipe) return;
+		if (router.current?.meta?.disableSwipe) return;
 		currentTouch = e.touches[0];
 		startTime = Date.now();
 	});

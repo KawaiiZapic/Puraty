@@ -2,7 +2,7 @@ import { not, shallowRef } from "@puraty/reactivity";
 import ChevronLeftFilled from "@sicons/material/ChevronLeftFilled.svg";
 import SettingsFilled from "@sicons/material/SettingsFilled.svg";
 
-import { lastMatched, router } from "@/router";
+import { router } from "@/router";
 import { RouterLink } from "@/router/RouterLink";
 
 import style from "./header.module.css";
@@ -20,11 +20,10 @@ export default () => {
 	};
 	const isBack = shallowRef(false);
 	const onRouteUpdate = () => {
-		title.value = lastMatched?.title || "";
-		isBack.value = lastMatched?.path !== "/";
+		title.value = router.current?.title ?? router.current?.name ?? "";
+		isBack.value = router.current?.path !== "/";
 	};
-	window.addEventListener("route-update", onRouteUpdate);
-	onRouteUpdate();
+	router.onEnter(onRouteUpdate);
 	return (
 		<div class={style.wrapper}>
 			<div
