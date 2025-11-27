@@ -196,14 +196,16 @@ export class ComicHandler {
 	@Get("/image/cache")
 	async cache() {
 		const size = ComicCache.totalSize();
-		const D3 = ComicCache.sizeBetweenDate(Date.now() - 1000 * 60 * 60 * 24 * 3);
-		const D7 = ComicCache.sizeBetweenDate(Date.now() - 1000 * 60 * 60 * 24 * 7);
-		const D30 = ComicCache.sizeBetweenDate(
-			Date.now() - 1000 * 60 * 60 * 24 * 30
-		);
-		const D365 = ComicCache.sizeBetweenDate(
-			Date.now() - 1000 * 60 * 60 * 24 * 365
-		);
+		const time = {
+			D3: Date.now() - 1000 * 60 * 60 * 24 * 3,
+			D7: Date.now() - 1000 * 60 * 60 * 24 * 7,
+			D30: Date.now() - 1000 * 60 * 60 * 24 * 30,
+			D365: Date.now() - 1000 * 60 * 60 * 24 * 365
+		};
+		const D3 = ComicCache.sizeBetweenDate(time.D3);
+		const D7 = ComicCache.sizeBetweenDate(time.D7, time.D3);
+		const D30 = ComicCache.sizeBetweenDate(time.D30, time.D7);
+		const D365 = ComicCache.sizeBetweenDate(time.D365, time.D30);
 		return {
 			size,
 			D3,
