@@ -14,11 +14,10 @@ export const useSharedData = <T = any>(
 	// history index is not supported in Chrome before 102
 	// history index is count manually by ourself
 	const historyIdx = history.state?.historyIndex ?? 99999;
-	const groupId = `${group}@${historyIdx}`;
-	if (!sharedData.has(groupId)) {
-		sharedData.set(groupId, { value: undefined, at: historyIdx });
+	if (!sharedData.has(group)) {
+		sharedData.set(group, { value: undefined, at: historyIdx });
 	}
-	const data = sharedData.get(groupId)!;
+	const data = sharedData.get(group)!;
 	if (data.value === undefined) {
 		data.value = init;
 	}

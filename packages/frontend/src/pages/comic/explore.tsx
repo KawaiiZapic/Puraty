@@ -53,7 +53,7 @@ export default () => {
 		</div>
 	);
 
-	const shared = useSharedData("comic-list-data", {
+	const shared = useSharedData(`comic-list-${id}-${explore}`, {
 		results: [] as ExplorePageResult[],
 		page: 0
 	}).value;

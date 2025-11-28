@@ -8,6 +8,7 @@ import api from "@/api";
 import { LazyImg } from "@/components/LazyImg";
 import LoadingWrapper from "@/components/LoadingWrapper";
 import { router } from "@/router";
+import { useSharedData } from "@/utils/SharedData";
 
 import style from "./detail.module.css";
 
@@ -180,17 +181,20 @@ export default () => {
 	const route = router.current;
 	const id = route?.params?.id;
 	const comicId = route?.params?.comicId;
+	const data = useSharedData<ComicDetails>(`comic-${id}-${comicId}`);
 	const load = async () => {
 		state.loading = true;
 		try {
 			if (!id || !comicId) {
 				return;
 			}
-			const data = await api.Comic.detail(id, comicId);
+			if (!data.value) {
+				data.value = await api.Comic.detail(id, comicId);
+			}
 			state.loading = false;
 			nextTick(() => {
-				root.appendChild(DetailHeader(id, comicId, data));
-				root.appendChild(DetailDetails(data));
+				root.appendChild(DetailHeader(id, comicId, data.value));
+				root.appendChild(DetailDetails(data.value));
 			});
 		} catch (_) {
 			console.error(_);

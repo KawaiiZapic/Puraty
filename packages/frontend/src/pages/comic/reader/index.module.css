@@ -33,6 +33,17 @@
 	border-bottom: 2px solid rgba(0, 0, 0);
 }
 
+.layerTopMain {
+	display: flex;
+	align-items: center;
+}
+
+.layerTopMain span {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
 .iconBtn {
 	width: 100px;
 	height: 100px;

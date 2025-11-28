@@ -1,9 +1,11 @@
 import { computed, shallowRef } from "@puraty/reactivity";
+import { type ComicDetails } from "@puraty/server";
 import ChevronLeftFilled from "@sicons/material/ChevronLeftFilled.svg";
 
 import api from "@/api";
 import LoadingWrapper from "@/components/LoadingWrapper";
 import { router } from "@/router";
+import { useSharedData } from "@/utils/SharedData";
 
 import style from "./index.module.css";
 
@@ -12,7 +14,7 @@ export default () => {
 	const id = params?.id;
 	const comicId = params?.comicId;
 	const chapter = params?.chapter;
-
+	const data = useSharedData<ComicDetails>(`comic-${id}-${comicId}`);
 	const images = shallowRef<string[]>([]);
 	const imageCount = computed(() => images.value.length);
 	const currentPage = shallowRef(0);
@@ -31,9 +33,16 @@ export default () => {
 	};
 
 	const showTopBar = shallowRef(false);
+	const handleLayerClick = (e: MouseEvent) => {
+		if (e.target !== layer) return;
+		showTopBar.value = false;
+	};
 
 	const handleClick = (e: MouseEvent) => {
-		if (showTopBar.value) return;
+		if (showTopBar.value) {
+			handleLayerClick(e);
+			return;
+		}
 		e.preventDefault();
 		const lastPage = currentPage.value;
 		if (e.clientX > (innerWidth / 3) * 2) {
@@ -71,13 +80,16 @@ export default () => {
 		loadingState.loading = false;
 	});
 
+	const titleWrapper = <span></span>;
+
 	const layer = (
 		<div class={style.layer} p-show={showTopBar}>
 			<div class={style.layerTop}>
-				<div>
+				<div class={style.layerTopMain}>
 					<div onClick={toHome} class={[style.iconBtn, "clickable-item"]}>
 						<img src={ChevronLeftFilled}></img>
 					</div>
+					{titleWrapper}
 				</div>
 			</div>
 		</div>
@@ -95,8 +107,12 @@ export default () => {
 
 	const load = async () => {
 		if (!id || !comicId) return;
-		const data = await api.Comic.pages(id, comicId, chapter);
-		images.value = data.images;
+		if (!data.value) {
+			data.value = await api.Comic.detail(id, comicId);
+		}
+		titleWrapper.textContent = data.value.title;
+		const pages = await api.Comic.pages(id, comicId, chapter);
+		images.value = pages.images;
 	};
 
 	load();
