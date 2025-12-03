@@ -128,24 +128,17 @@ export default () => {
 		const result = shallowReactive(v.settingValues) as Record<string, string>;
 		for (const k in v.settings) {
 			const s = v.settings[k];
+			const $item = <div class={style.sourceConfigItem}> {s.title} </div>;
 			if (!(k in result) && s.type !== "callback" && s.default) {
 				result[k] = String(s.default);
 			}
 			if (s.type === "input") {
 				const v = toRef(result, k);
-				$.appendChild(
-					<div class={style.sourceConfigItem}>
-						{s.title}
-						<Input name={k} modelValue={v}></Input>
-					</div>
-				);
+				$item.appendChild(<Input name={k} modelValue={v}></Input>);
 			} else if (s.type === "switch") {
 				const v = toRef(result, k);
-				$.appendChild(
-					<div class={style.sourceConfigItem}>
-						{s.title}
-						<Checkbox name={k} type="checkbox" modelValue={v}></Checkbox>
-					</div>
+				$item.appendChild(
+					<Checkbox name={k} type="checkbox" modelValue={v}></Checkbox>
 				);
 			} else if (s.type === "select") {
 				const v = toRef(result, k) as Ref<string>;
@@ -158,12 +151,7 @@ export default () => {
 						{$opts}{" "}
 					</Select>
 				);
-				$.appendChild(
-					<div class={style.sourceConfigItem}>
-						{s.title}
-						{$select}
-					</div>
-				);
+				$item.appendChild($select);
 			} else if (s.type === "callback") {
 				const isRunning = shallowRef(false);
 				const cb = async () => {
@@ -175,15 +163,13 @@ export default () => {
 						isRunning.value = false;
 					}
 				};
-				$.appendChild(
-					<div class={style.sourceConfigItem}>
-						{s.title}
-						<button disabled={isRunning} onClick={cb}>
-							{s.buttonText ?? "执行"}
-						</button>
-					</div>
+				$item.appendChild(
+					<button disabled={isRunning} onClick={cb}>
+						{s.buttonText ?? "执行"}
+					</button>
 				);
 			}
+			$.appendChild($item);
 		}
 		watch(result, () => {
 			api.ComicSource.modify(id, {
