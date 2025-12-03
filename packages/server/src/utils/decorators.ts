@@ -179,6 +179,7 @@ export const initializeHandlers = (app: H3) => {
 							if (typeof r === "undefined") {
 								throw new Error();
 							}
+							return r;
 						} catch {
 							if (!v.notRequired) {
 								throw HTTPError.status(400, undefined, {
