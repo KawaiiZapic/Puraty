@@ -30,7 +30,7 @@ export interface InstalledSourceDetail {
 		logout: boolean;
 	};
 	settings?: Record<string, AnySettingItem>;
-	settingValues: Record<string, string>;
+	settingValues: Record<string, unknown>;
 	initializedError: string;
 }
 

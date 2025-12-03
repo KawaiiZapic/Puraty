@@ -160,12 +160,7 @@ export class ComicSourceService {
 	}
 
 	static getSettings(id: string) {
-		const r: Record<string, string> = {};
-		const keyLength = `setting_${id}_`.length;
-		ComicSourceData.getAll("setting", id).forEach(v => {
-			r[v.key.substring(keyLength)] = v.value;
-		});
-		return r;
+		return ComicSourceData.getAll("setting", id);
 	}
 
 	static setLoginStatus(id: string, account?: [string, string]) {

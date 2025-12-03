@@ -85,7 +85,11 @@ export class ComicSourceData extends BaseDB {
 
 	protected upgrade(): void {}
 
-	static get<T>(type: DataType, id: string, key: string): T | undefined {
+	static get<T = unknown>(
+		type: DataType,
+		id: string,
+		key: string
+	): T | undefined {
 		const st = this.db.prepare(
 			"SELECT value from source_data where key=? and id=? and type=?;"
 		);
@@ -94,17 +98,17 @@ export class ComicSourceData extends BaseDB {
 		return result ? JSON.parse(result) : undefined;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	static getAll(type: DataType, id: string): { key: string; value: any }[] {
+	static getAll<T = Record<string, unknown>>(type: DataType, id: string): T {
 		const st = this.db.prepare(
 			"SELECT key,value from source_data where id=? and type=?;"
 		);
 		const result = st.all(id, type);
 		st.finalize();
+		const res: Record<string, unknown> = {};
 		result.forEach(v => {
-			v.value = JSON.parse(v.value);
+			res[v.key] = JSON.parse(v.value);
 		});
-		return result;
+		return res as T;
 	}
 
 	static set(type: DataType, id: string, key: string, data: unknown) {

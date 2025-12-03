@@ -57,15 +57,12 @@ export class ComicSourceHandler {
 	}
 
 	@Patch("/:id")
-	async modify(
-		@Path("id") id: string,
-		@NotRequired @Json body?: SourceModifyBody
-	) {
-		if (!body?.settingValues) return;
+	async modify(@Path("id") id: string, @Json body: SourceModifyBody) {
+		if (!body.settingValues) return;
 		const source = await ComicSourceService.get(id);
 		for (const k in source.settings) {
 			if (k in body.settingValues) {
-				ComicSourceData.set("setting", id, k, String(body.settingValues[k]));
+				ComicSourceData.set("setting", id, k, body.settingValues[k]);
 			}
 		}
 	}
