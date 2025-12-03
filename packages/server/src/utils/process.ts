@@ -61,7 +61,10 @@ export const launchUI = async (signal?: AbortSignal) => {
 	return p;
 };
 
+let UIWindowId = "";
+
 export const findUIWindowId = async () => {
+	if (UIWindowId) return UIWindowId;
 	const finder = tjs.spawn([path.join(APP_DIR, "..", "bin/wmctrl"), "-l"], {
 		stdout: "pipe"
 	});
@@ -69,9 +72,10 @@ export const findUIWindowId = async () => {
 	const buf = new Uint8Array(1024);
 	await finder.stdout.read(buf);
 	const lines = new TextDecoder().decode(buf).split("\n");
-	return lines
-		.find(line => line.includes("com.lab126.browser"))
-		?.split(" ")?.[0];
+	UIWindowId =
+		lines.find(line => line.includes("com.lab126.browser"))?.split(" ")?.[0] ||
+		"";
+	return UIWindowId;
 };
 
 export const requestExitFullscreen = async () => {
