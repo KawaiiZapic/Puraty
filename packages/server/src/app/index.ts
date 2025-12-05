@@ -6,6 +6,7 @@ import "./comic-source/comic-source.controller";
 import "./comic/comic.controller";
 import "./commands/commands.controller";
 import "./misc/misc.controller";
+import "./app/app.controller";
 import { initializeHandlers } from "@/utils/decorators";
 import { env } from "@/utils/env";
 import { requestExitFullscreen } from "@/utils/process";

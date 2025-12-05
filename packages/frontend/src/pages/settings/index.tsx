@@ -18,6 +18,12 @@ export default () => {
 			>
 				管理缓存
 			</RouterLink>
+			<RouterLink
+				href="/settings/misc"
+				class={[style.listItem, "clickable-item"]}
+			>
+				其他设置
+			</RouterLink>
 			<div
 				onClick={() => api.Command.exit()}
 				class={[style.listItem, "clickable-item"]}

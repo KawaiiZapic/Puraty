@@ -1,3 +1,4 @@
+import { App } from "./app";
 import { Comic } from "./comic";
 import { ComicSource } from "./comic-source";
 import { Command } from "./command";
@@ -106,6 +107,7 @@ export default {
 	Command,
 	ComicSource,
 	Comic,
+	App,
 	proxy(
 		source: string,
 		url: string,

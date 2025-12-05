@@ -19,6 +19,9 @@ export type ComicSourceHandler = Abstraction<
 export type ComicHandler = Abstraction<
 	import("@/app/comic/comic.controller").ComicHandler
 >;
+export type MainController = Abstraction<
+	import("@/app/app/app.controller").MainController
+>;
 
 export type CommandHandler = Abstraction<
 	import("@/app/commands/commands.controller").CommandHandler
@@ -26,3 +29,4 @@ export type CommandHandler = Abstraction<
 
 export type * from "@/venera-lib/Data";
 export type * from "@/app/comic/comic.model";
+export type { AppConfig } from "@/app/app/app.model";
