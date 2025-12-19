@@ -1,4 +1,4 @@
-import { router } from "@/router";
+import type { Router } from "@/router/router";
 
 declare global {
 	interface RouteMeta {
@@ -8,14 +8,28 @@ declare global {
 
 const TOP_BAR_HEIGHT = 100;
 
-export const handleSwipe = ($: HTMLElement) => {
-	const scrollIndicator = (
-		<div
-			style={`position: fixed; right: 0; top: ${TOP_BAR_HEIGHT}px; width: 12px; background: #ccc; height: calc(100vh - ${TOP_BAR_HEIGHT}px); display: none;`}
-		>
-			<div style="position: fixed; right: 0; top: var(--scroll-top); height: var(--scroll-height); width: 12px; background: #000;"></div>
-		</div>
-	) as HTMLElement;
+export const handleSwipe = ($: HTMLElement, router: Router) => {
+	const scrollIndicator = document.createElement("div");
+	Object.assign(scrollIndicator.style, {
+		position: "fixed",
+		right: "0",
+		top: `${TOP_BAR_HEIGHT}px`,
+		height: `calc(100vh - ${TOP_BAR_HEIGHT}px)`,
+		width: "12px",
+		background: "#ccc",
+		display: "none"
+	});
+	const scrollThumb = document.createElement("div");
+	Object.assign(scrollThumb.style, {
+		position: "fixed",
+		right: "0",
+		top: "var(--scroll-top)",
+		height: "var(--scroll-height)",
+		width: "12px",
+		background: "#000"
+	});
+	scrollIndicator.appendChild(scrollThumb);
+
 	$.appendChild(scrollIndicator);
 	Object.assign($.style, {
 		overflow: "hidden",

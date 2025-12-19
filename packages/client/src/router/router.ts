@@ -1,5 +1,5 @@
-import { type FC } from "@puraty/render";
 import Navigo, { type Match, type RouterOptions } from "navigo";
+import type { ComponentType } from "preact";
 
 declare global {
 	// eslint-disable-next-line @typescript-eslint/no-empty-object-type
@@ -8,7 +8,7 @@ declare global {
 
 export interface RouteRecord {
 	path: string;
-	component: FC;
+	component: ComponentType;
 	name?: string;
 	title?: string;
 	children?: RouteRecord[];

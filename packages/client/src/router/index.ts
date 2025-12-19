@@ -1,3 +1,6 @@
+import { createContext } from "preact";
+import { useContext } from "preact/hooks";
+
 import ComicDetail from "@/pages/comic/detail";
 import ComicExplore from "@/pages/comic/explore";
 import ComicReader from "@/pages/comic/reader";
@@ -65,5 +68,15 @@ const routes: RouteRecord[] = [
 		}
 	}
 ];
-export const router = createRouter(routes);
-router.with(fullscreen);
+
+export const initializeRouter = () => {
+	const router = createRouter(routes);
+	router.with(fullscreen);
+	router.ready();
+	return router;
+};
+
+export const RouterContext = createContext<ReturnType<typeof createRouter>>(
+	null as never
+);
+export const useRouter = () => useContext(RouterContext);

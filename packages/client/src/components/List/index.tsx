@@ -1,24 +1,27 @@
-import type { BaseProps } from "@puraty/render";
+import type { FunctionalComponent } from "preact";
 
-import { router } from "@/router";
+import { useRouter } from "@/router";
 
 import style from "./List.module.css";
 
-export const List = (attr: BaseProps & { withIcon?: boolean }) => {
+export const List: FunctionalComponent<{
+	withIcon?: boolean;
+}> = attr => {
 	return (
-		<ul class={[style.listWrapper, attr.withIcon && style.listWithIcon]}>
+		<ul class={`${style.listWrapper} ${attr.withIcon && style.listWithIcon}`}>
 			{attr.children}
 		</ul>
 	);
 };
 
-interface ListItemProps extends BaseProps {
+interface ListItemProps {
 	href?: string;
 	onClick?: (e: MouseEvent) => void;
 }
 
-export const ListItem = (attr: ListItemProps) => {
+export const ListItem: FunctionalComponent<ListItemProps> = attr => {
 	const { href, onClick } = attr;
+	const router = useRouter();
 	const handleClick = (e: MouseEvent) => {
 		if (href) {
 			setTimeout(() => {
@@ -29,16 +32,16 @@ export const ListItem = (attr: ListItemProps) => {
 		}
 	};
 	return (
-		<li class={["clickable-item", style.listItem]} onClick={handleClick}>
+		<li class={`clickable-item ${style.listItem}`} onClick={handleClick}>
 			{attr.children}
 		</li>
 	);
 };
 
-export const ListTitle = (attr: BaseProps) => {
+export const ListTitle: FunctionalComponent = attr => {
 	return <div class={style.listTitle}>{attr.children}</div>;
 };
 
-export const ListIcon = (attr: { icon: string }) => {
+export const ListIcon: FunctionalComponent<{ icon?: string }> = attr => {
 	return <img src={attr.icon} class={style.listIcon}></img>;
 };

@@ -1,18 +1,20 @@
-import { not, shallowRef } from "@puraty/reactivity";
+import { signal } from "@preact/signals";
 import ChevronLeftFilled from "@sicons/material/ChevronLeftFilled.svg";
 import SettingsFilled from "@sicons/material/SettingsFilled.svg";
+import { useEffect, useState } from "preact/hooks";
 
-import { router } from "@/router";
+import { useRouter } from "@/router";
 import { RouterLink } from "@/router/RouterLink";
 
 import style from "./header.module.css";
 
-const title = shallowRef("");
-export const setTitle = (v: string) => {
-	title.value = v;
+const title = signal("");
+export const setTitle = (newVal: string) => {
+	title.value = newVal;
 };
 
 export default () => {
+	const router = useRouter();
 	const toHome = () => {
 		if (history.length === 0) {
 			router.navigate("/");
@@ -20,30 +22,26 @@ export default () => {
 			history.go(-1);
 		}
 	};
-	const isBack = shallowRef(false);
-	const onRouteUpdate = () => {
-		title.value = router.current?.title ?? router.current?.name ?? "";
-		isBack.value = router.current?.path !== "/";
-	};
-	router.beforeEnter(onRouteUpdate);
+	const [isHome, setIsHome] = useState(false);
+	useEffect(() => {
+		setIsHome(router.current?.path === "/");
+		return router.onEnter(({ path }) => {
+			setIsHome(path === "/");
+		});
+	}, []);
 	return (
 		<div class={style.wrapper}>
-			<div
-				onClick={toHome}
-				class={[style.iconBtn, "clickable-item"]}
-				p-show={isBack}
-			>
-				<img src={ChevronLeftFilled}></img>
-			</div>
-			<input
-				class={style.searchBar}
-				placeholder="搜索"
-				p-show={not(isBack)}
-			></input>
-			<div class={style.pageTitle} p-show={isBack}>
-				{title}
-			</div>
-			<RouterLink href="/settings" class={[style.iconBtn, "clickable-item"]}>
+			{!isHome && (
+				<div onClick={toHome} class={`${style.iconBtn} clickable-item`}>
+					<img src={ChevronLeftFilled}></img>
+				</div>
+			)}
+			{isHome ? (
+				<input class={style.searchBar} placeholder="搜索"></input>
+			) : (
+				<div class={style.pageTitle}>{title}</div>
+			)}
+			<RouterLink href="/settings" class={`${style.iconBtn} clickable-item`}>
 				<img src={SettingsFilled}></img>
 			</RouterLink>
 		</div>
