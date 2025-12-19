@@ -1,10 +1,12 @@
 import path from "node:path";
 
+import preact from "@preact/preset-vite";
 import autoprefixer from "autoprefixer";
 import { defineConfig } from "vite";
 
 export default defineConfig(() => {
 	return {
+		plugins: [preact()],
 		base: "",
 		build: {
 			minify: false,
