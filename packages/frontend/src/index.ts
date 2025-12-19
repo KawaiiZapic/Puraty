@@ -1,11 +1,17 @@
 import App from "./pages/App";
 import { router } from "./router";
 import "./style.css";
+import { initConfig } from "./utils/config";
 import { handleSwipe } from "./utils/swipe";
 
-const AppRoot = document.body;
+const load = async () => {
+	const AppRoot = document.body;
+	AppRoot.appendChild(App());
+	router.ready();
 
-AppRoot.appendChild(App());
-router.ready();
+	initConfig();
 
-handleSwipe(document.scrollingElement! as HTMLElement);
+	handleSwipe(document.scrollingElement! as HTMLElement);
+};
+
+load();
