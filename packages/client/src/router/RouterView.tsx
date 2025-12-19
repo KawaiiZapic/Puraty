@@ -1,28 +1,32 @@
-import { createContext, Fragment, h, type FunctionComponent } from "preact";
+import {
+	createContext,
+	Fragment,
+	h,
+	type ComponentType,
+	type FunctionComponent
+} from "preact";
 import { useContext, useEffect, useState } from "preact/hooks";
-
-import type { RouteRecord } from "./router";
 
 import { useRouter } from ".";
 
 const RouteViewIndex = createContext(0);
 
 export const RouteView: FunctionComponent = () => {
-	const [currentRoute, setCurrent] = useState<RouteRecord>();
+	const [currentRoute, setCurrent] = useState<ComponentType[]>([]);
 	const routeLevel = useContext(RouteViewIndex);
 	const router = useRouter();
 	useEffect(() => {
-		setCurrent(router.matched[routeLevel]);
+		setCurrent([router.matched[routeLevel].component]);
 		return router.beforeEnter(() => {
-			const newEl = router.matched[routeLevel];
-			if (newEl !== currentRoute) {
-				setCurrent(newEl);
+			const newEl = router.matched[routeLevel].component;
+			if (newEl !== currentRoute[0]) {
+				setCurrent([newEl]);
 			}
 		});
 	}, []);
 	return (
 		<RouteViewIndex.Provider value={routeLevel + 1}>
-			{h(currentRoute?.component ?? Fragment, null)}
+			{h(currentRoute[0] ?? Fragment, null)}
 		</RouteViewIndex.Provider>
 	);
 };
