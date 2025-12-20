@@ -32,7 +32,7 @@ export const useModal = () => {
 			const remove = portal.warp($);
 			setTimeout(() => {
 				remove();
-			}, timeout * 10000);
+			}, timeout);
 		}
 	};
 };
