@@ -30,6 +30,7 @@ export default () => {
 		return router.onEnter(({ path, title }) => {
 			setIsHome(path === "/");
 			setFallbackTitle(title || "");
+			setTitle("");
 		});
 	}, []);
 	return (
