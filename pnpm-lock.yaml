@@ -47,12 +47,6 @@ importers:
       '@preact/signals':
         specifier: ^2.5.1
         version: 2.5.1(preact@10.28.0)
-      '@puraty/reactivity':
-        specifier: 'workspace:'
-        version: link:../reactivity
-      '@puraty/render':
-        specifier: 'workspace:'
-        version: link:../render
       '@puraty/tools':
         specifier: 'workspace:'
         version: link:../tools
