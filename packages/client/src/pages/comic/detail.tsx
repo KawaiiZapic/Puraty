@@ -1,67 +1,55 @@
-import { nextTick } from "@puraty/reactivity";
 import type { ComicDetails } from "@puraty/server";
 import AccessTimeOutlined from "@sicons/material/AccessTimeOutlined.svg";
 import FileUploadFilled from "@sicons/material/FileUploadFilled.svg";
 import ImageFilled from "@sicons/material/ImageFilled.svg";
 
 import api from "@/api";
-import { LazyImg } from "@/components/LazyImg";
 import LoadingWrapper from "@/components/LoadingWrapper";
-import { router } from "@/router";
 import { useSharedData } from "@/utils/SharedData";
 
 import style from "./detail.module.css";
 
-const isUndef = (value: unknown): value is undefined => {
-	return typeof value === "undefined";
+const DetailMeta: FunctionalComponent<{ comic: ComicDetails }> = ({
+	comic
+}) => {
+	return (
+		<div class={style.comicMetaWrapper}>
+			{comic.uploader && (
+				<div class={style.comicMetaItem}>
+					<img src={FileUploadFilled}></img> {comic.uploader}
+				</div>
+			)}
+
+			{comic.uploadTime && (
+				<div class={style.comicMetaItem}>
+					<img src={AccessTimeOutlined}></img> {comic.uploadTime}
+				</div>
+			)}
+
+			{comic.updateTime && (
+				<div class={style.comicMetaItem}>
+					<img src={AccessTimeOutlined}></img> {comic.updateTime}
+				</div>
+			)}
+
+			{comic.maxPage && (
+				<div class={style.comicMetaItem}>
+					<img src={ImageFilled}></img> {comic.maxPage}
+				</div>
+			)}
+		</div>
+	);
 };
 
-const DetailMeta = ({ comic }: { comic: ComicDetails }) => {
-	const root = <div class={style.comicMetaWrapper}></div>;
-
-	if (!isUndef(comic.uploader)) {
-		root.appendChild(
-			<div class={style.comicMetaItem}>
-				<img src={FileUploadFilled}></img> {comic.uploader}
-			</div>
-		);
-	}
-
-	if (!isUndef(comic.uploadTime)) {
-		root.appendChild(
-			<div class={style.comicMetaItem}>
-				<img src={AccessTimeOutlined}></img> {comic.uploadTime}
-			</div>
-		);
-	}
-
-	if (!isUndef(comic.updateTime)) {
-		root.appendChild(
-			<div class={style.comicMetaItem}>
-				<img src={AccessTimeOutlined}></img> {comic.updateTime}
-			</div>
-		);
-	}
-
-	if (!isUndef(comic.maxPage)) {
-		root.appendChild(
-			<div class={style.comicMetaItem}>
-				<img src={ImageFilled}></img> {comic.maxPage}
-			</div>
-		);
-	}
-
-	return root;
-};
-
-const DetailHeader = (
-	sourceId: string,
-	comicId: string,
-	comic: ComicDetails
-) => {
+const DetailHeader: FunctionalComponent<{
+	sourceId: string;
+	comicId: string;
+	comic: ComicDetails;
+	onRead: () => void;
+}> = ({ sourceId, comicId, comic, onRead }) => {
 	return (
 		<div class={style.comicHeaderWrapper}>
-			<LazyImg src={api.proxy(sourceId, comic.cover, comicId)}></LazyImg>
+			<img src={api.proxy(sourceId, comic.cover, comicId)} />
 			<div class={style.comicHeaderRight}>
 				<div class={style.comicHeaderTitle}>{comic.title}</div>
 				<div class={style.comicHeaderSub}>
@@ -70,138 +58,158 @@ const DetailHeader = (
 				<DetailMeta comic={comic} />
 				<div style="flex-grow: 1;"></div>
 				<div>
-					<button onClick={() => openManga(comic)}>阅读</button>
+					<button onClick={onRead}>阅读</button>
 				</div>
 			</div>
 		</div>
 	);
 };
 
-const TagGroup = (name: string, tags: string[]) => {
+const TagGroup: FunctionalComponent<{
+	name: string;
+	tags: string[];
+}> = ({ name, tags }) => {
 	return (
 		<div class={style.comicTagGroup}>
-			<div class={[style.comicTag, style.comicTagLeader]}>{name}</div>
+			<div class={`${style.comicTag} ${style.comicTagLeader}`}>{name}</div>
 			<div class={style.comicTagList}>
 				{tags.map(t => (
-					<div class={[style.comicTag, "clickable-item"]}>{t}</div>
+					<div class={`${style.comicTag} clickable-item`}>{t}</div>
 				))}
 			</div>
 		</div>
-	) as HTMLElement;
+	);
 };
 
-const DetailTags = (tags?: Record<string, string[] | string>) => {
+const DetailTags: FunctionalComponent<{
+	tags?: Record<string, string[] | string>;
+}> = ({ tags }) => {
 	if (!tags) {
-		return <div></div>;
+		return;
 	}
-	const r: Element[] = [];
-	for (const group in tags) {
-		r.push(
-			TagGroup(group, Array.isArray(tags[group]) ? tags[group] : [tags[group]])
-		);
-	}
-	return <div> {r} </div>;
+
+	const tagGroups = Object.entries(tags).map(([group, groupTags]) => {
+		const tagList = Array.isArray(groupTags) ? groupTags : [groupTags];
+		return <TagGroup name={group} tags={tagList} />;
+	});
+
+	return <div>{tagGroups}</div>;
 };
 
-const DetailChapters = (comic: ComicDetails) => {
-	const list = <div class={style.comicChapterList}></div>;
-	const chapterList = comic.chapters!;
-	if (!chapterList) return list;
-	for (const chapter in chapterList) {
-		if (typeof chapterList[chapter] === "string") {
-			list.appendChild(
+const DetailChapters: FunctionalComponent<{
+	comic: ComicDetails;
+	onChapterSelect: (chapter: string) => void;
+}> = ({ comic, onChapterSelect }) => {
+	const chapterList = comic.chapters;
+	if (!chapterList) return <div></div>;
+
+	const chapters = Object.entries(chapterList).flatMap(([chapter, value]) => {
+		if (typeof value === "string") {
+			return (
 				<div
-					class={[style.comicChapterItem, "clickable-item"]}
-					data-chapter={chapter}
-					onClick={() => openManga(comic, chapter)}
+					class={`${style.comicChapterItem} clickable-item`}
+					onClick={() => onChapterSelect(chapter)}
 				>
-					{chapterList[chapter]}
+					{value}
 				</div>
 			);
 		} else {
-			for (const subChapter in chapterList[chapter]) {
-				list.appendChild(
-					<div
-						class={[style.comicChapterItem, "clickable-item"]}
-						data-chapter={subChapter}
-						onClick={() => openManga(comic, subChapter)}
-					>
-						{chapter} - {chapterList[chapter][subChapter]}
-					</div>
-				);
-			}
+			return Object.entries(value).map(([subChapter, subChapterName]) => (
+				<div
+					class={`${style.comicChapterItem} clickable-item`}
+					onClick={() => onChapterSelect(subChapter)}
+				>
+					{chapter} - {subChapterName}
+				</div>
+			));
 		}
-	}
+	});
+
 	return (
 		<div>
 			<div class={style.comicChapterTitle}>章节</div>
-			{list}
+			<div class={style.comicChapterList}>{chapters}</div>
 		</div>
 	);
 };
 
-const DetailDetails = (comic: ComicDetails) => {
-	const root = <div></div>;
+const DetailDetails: FunctionalComponent<{
+	comic: ComicDetails;
+	onChapterSelect: (chapter: string) => void;
+}> = ({ comic, onChapterSelect }) => {
+	return (
+		<div>
+			{comic.description && (
+				<div class={style.comicDescription}>{comic.description}</div>
+			)}
 
-	if (comic.description) {
-		root.appendChild(
-			<div class={style.comicDescription}>{comic.description}</div>
-		);
-	}
+			{<DetailTags tags={comic.tags} />}
 
-	if (comic.tags) {
-		root.appendChild(DetailTags(comic.tags));
-	}
-
-	if (comic.chapters) {
-		root.appendChild(DetailChapters(comic));
-	}
-
-	return root;
-};
-
-const openManga = (comic: ComicDetails, _chapter?: string) => {
-	const route = router.current;
-	const id = route?.params?.id;
-	const comicId = route?.params?.comicId;
-	let chapter = _chapter;
-	if (!chapter) {
-		if (!comic.chapters) {
-			chapter = "1";
-		} else {
-			chapter = Object.keys(comic.chapters)[0] ?? "1";
-		}
-	}
-	router.navigate(
-		`/comic/${id}/manga/${encodeURIComponent(comicId!)}/${chapter}`
+			{comic.chapters && (
+				<DetailChapters comic={comic} onChapterSelect={onChapterSelect} />
+			)}
+		</div>
 	);
 };
 
 export default () => {
-	const route = router.current;
+	const router = useRouter();
+	const route = useRoute();
 	const id = route?.params?.id;
 	const comicId = route?.params?.comicId;
 	const data = useSharedData<ComicDetails>(`comic-${id}-${comicId}`);
-	const load = async () => {
-		state.loading = true;
-		try {
-			if (!id || !comicId) {
-				return;
+	const [loading, setLoading] = useState(true);
+
+	const openManga = (_chapter?: string) => {
+		if (!data.value) return;
+
+		let chapter = _chapter;
+		if (!chapter) {
+			if (!data.value.chapters) {
+				chapter = "1";
+			} else {
+				chapter = Object.keys(data.value.chapters)[0] ?? "1";
 			}
-			if (!data.value) {
-				data.value = await api.Comic.detail(id, comicId);
-			}
-			state.loading = false;
-			nextTick(() => {
-				root.appendChild(DetailHeader(id, comicId, data.value));
-				root.appendChild(DetailDetails(data.value));
-			});
-		} catch (_) {
-			console.error(_);
 		}
+
+		router.navigate(
+			`/comic/${id}/manga/${encodeURIComponent(comicId!)}/${chapter}`
+		);
 	};
-	const { state, $: Wrapper } = LoadingWrapper(load);
-	load();
-	const root = <div class={style.comicDetailWrapper}>{Wrapper}</div>;
-	return root;
+
+	useEffect(() => {
+		const load = async () => {
+			setLoading(true);
+			try {
+				if (!id || !comicId) {
+					return;
+				}
+				if (!data.value) {
+					data.value = await api.Comic.detail(id, comicId);
+				}
+				setLoading(false);
+			} catch (error) {
+				console.error(error);
+			}
+		};
+
+		load();
+	}, [id, comicId]);
+
+	return (
+		<div class={style.comicDetailWrapper}>
+			<LoadingWrapper loading={loading}>
+				<DetailHeader
+					sourceId={id!}
+					comicId={comicId!}
+					comic={data.value}
+					onRead={() => openManga()}
+				/>
+				<DetailDetails
+					comic={data.value}
+					onChapterSelect={chapter => openManga(chapter)}
+				/>
+			</LoadingWrapper>
+		</div>
+	);
 };

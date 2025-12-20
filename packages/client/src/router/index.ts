@@ -1,4 +1,4 @@
-//import ComicDetail from "@/pages/comic/detail";
+import ComicDetail from "@/pages/comic/detail";
 import ComicExplore from "@/pages/comic/explore";
 //import ComicReader from "@/pages/comic/reader";
 import ComicSourceDetail from "@/pages/comic-source/explore-list";
@@ -50,12 +50,12 @@ const routes: RouteRecord[] = [
 	{
 		path: "/comic/:id/explore/:explore",
 		component: ComicExplore
+	},
+	{
+		path: "/comic/:id/manga/:comicId",
+		component: ComicDetail,
+		title: "漫画详情"
 	}
-	// {
-	// 	path: "/comic/:id/manga/:comicId",
-	// 	component: ComicDetail,
-	// 	title: "漫画详情"
-	// },
 	// {
 	// 	path: "/comic/:id/manga/:comicId/:chapter",
 	// 	component: ComicReader,
