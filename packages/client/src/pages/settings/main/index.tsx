@@ -29,6 +29,28 @@ export default () => {
 			type: "input",
 			title: "HTTP 代理",
 			description: "代理地址，如 http://127.0.0.1:7890"
+		},
+		readerPreloadPages: {
+			type: "select",
+			title: "向后预加载页数",
+			options: [
+				{
+					text: "1",
+					value: "1"
+				},
+				{
+					text: "3",
+					value: "3"
+				},
+				{
+					text: "5",
+					value: "5"
+				},
+				{
+					text: "10",
+					value: "10"
+				}
+			]
 		}
 	};
 	api.App.config().then(v => {
