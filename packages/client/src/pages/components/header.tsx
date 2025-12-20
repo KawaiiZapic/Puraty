@@ -23,10 +23,13 @@ export default () => {
 		}
 	};
 	const [isHome, setIsHome] = useState(false);
+	const [fallbackTitle, setFallbackTitle] = useState("");
 	useEffect(() => {
 		setIsHome(router.current?.path === "/");
-		return router.onEnter(({ path }) => {
+		setFallbackTitle(router.current?.title || "");
+		return router.onEnter(({ path, title }) => {
 			setIsHome(path === "/");
+			setFallbackTitle(title || "");
 		});
 	}, []);
 	return (
@@ -39,7 +42,7 @@ export default () => {
 			{isHome ? (
 				<input class={style.searchBar} placeholder="搜索"></input>
 			) : (
-				<div class={style.pageTitle}>{title}</div>
+				<div class={style.pageTitle}>{title.value || fallbackTitle}</div>
 			)}
 			<RouterLink href="/settings" class={`${style.iconBtn} clickable-item`}>
 				<img src={SettingsFilled}></img>
