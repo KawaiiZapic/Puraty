@@ -10,7 +10,7 @@ import SettingsIndex from "@/pages/settings";
 import ComicCache from "@/pages/settings/cache";
 import ComicSourceList from "@/pages/settings/comic-source";
 import ComicSourceConfig from "@/pages/settings/comic-source/config";
-//import MiscConfig from "@/pages/settings/main/index";
+import MiscConfig from "@/pages/settings/main/index";
 
 import fullscreen from "./plugins/fullscreen";
 import { createRouter, type RouteRecord } from "./router";
@@ -40,12 +40,12 @@ const routes: RouteRecord[] = [
 		path: "/settings/comic-sources/:id",
 		component: ComicSourceConfig,
 		title: "漫画源设置"
+	},
+	{
+		path: "/settings/misc",
+		component: MiscConfig,
+		title: "其他设置"
 	}
-	// {
-	// 	path: "/settings/misc",
-	// 	component: MiscConfig,
-	// 	title: "其他设置"
-	// },
 	// {
 	// 	path: "/source/:id",
 	// 	component: ComicSourceDetail
