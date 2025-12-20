@@ -7,7 +7,7 @@ import { useContext } from "preact/hooks";
 //import ComicSourceDetail from "@/pages/comic-source/explore-list";
 import main from "@/pages/main";
 import SettingsIndex from "@/pages/settings";
-//import ComicCache from "@/pages/settings/cache";
+import ComicCache from "@/pages/settings/cache";
 import ComicSourceList from "@/pages/settings/comic-source";
 import ComicSourceConfig from "@/pages/settings/comic-source/config";
 //import MiscConfig from "@/pages/settings/main/index";
@@ -26,11 +26,11 @@ const routes: RouteRecord[] = [
 		component: SettingsIndex,
 		title: "设置"
 	},
-	// {
-	// 	path: "/settings/cache",
-	// 	component: ComicCache,
-	// 	title: "管理缓存"
-	// },
+	{
+		path: "/settings/cache",
+		component: ComicCache,
+		title: "管理缓存"
+	},
 	{
 		path: "/settings/comic-sources",
 		component: ComicSourceList,
