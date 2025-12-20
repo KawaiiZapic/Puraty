@@ -1,5 +1,5 @@
 //import ComicDetail from "@/pages/comic/detail";
-//import ComicExplore from "@/pages/comic/explore";
+import ComicExplore from "@/pages/comic/explore";
 //import ComicReader from "@/pages/comic/reader";
 import ComicSourceDetail from "@/pages/comic-source/explore-list";
 import main from "@/pages/main";
@@ -46,11 +46,11 @@ const routes: RouteRecord[] = [
 	{
 		path: "/source/:id",
 		component: ComicSourceDetail
+	},
+	{
+		path: "/comic/:id/explore/:explore",
+		component: ComicExplore
 	}
-	// {
-	// 	path: "/comic/:id/explore/:explore",
-	// 	component: ComicExplore
-	// },
 	// {
 	// 	path: "/comic/:id/manga/:comicId",
 	// 	component: ComicDetail,

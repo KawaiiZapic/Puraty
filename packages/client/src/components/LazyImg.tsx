@@ -1,4 +1,4 @@
-import type { BaseProps } from "@puraty/render";
+import { Component } from "preact";
 
 const io = new IntersectionObserver(
 	e => {
@@ -18,24 +18,33 @@ const io = new IntersectionObserver(
 	}
 );
 
-export const LazyImg = (
-	attr: Partial<HTMLImageElement> & BaseProps & { class?: string }
-) => {
-	const img = new Image();
-	for (const key in attr) {
-		if (key in img || key === "class") {
-			if (key === "src") continue;
-			if (key === "class") {
-				img.className = Array.isArray(attr.class)
-					? attr.class.join(" ")
-					: attr.class!;
-			}
-			// @ts-expect-error assign
-			img[key] = attr[key];
-		}
+export class LazyImg extends Component<
+	Partial<HTMLImageElement> & { class?: string }
+> {
+	shouldComponentUpdate() {
+		return false;
 	}
 
-	img.setAttribute("data-lazy-src", attr.src!);
-	io.observe(img);
-	return img;
-};
+	render() {
+		const attr = this.props;
+		const ref = createRef<HTMLImageElement>();
+		const newAttr: Record<string, unknown> = {};
+		for (const key in attr) {
+			if (key !== "src") {
+				// @ts-expect-error complex merging
+				newAttr[key] = attr[key];
+			} else if (attr.src) {
+				newAttr["data-lazy-src"] = attr.src;
+			}
+		}
+		newAttr.ref = ref;
+
+		useEffect(() => {
+			const curr = ref.current;
+			if (!curr) return;
+			io.observe(curr);
+			return () => io.unobserve(curr);
+		}, [ref]);
+		return h("img", newAttr, null);
+	}
+}

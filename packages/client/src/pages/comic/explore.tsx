@@ -3,7 +3,6 @@ import type { Comic, ExplorePageResult } from "@puraty/server";
 import { setTitle } from "../components/header";
 import api from "@/api";
 import { LazyImg } from "@/components/LazyImg";
-import { router } from "@/router";
 import { useSharedData } from "@/utils/SharedData";
 
 import style from "./explore.module.css";
@@ -12,27 +11,26 @@ const ComicItem = ({ comic, sourceId }: { comic: Comic; sourceId: string }) => {
 	return (
 		<RouteLink
 			href={`/comic/${sourceId}/manga/${encodeURIComponent(comic.id)}`}
+			class={`${style.comicItemWrapper} clickable-item`}
 		>
-			<div class={[style.comicItemWrapper, "clickable-item"]}>
-				<LazyImg
-					class={style.comicItemImage}
-					src={api.proxy(sourceId, comic.cover, comic.id)}
-				></LazyImg>
-				<div class={style.comicItemMeta}>
-					<div class={style.comicItemTitle}>{comic.title}</div>
-					<div class={style.comicItemSubtitle}>
-						{comic.subTitle ?? comic.subtitle}
-					</div>
-					<div class={style.comicItemSubtitle}>
-						{[comic.description, comic.maxPage ? `${comic.maxPage} 页` : ""]
-							.filter(v => !!v)
-							.join(" - ")}
-					</div>
-					<div class={style.comicItemTagWrapper}>
-						{comic.tags?.map(t => (
-							<div class={style.comicItemTag}>{t}</div>
-						))}
-					</div>
+			<LazyImg
+				class={style.comicItemImage}
+				src={api.proxy(sourceId, comic.cover, comic.id)}
+			></LazyImg>
+			<div class={style.comicItemMeta}>
+				<div class={style.comicItemTitle}>{comic.title}</div>
+				<div class={style.comicItemSubtitle}>
+					{comic.subTitle ?? comic.subtitle}
+				</div>
+				<div class={style.comicItemSubtitle}>
+					{[comic.description, comic.maxPage ? `${comic.maxPage} 页` : ""]
+						.filter(v => !!v)
+						.join(" - ")}
+				</div>
+				<div class={style.comicItemTagWrapper}>
+					{comic.tags?.map(t => (
+						<div class={style.comicItemTag}>{t}</div>
+					))}
 				</div>
 			</div>
 		</RouteLink>
@@ -40,123 +38,127 @@ const ComicItem = ({ comic, sourceId }: { comic: Comic; sourceId: string }) => {
 };
 
 export default () => {
-	const route = router.current;
+	const route = useRoute();
 	const id = route?.params?.id;
 	const explore = route?.params?.explore;
-	const placeholder = document.createComment("");
-	const bottom = <div class={style.comicListLastPlaceholder}>正在加载</div>;
-	const root = (
-		<div>
-			{placeholder}
-			{bottom}
-		</div>
-	);
 
-	const shared = useSharedData(`comic-list-${id}-${explore}`, {
-		results: [] as ExplorePageResult[],
-		page: 0
-	}).value;
+	const shared = useSharedData(`explore-${id}-${explore}`, {
+		page: 0,
+		results: [] as ExplorePageResult[]
+	});
 
-	let isLoading = false;
-	let isEnded = false;
-	const io = new IntersectionObserver(
-		entries => {
-			if (!isLoading && !isEnded && entries[0].isIntersecting) {
-				shared.page++;
-				getData(shared.page);
+	const [results, setResults] = useState<ExplorePageResult[]>([]);
+	const [isEnded, setIsEnded] = useState(false);
+	const observerTarget = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		let isLoading = false;
+		const { results } = shared.value;
+
+		const isEnd = (detail: ExplorePageResult) => {
+			const page = shared.value.page;
+			if (detail.type === "multiPageComicList") {
+				if (typeof detail.data.maxPage === "number") {
+					return detail.data.maxPage <= page;
+				} else {
+					const lastRecord = results[results.length - 1];
+					if (!lastRecord) return false;
+					return (
+						lastRecord.type === "multiPageComicList" &&
+						lastRecord.data.comics[0].id === detail.data.comics[0]?.id
+					);
+				}
 			}
-		},
-		{
-			rootMargin: "0px 0px 3000px 0px",
-			threshold: 0
-		}
-	);
-	io.observe(bottom as Element);
+			return false;
+		};
 
-	const handleData = (detail: ExplorePageResult) => {
-		if (!id || !explore) return;
-		setTitle(detail.title);
-		if (detail.type === "multiPageComicList") {
-			detail.data.comics.forEach(comic => {
-				placeholder.before(<ComicItem sourceId={id} comic={comic}></ComicItem>);
-			});
-		} else if (detail.type === "singlePageWithMultiPart") {
-			Object.keys(detail.data).forEach(partId => {
-				const partRoot = (
-					<div>
+		const fetchData = async (newPage: number) => {
+			if (!id || !explore || isLoading) return;
+
+			isLoading = true;
+			try {
+				let next: string | undefined = undefined;
+				const last = results[newPage - 2];
+				if (last && last.type === "multiPageComicList") {
+					next = last.data?.next;
+				}
+
+				const detail = await api.Comic.explore(id, explore, newPage, next);
+
+				if (isEnd(detail)) {
+					setIsEnded(true);
+					isLoading = false;
+					return;
+				}
+
+				results.push(detail);
+				shared.value.page = newPage;
+				setResults(prev => [...prev, detail]);
+				setTitle(detail.title);
+			} catch (e) {
+				console.error(e);
+			}
+			isLoading = false;
+		};
+		const observer = new IntersectionObserver(
+			entries => {
+				if (!isLoading && !isEnded && entries[0].isIntersecting) {
+					const page = shared.value.page;
+					fetchData(page + 1);
+				}
+			},
+			{
+				rootMargin: "0px 0px 3000px 0px",
+				threshold: 0
+			}
+		);
+
+		if (observerTarget.current) {
+			observer.observe(observerTarget.current);
+		}
+
+		return () => observer.disconnect();
+	}, []);
+
+	const renderContent = () => {
+		return results.map(result => {
+			if (result.type === "multiPageComicList") {
+				return result.data.comics.map(comic => (
+					<ComicItem key={comic.id} sourceId={id!} comic={comic} />
+				));
+			} else if (result.type === "singlePageWithMultiPart") {
+				return Object.keys(result.data).map(partId => (
+					<div key={partId}>
 						<div style="padding: 0.5rem 0.25rem; font-size: 1.25rem">
 							{partId}
 						</div>
+						{result.data[partId].map(comic => (
+							<ComicItem key={comic.id} sourceId={id!} comic={comic} />
+						))}
 					</div>
-				);
-				detail.data[partId].forEach(comic => {
-					partRoot.appendChild(
-						<ComicItem sourceId={id} comic={comic}></ComicItem>
-					);
-				});
-				placeholder.before(partRoot);
-			});
-		} else if (detail.type === "multiPartPage") {
-			detail.data.forEach(part => {
-				const partRoot = (
-					<div>
+				));
+			} else if (result.type === "multiPartPage") {
+				return result.data.map(part => (
+					<div key={part.title}>
 						<div style="padding: 0.5rem 0.25rem; font-size: 1.25rem">
 							{part.title}
 						</div>
+						{part.comics.map(comic => (
+							<ComicItem key={comic.id} sourceId={id!} comic={comic} />
+						))}
 					</div>
-				);
-				part.comics.forEach(comic => {
-					partRoot.appendChild(
-						<ComicItem sourceId={id} comic={comic}></ComicItem>
-					);
-				});
-				placeholder.before(partRoot);
-			});
-		}
-	};
-	const isEnd = (detail: ExplorePageResult) => {
-		if (detail.type === "multiPageComicList") {
-			if (typeof detail.data.maxPage === "number") {
-				return detail.data.maxPage >= shared.page;
-			} else {
-				const lastRecord = shared.results[shared.results.length - 1];
-				if (!lastRecord) return false;
-				return (
-					lastRecord.type === "multiPageComicList" &&
-					lastRecord.data.comics[0].id === detail.data.comics[0]?.id
-				);
+				));
 			}
-		}
-		return false;
+			return null;
+		});
 	};
-	const getData = async (page = 1) => {
-		if (!id || !explore || isLoading) return;
-		isLoading = true;
-		try {
-			let next: string | undefined = undefined;
-			const last = shared.results[page - 2];
-			if (last && last.type === "multiPageComicList") {
-				next = last.data?.next;
-			}
-			const detail = await api.Comic.explore(id, explore, page, next);
-			if (isEnd(detail)) {
-				isEnded = true;
-				bottom.textContent = "没有更多了";
-				return;
-			}
-			handleData(detail);
-			shared.results.push(detail);
-		} catch {}
-		isLoading = false;
-	};
-	(async () => {
-		if (!id || !explore) return;
-		if (shared.page !== 0) {
-			shared.results.forEach(handleData);
-			return;
-		}
-		shared.page = 1;
-		getData(shared.page);
-	})();
-	return root;
+
+	return (
+		<div>
+			{renderContent()}
+			<div ref={observerTarget} class={style.comicListLastPlaceholder}>
+				{isEnded ? "没有更多了" : "正在加载"}
+			</div>
+		</div>
+	);
 };
