@@ -11,7 +11,7 @@ import { initializeHandlers } from "@/utils/decorators";
 import { env } from "@/utils/env";
 import { requestExitFullscreen } from "@/utils/process";
 
-const assertBase = "./frontend";
+const assertBase = "./client";
 const serveStatic = async (fp: string) => {
 	const p = path.join(assertBase, fp);
 	try {
