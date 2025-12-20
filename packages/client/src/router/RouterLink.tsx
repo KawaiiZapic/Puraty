@@ -12,7 +12,9 @@ export const RouterLink: FunctionalComponent<{
 		e.preventDefault();
 		// a 100 ms delay to show a click response to user
 		setTimeout(() => {
-			router.navigate(props.href);
+			if (!router.__router.matchLocation(props.href)) {
+				router.navigate(props.href);
+			}
 		}, 100);
 	}, []);
 	return (

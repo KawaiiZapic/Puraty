@@ -1,6 +1,6 @@
 import type { FunctionalComponent } from "preact";
 
-import { useRouter } from "@/router";
+import { RouterLink } from "@/router/RouterLink";
 
 import style from "./List.module.css";
 
@@ -19,22 +19,19 @@ interface ListItemProps {
 	onClick?: (e: MouseEvent) => void;
 }
 
-export const ListItem: FunctionalComponent<ListItemProps> = attr => {
-	const { href, onClick } = attr;
-	const router = useRouter();
-	const handleClick = (e: MouseEvent) => {
-		if (href) {
-			setTimeout(() => {
-				router.navigate(href);
-			}, 100);
-		} else if (onClick) {
-			onClick(e);
-		}
-	};
-	return (
-		<li class={`clickable-item ${style.listItem}`} onClick={handleClick}>
-			{attr.children}
-		</li>
+export const ListItem: FunctionalComponent<ListItemProps> = ({
+	href,
+	onClick,
+	children
+}) => {
+	return href ? (
+		<RouterLink class={`clickable-item ${style.listItem}`} href={href}>
+			{children}
+		</RouterLink>
+	) : (
+		<div class={`clickable-item ${style.listItem}`} onClick={onClick}>
+			{children}
+		</div>
 	);
 };
 
