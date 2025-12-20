@@ -47,13 +47,16 @@ export default () => {
 		results: [] as ExplorePageResult[]
 	});
 
-	const [results, setResults] = useState<ExplorePageResult[]>([]);
+	const [results, setResults] = useState<ExplorePageResult[]>(
+		shared.value.results
+	);
 	const [isEnded, setIsEnded] = useState(false);
 	const observerTarget = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
 		let isLoading = false;
 		const { results } = shared.value;
+		setTitle(results[0]?.title ?? "");
 
 		const isEnd = (detail: ExplorePageResult) => {
 			const page = shared.value.page;
