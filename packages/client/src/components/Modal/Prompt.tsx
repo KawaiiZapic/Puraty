@@ -1,4 +1,4 @@
-import { createRef, type RenderableProps } from "preact";
+import { type RenderableProps } from "preact";
 
 export interface PromptField {
 	title?: string;

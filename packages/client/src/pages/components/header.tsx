@@ -1,7 +1,6 @@
 import { signal } from "@preact/signals";
 import ChevronLeftFilled from "@sicons/material/ChevronLeftFilled.svg";
 import SettingsFilled from "@sicons/material/SettingsFilled.svg";
-import { useEffect, useState } from "preact/hooks";
 
 import { useRouter } from "@/router";
 import { RouterLink } from "@/router/RouterLink";

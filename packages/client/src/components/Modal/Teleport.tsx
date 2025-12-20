@@ -1,5 +1,5 @@
-import { createContext, type FunctionComponent, type VNode } from "preact";
-import { useContext, useReducer, type Dispatch } from "preact/hooks";
+import type { FunctionalComponent, VNode } from "preact";
+import type { Dispatch } from "preact/hooks";
 
 const TeleportContext = createContext<
 	Dispatch<{
@@ -8,7 +8,7 @@ const TeleportContext = createContext<
 	}>
 >(null as never);
 
-export const TeleportWrapper: FunctionComponent = ({ children }) => {
+export const TeleportWrapper: FunctionalComponent = ({ children }) => {
 	const [list, updateList] = useReducer(
 		(
 			state,

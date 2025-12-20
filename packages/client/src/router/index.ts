@@ -1,6 +1,3 @@
-import { createContext } from "preact";
-import { useContext, useEffect, useState } from "preact/hooks";
-
 //import ComicDetail from "@/pages/comic/detail";
 //import ComicExplore from "@/pages/comic/explore";
 //import ComicReader from "@/pages/comic/reader";

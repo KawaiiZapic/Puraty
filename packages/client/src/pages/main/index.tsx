@@ -1,6 +1,5 @@
 import type { InstalledSourceDetail } from "@puraty/server";
 import ExploreOutlined from "@sicons/material/ExploreOutlined.svg";
-import { useEffect, useState } from "preact/hooks";
 
 import api from "@/api";
 import { List, ListIcon, ListItem, ListTitle } from "@/components";

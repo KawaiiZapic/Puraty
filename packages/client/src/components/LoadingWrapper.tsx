@@ -1,6 +1,6 @@
-import type { FunctionComponent } from "preact";
+import type { FunctionalComponent } from "preact";
 
-const LoadingWrapper: FunctionComponent<{
+const LoadingWrapper: FunctionalComponent<{
 	onRetry?: () => void;
 	loading: boolean;
 	errorMsg?: string;

@@ -1,5 +1,4 @@
-import { type FunctionalComponent } from "preact";
-import { useCallback } from "preact/hooks";
+import type { FunctionalComponent } from "preact";
 
 import { useRouter } from ".";
 

@@ -1,6 +1,5 @@
 import WarningAmberOutlined from "@sicons/material/WarningAmberOutlined.svg";
-import type { FunctionComponent } from "preact";
-import { useMemo, useState } from "preact/hooks";
+import type { FunctionalComponent } from "preact";
 
 import type { ListSourceDetail } from "..";
 import api from "@/api";
@@ -8,7 +7,7 @@ import { RouterLink } from "@/router/RouterLink";
 
 import style from "./source-item.module.css";
 
-const fc: FunctionComponent<{
+const fc: FunctionalComponent<{
 	item: ListSourceDetail;
 }> = ({ item }) => {
 	const [isLoading, setLoading] = useState(false);

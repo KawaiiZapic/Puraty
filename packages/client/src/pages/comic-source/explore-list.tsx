@@ -1,5 +1,3 @@
-import { useEffect, useState } from "preact/hooks";
-
 import { setTitle } from "../components/header";
 import api from "@/api";
 import { List, ListItem } from "@/components";

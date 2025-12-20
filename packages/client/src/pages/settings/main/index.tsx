@@ -1,6 +1,5 @@
 import type { AppConfig } from "@puraty/server";
 import type { VNode } from "preact";
-import { useMemo } from "preact/hooks";
 
 import api from "@/api";
 import { useModal } from "@/components";

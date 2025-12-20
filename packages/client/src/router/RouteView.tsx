@@ -1,17 +1,10 @@
-import {
-	createContext,
-	Fragment,
-	h,
-	type ComponentType,
-	type FunctionComponent
-} from "preact";
-import { useContext, useEffect, useState } from "preact/hooks";
+import type { ComponentType, FunctionalComponent } from "preact";
 
 import { useRouter } from ".";
 
 const RouteViewIndex = createContext(0);
 
-export const RouteView: FunctionComponent = () => {
+export const RouteView: FunctionalComponent = () => {
 	const [currentRoute, setCurrent] = useState<ComponentType[]>([]);
 	const routeLevel = useContext(RouteViewIndex);
 	const router = useRouter();

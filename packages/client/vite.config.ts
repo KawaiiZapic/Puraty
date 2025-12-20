@@ -2,11 +2,33 @@ import path from "node:path";
 
 import preact from "@preact/preset-vite";
 import autoprefixer from "autoprefixer";
+import AutoImport from "unplugin-auto-import/vite";
 import { defineConfig } from "vite";
 
 export default defineConfig(() => {
 	return {
-		plugins: [preact()],
+		plugins: [
+			preact(),
+			AutoImport({
+				imports: [
+					"preact",
+					{
+						from: "preact",
+						imports: ["createContext", "createRef", "Fragment", "h"]
+					},
+					{
+						from: "@/router",
+						imports: ["useRouter", "useRoute"]
+					},
+					{
+						from: "preact",
+						imports: ["FunctionalComponent", "ComponentType", "VNode"],
+						type: true
+					}
+				],
+				dts: "src/types/auto-imports.d.ts"
+			})
+		],
 		base: "",
 		build: {
 			minify: false,

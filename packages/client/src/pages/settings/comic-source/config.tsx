@@ -1,5 +1,4 @@
 import type { InstalledSourceDetail } from "@puraty/server";
-import { useState, useEffect, useMemo } from "preact/hooks";
 
 import api from "@/api";
 import { useModal } from "@/components";

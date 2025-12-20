@@ -1,4 +1,4 @@
-import type { FunctionComponent } from "preact";
+import type { FunctionalComponent } from "preact";
 
 import { TeleportWrapper } from "@/components/Modal/Teleport";
 import { RouterContext } from "@/router";
@@ -16,4 +16,4 @@ export default (({ router }) => {
 			</RouterContext.Provider>
 		</TeleportWrapper>
 	);
-}) as FunctionComponent<{ router: Router }>;
+}) as FunctionalComponent<{ router: Router }>;
