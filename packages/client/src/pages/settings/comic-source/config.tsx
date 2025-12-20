@@ -1,182 +1,218 @@
-import {
-	shallowReactive,
-	shallowRef,
-	toRef,
-	watch,
-	type Ref
-} from "@puraty/reactivity";
 import type { InstalledSourceDetail } from "@puraty/server";
+import { useState, useEffect, useMemo } from "preact/hooks";
 
 import api from "@/api";
-import { Prompt, Alert } from "@/components";
-import { Checkbox, Input, Select } from "@/components/InputModel";
-import { router } from "@/router";
+import { useModal } from "@/components";
+import { useRouter } from "@/router";
 
 import style from "./config.module.css";
 
-export default () => {
-	const id = router.current!.params!.id;
-	const loginGroup = <div></div>;
+export default function ComicSourceConfig() {
+	const id = useRouter().current!.params.id!;
+	const [sourceDetail, setSourceDetail] =
+		useState<InstalledSourceDetail | null>(null);
+	const [isLoading, setIsLoading] = useState(false);
+	const [result, setResult] = useState<Record<string, string>>({});
+	const modal = useModal();
 
-	const $ = (<div>{loginGroup}</div>) as HTMLDivElement;
-
-	const updateLoginStatus = (v: InstalledSourceDetail) => {
-		loginGroup.childNodes.forEach(v => loginGroup.removeChild(v));
-		const isLoading = shallowRef(false);
-		if (!v.isLogged) {
-			if (v.features.UAPLogin) {
-				const onClick = () => {
-					Prompt(
-						[
-							{
-								key: "username",
-								title: "用户名"
-							},
-							{
-								key: "password",
-								title: "密码"
-							}
-						],
-						"登录"
-					).then(async r => {
-						if (!r.username || !r.password) return;
-						isLoading.value = true;
-						try {
-							await api.ComicSource.doUAPLogin(id, r.username, r.password);
-							v.isLogged = true;
-							updateLoginStatus(v);
-							Alert("登录成功");
-						} catch (e) {
-							Alert("登录失败: " + api.normalizeError(e));
-						} finally {
-							isLoading.value = false;
-						}
-					});
-				};
-				loginGroup.appendChild(
-					<div class={style.sourceConfigItem}>
-						用户名密码登录
-						<button disabled={isLoading} onClick={onClick}>
-							登录
-						</button>
-					</div>
-				);
-			}
-			if (v.features.CookieLogin) {
-				const onClick = () => {
-					Prompt(
-						v.features.CookieLogin!.map(key => ({ key })),
-						"Cookie 登录"
-					).then(async r => {
-						isLoading.value = true;
-						try {
-							await api.ComicSource.doCookieLogin(id, r);
-							v.isLogged = true;
-							updateLoginStatus(v);
-							Alert("登录成功");
-						} catch (e) {
-							Alert("登录失败: " + api.normalizeError(e));
-						} finally {
-							isLoading.value = false;
-						}
-					});
-				};
-				loginGroup.appendChild(
-					<div class={style.sourceConfigItem}>
-						Cookie 登录
-						<button disabled={isLoading} onClick={onClick}>
-							登录
-						</button>
-					</div>
-				);
-			}
-		} else if (v.features.logout) {
-			const onClick = async () => {
-				isLoading.value = true;
-				try {
-					await api.ComicSource.logout(id);
-					v.isLogged = false;
-					updateLoginStatus(v);
-					Alert("已退出登录");
-				} catch (e) {
-					Alert("无法退出登录: " + api.normalizeError(e));
-					console.error(e);
-				} finally {
-					isLoading.value = false;
+	useEffect(() => {
+		api.ComicSource.get(id).then(v => {
+			setSourceDetail(v);
+			const initialValues = { ...v.settingValues } as Record<string, string>;
+			for (const k in v.settings) {
+				const s = v.settings[k];
+				if (!(k in initialValues) && s.type !== "callback" && s.default) {
+					initialValues[k] = String(s.default);
 				}
-			};
-			loginGroup.appendChild(
-				<div class={style.sourceConfigItem}>
-					已登录
-					<button disabled={isLoading} onClick={onClick}>
-						退出登录
-					</button>
-				</div>
-			);
+			}
+			setResult(initialValues);
+		});
+	}, [id]);
+
+	const saveSettings = useMemo(() => {
+		let timer: number | null = null;
+		return () => {
+			if (timer) {
+				clearTimeout(timer);
+			}
+			timer = setTimeout(() => {
+				api.ComicSource.modify(id, result);
+			}, 500);
+		};
+	}, []);
+
+	const handleUAPLogin = () => {
+		modal
+			.prompt(
+				[
+					{
+						key: "username",
+						title: "用户名"
+					},
+					{
+						key: "password",
+						title: "密码"
+					}
+				],
+				"登录"
+			)
+			.then(async r => {
+				if (!r.username || !r.password) return;
+				setIsLoading(true);
+				try {
+					await api.ComicSource.doUAPLogin(id, r.username, r.password);
+					setSourceDetail(prev => (prev ? { ...prev, isLogged: true } : null));
+					modal.alert("登录成功");
+				} catch (e) {
+					modal.alert("登录失败: " + api.normalizeError(e));
+				} finally {
+					setIsLoading(false);
+				}
+			})
+			.catch(() => {});
+	};
+
+	const handleCookieLogin = () => {
+		if (!sourceDetail) return;
+		const cookieFields = sourceDetail.features.CookieLogin || [];
+		modal
+			.prompt(
+				cookieFields.map(key => ({ key })),
+				"Cookie 登录"
+			)
+			.then(async r => {
+				setIsLoading(true);
+				try {
+					await api.ComicSource.doCookieLogin(id, r);
+					setSourceDetail(prev => (prev ? { ...prev, isLogged: true } : null));
+					modal.alert("登录成功");
+				} catch (e) {
+					modal.alert("登录失败: " + api.normalizeError(e));
+				} finally {
+					setIsLoading(false);
+				}
+			});
+	};
+
+	const handleLogout = async () => {
+		setIsLoading(true);
+		try {
+			await api.ComicSource.logout(id);
+			setSourceDetail(prev => (prev ? { ...prev, isLogged: false } : null));
+			modal.alert("已退出登录");
+		} catch (e) {
+			modal.alert("无法退出登录: " + api.normalizeError(e));
+			console.error(e);
+		} finally {
+			setIsLoading(false);
 		}
 	};
-	api.ComicSource.get(id).then(v => {
-		if (v.initializedError) {
-			$.prepend(
+
+	const handleCallback = async (key: string) => {
+		setIsLoading(true);
+		try {
+			await api.ComicSource.execCallback(id, key);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	const handleInputChange = (key: string, value: string) => {
+		setResult(prev => ({
+			...prev,
+			[key]: value
+		}));
+		saveSettings();
+	};
+
+	if (!sourceDetail) {
+		return <></>;
+	}
+
+	return (
+		<div>
+			{sourceDetail.initializedError && (
 				<div class={style.sourceInitializeError}>
 					<div>警告：漫画源初始化失败</div>
-					<pre>{v.initializedError}</pre>
+					<pre>{sourceDetail.initializedError}</pre>
 				</div>
-			);
-		}
-		updateLoginStatus(v);
-		const result = shallowReactive(v.settingValues) as Record<string, string>;
-		for (const k in v.settings) {
-			const s = v.settings[k];
-			const $item = <div class={style.sourceConfigItem}> {s.title} </div>;
-			if (!(k in result) && s.type !== "callback" && s.default) {
-				result[k] = String(s.default);
-			}
-			if (s.type === "input") {
-				const v = toRef(result, k);
-				$item.appendChild(<Input name={k} modelValue={v}></Input>);
-			} else if (s.type === "switch") {
-				const v = toRef(result, k);
-				$item.appendChild(
-					<Checkbox name={k} type="checkbox" modelValue={v}></Checkbox>
-				);
-			} else if (s.type === "select") {
-				const v = toRef(result, k) as Ref<string>;
-				const $opts = s.options?.map(opt => {
-					return <option value={opt.value}>{opt.text ?? opt.value}</option>;
-				});
-				const $select = (
-					<Select name={k} modelValue={v}>
-						{" "}
-						{$opts}{" "}
-					</Select>
-				);
-				$item.appendChild($select);
-			} else if (s.type === "callback") {
-				const isRunning = shallowRef(false);
-				const cb = async () => {
-					if (isRunning.value) return;
-					isRunning.value = true;
-					try {
-						await api.ComicSource.execCallback(id, k);
-					} finally {
-						isRunning.value = false;
-					}
-				};
-				$item.appendChild(
-					<button disabled={isRunning} onClick={cb}>
-						{s.buttonText ?? "执行"}
-					</button>
-				);
-			}
-			$.appendChild($item);
-		}
-		watch(result, () => {
-			api.ComicSource.modify(id, {
-				settingValues: result
-			});
-		});
-	});
+			)}
+			{!sourceDetail.isLogged ? (
+				<>
+					{sourceDetail.features.UAPLogin && (
+						<div class={style.sourceConfigItem}>
+							用户名密码登录
+							<button disabled={isLoading} onClick={handleUAPLogin}>
+								登录
+							</button>
+						</div>
+					)}
+					{sourceDetail.features.CookieLogin && (
+						<div class={style.sourceConfigItem}>
+							Cookie 登录
+							<button disabled={isLoading} onClick={handleCookieLogin}>
+								登录
+							</button>
+						</div>
+					)}
+				</>
+			) : (
+				sourceDetail.features.logout && (
+					<div class={style.sourceConfigItem}>
+						已登录
+						<button disabled={isLoading} onClick={handleLogout}>
+							退出登录
+						</button>
+					</div>
+				)
+			)}
 
-	return $;
-};
+			{/* 设置项 */}
+			{sourceDetail.settings &&
+				Object.entries(sourceDetail.settings).map(([key, setting]) => {
+					const item = (
+						<div class={style.sourceConfigItem}>
+							{setting.title}
+							{setting.type === "input" && (
+								<input
+									name={key}
+									value={result[key] || ""}
+									onInput={e => handleInputChange(key, e.currentTarget.value)}
+								/>
+							)}
+							{setting.type === "switch" && (
+								<input
+									type="checkbox"
+									name={key}
+									checked={result[key] === "true"}
+									onChange={e =>
+										handleInputChange(key, e.currentTarget.checked.toString())
+									}
+								/>
+							)}
+							{setting.type === "select" && (
+								<select
+									name={key}
+									value={result[key] || ""}
+									onChange={e => handleInputChange(key, e.currentTarget.value)}
+								>
+									{setting.options?.map(opt => (
+										<option value={opt.value}>{opt.text ?? opt.value}</option>
+									))}
+								</select>
+							)}
+							{setting.type === "callback" && (
+								<button
+									disabled={isLoading}
+									onClick={() => handleCallback(key)}
+								>
+									{setting.buttonText ?? "执行"}
+								</button>
+							)}
+						</div>
+					);
+					return item;
+				})}
+		</div>
+	);
+}

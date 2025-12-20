@@ -1,42 +1,33 @@
-import { computed, shallowReactive, toRef } from "@puraty/reactivity";
+import type { FunctionComponent } from "preact";
 
-export default (onRetry: () => void) => {
-	const state = shallowReactive({
-		loading: true,
-		errorMsg: ""
-	});
-	const disabled = toRef(state, "loading");
+const LoadingWrapper: FunctionComponent<{
+	onRetry?: () => void;
+	loading: boolean;
+	errorMsg?: string;
+}> = ({ onRetry, loading, errorMsg, children }) => {
+	const btnText = loading ? "正在加载" : "重试";
+	const btnStyle = !errorMsg ? "display: none" : "";
+	const showWrapper = !!errorMsg || loading;
+	const tipText = errorMsg || "正在加载...";
 
-	const btnText = computed(() => {
-		return state.loading ? "正在加载" : "重试";
-	});
-	const btnStyle = computed(() => {
-		return !state.errorMsg ? "display: none" : "";
-	});
-	const showWrapper = computed(() => {
-		return !!state.errorMsg || state.loading;
-	});
-
-	const tipText = computed(() => {
-		return state.errorMsg || "正在加载...";
-	});
-	const $ = (
-		<div style={"padding: 2rem 0; text-align: center"} p-show={showWrapper}>
+	return showWrapper ? (
+		<div style={"padding: 2rem 0; text-align: center"}>
 			<div style="padding: 1rem 0;">{tipText}</div>
-			<button
-				style={btnStyle}
-				disabled={disabled}
-				onClick={() => {
-					onRetry();
-				}}
-			>
-				{btnText}
-			</button>
+			{onRetry ?? (
+				<button
+					style={btnStyle}
+					disabled={loading}
+					onClick={() => {
+						onRetry!();
+					}}
+				>
+					{btnText}
+				</button>
+			)}
 		</div>
+	) : (
+		<>{children}</>
 	);
-
-	return {
-		state,
-		$
-	};
 };
+
+export default LoadingWrapper;

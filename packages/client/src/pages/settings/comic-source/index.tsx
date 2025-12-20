@@ -1,60 +1,65 @@
+import { useCallback, useEffect, useState } from "preact/hooks";
+
 import api from "@/api";
 import LoadingWrapper from "@/components/LoadingWrapper";
 
 import SourceItem from "./components/source-item";
 
+export interface ListSourceDetail {
+	name: string;
+	key: string;
+	version?: string;
+	description?: string;
+	fileName?: string;
+	initialized?: boolean;
+	installedVersion?: string;
+}
+
 export default () => {
-	const load = async () => {
-		state.loading = true;
+	const [isLoading, setLoading] = useState(true);
+	const [installed, setInstalled] = useState<ListSourceDetail[]>([]);
+	const [available, setAvailable] = useState<ListSourceDetail[]>([]);
+	const load = useCallback(async () => {
+		setLoading(true);
 		try {
-			list.innerHTML = "";
-			list.prepend(loadingWrapper);
-			const installed = await api.ComicSource.list(true);
-			installed.forEach(source => {
-				list.prepend(
-					SourceItem({
-						item: {
-							key: source.key,
-							name: source.name,
-							version: source.version,
-							fileName: "",
-							initialized: !source.initializedError
-						},
-						installedVersion: source.version
-					})
-				);
+			const _installed = (await api.ComicSource.list(true)).map(v => {
+				return {
+					name: v.name,
+					key: v.key,
+					installedVersion: v.version
+				};
 			});
-			const available = await api.ComicSource.available();
-			list.innerHTML = "";
-			installed.forEach(source => {
-				const orig = available.find(it => it.key === source.key);
-				list.prepend(
-					SourceItem({
-						item: {
-							key: source.key,
-							name: source.name,
-							version: orig?.version || source.version,
-							fileName: orig?.fileName || "",
-							description: orig?.description,
-							initialized: !source.initializedError
-						},
-						installedVersion: source.version
-					})
-				);
-			});
-			available.forEach(item => {
-				if (installed.find(it => it.key === item.key)) return;
-				list.appendChild(SourceItem({ item }));
-			});
+			setInstalled(_installed);
+			const _available = await api.ComicSource.available();
+			setAvailable(
+				_available.filter(it => {
+					const idx = _installed.findIndex(it2 => it2.key === it.key);
+					if (idx > -1) {
+						_installed[idx] = {
+							...it,
+							installedVersion: _installed[idx].installedVersion
+						};
+					}
+					return idx < 0;
+				})
+			);
 		} catch (_) {
 			console.error(_);
-			state.errorMsg = "加载列表失败";
 		} finally {
-			state.loading = false;
+			setLoading(false);
 		}
-	};
-	const { state, $: loadingWrapper } = LoadingWrapper(load);
-	const list = (<div>{loadingWrapper}</div>) as HTMLElement;
-	load();
-	return list;
+	}, []);
+	useEffect(() => void load(), []);
+	return (
+		<>
+			{installed.map(source => (
+				<SourceItem item={source} key={source.key} />
+			))}
+			<LoadingWrapper loading={isLoading} onRetry={load}>
+				{available.map(source => (
+					<SourceItem item={source} key={source.key} />
+				))}
+			</LoadingWrapper>
+		</>
+	);
 };

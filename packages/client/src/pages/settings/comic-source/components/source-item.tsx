@@ -1,87 +1,48 @@
-import { computed, shallowReactive, watch } from "@puraty/reactivity";
-import type { NetworkSourceDetail } from "@puraty/server";
 import WarningAmberOutlined from "@sicons/material/WarningAmberOutlined.svg";
+import type { FunctionComponent } from "preact";
+import { useMemo, useState } from "preact/hooks";
 
+import type { ListSourceDetail } from "..";
 import api from "@/api";
 import { RouterLink } from "@/router/RouterLink";
 
 import style from "./source-item.module.css";
 
-export default ({
-	item,
-	installedVersion
-}: {
-	item: NetworkSourceDetail & { initialized?: boolean };
-	installedVersion?: string;
-}) => {
-	const state = shallowReactive({
-		loading: false,
-		installedVersion
-	});
-	const ConfigBtn = () => {
-		let $: Node = document.createComment("");
-		watch(
-			state,
-			() => {
-				let $new: Node;
-				if (state.installedVersion) {
-					$new = (
-						<RouterLink
-							class={["clickable-item", style.listItemBtn]}
-							href={"/settings/comic-sources/" + item.key}
-						>
-							设置
-						</RouterLink>
-					);
-				} else {
-					$new = document.createComment("");
-				}
-				$.parentNode?.replaceChild($new, $);
-				$ = $new;
-			},
-			{ immediate: true }
-		);
-		return $;
-	};
-	const InsBtn = () => {
-		const updateBtnStateText = computed(() => {
-			let res = "";
-			if (state.installedVersion === item.version) {
-				res = "卸载";
+const fc: FunctionComponent<{
+	item: ListSourceDetail;
+}> = ({ item }) => {
+	const [isLoading, setLoading] = useState(false);
+	const [installedVersion, setInstalledVersion] = useState(
+		item.installedVersion
+	);
+	const insBtnText = useMemo(() => {
+		let res = "";
+		if (installedVersion === item.version || !item.version) {
+			res = "卸载";
+		} else if (item.version) {
+			res = installedVersion ? `升级到 ${item.version}` : "安装";
+		}
+		if (isLoading) {
+			res = "正在" + res;
+		}
+		return res;
+	}, [isLoading, item]);
+	const doInstall = async () => {
+		if (isLoading) return;
+		setLoading(true);
+		try {
+			if (installedVersion !== item.version) {
+				await api.ComicSource.add(item.fileName!, item.key).then(() => {
+					setInstalledVersion(item.version);
+				});
 			} else {
-				res = state.installedVersion ? "升级" : "安装";
+				await api.ComicSource.delete(item.key).then(() => {
+					setInstalledVersion(undefined);
+				});
 			}
-			if (state.loading) {
-				res = "正在" + res;
-			}
-			return res;
-		});
-		const doInstall = () => {
-			if (state.loading) return;
-			state.loading = true;
-			if (state.installedVersion !== item.version) {
-				api.ComicSource.add(item.fileName, item.key)
-					.then(() => {
-						state.installedVersion = item.version;
-					})
-					.finally(() => {
-						state.loading = false;
-					});
-			} else {
-				api.ComicSource.delete(item.key)
-					.then(() => {
-						state.installedVersion = undefined;
-					})
-					.finally(() => {
-						state.loading = false;
-					});
-			}
-		};
-		return (
-			<div onClick={doInstall} class={["clickable-item", style.listItemBtn]}>
-				{updateBtnStateText}
-			</div>
-		);
+		} finally {
+			setLoading(false);
+		}
 	};
 	const initializedMark =
 		item.initialized === false ? (
@@ -95,14 +56,23 @@ export default ({
 					{item.name}
 				</div>
 				<div class={style.listItemDesc}>
-					{!installedVersion || item.version === installedVersion
-						? item.version
-						: "可升级: " + item.version}{" "}
+					{item.installedVersion ?? item.version}
 					{item.description ? " - " + item.description : ""}
 				</div>
 			</div>
-			<ConfigBtn />
-			<InsBtn />
+			{installedVersion && (
+				<RouterLink
+					class={`clickable-item ${style.listItemBtn}`}
+					href={"/settings/comic-sources/" + item.key}
+				>
+					设置
+				</RouterLink>
+			)}
+			<div onClick={doInstall} class={`clickable-item ${style.listItemBtn}`}>
+				{insBtnText}
+			</div>
 		</div>
 	);
 };
+
+export default fc;
