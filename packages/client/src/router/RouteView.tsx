@@ -1,7 +1,5 @@
 import type { ComponentType, FunctionalComponent } from "preact";
 
-import { useRouter } from ".";
-
 const RouteViewIndex = createContext(0);
 
 export const RouteView: FunctionalComponent = () => {

@@ -3,7 +3,6 @@ import type { FunctionalComponent } from "preact";
 
 import type { ListSourceDetail } from "..";
 import api from "@/api";
-import { RouterLink } from "@/router/RouterLink";
 
 import style from "./source-item.module.css";
 
@@ -60,12 +59,12 @@ const fc: FunctionalComponent<{
 				</div>
 			</div>
 			{installedVersion && (
-				<RouterLink
+				<RouteLink
 					class={`clickable-item ${style.listItemBtn}`}
 					href={"/settings/comic-sources/" + item.key}
 				>
 					设置
-				</RouterLink>
+				</RouteLink>
 			)}
 			<div onClick={doInstall} class={`clickable-item ${style.listItemBtn}`}>
 				{insBtnText}

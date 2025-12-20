@@ -1,7 +1,5 @@
 import type { FunctionalComponent } from "preact";
 
-import { RouterLink } from "@/router/RouterLink";
-
 import style from "./List.module.css";
 
 export const List: FunctionalComponent<{
@@ -25,9 +23,9 @@ export const ListItem: FunctionalComponent<ListItemProps> = ({
 	children
 }) => {
 	return href ? (
-		<RouterLink class={`clickable-item ${style.listItem}`} href={href}>
+		<RouteLink class={`clickable-item ${style.listItem}`} href={href}>
 			{children}
-		</RouterLink>
+		</RouteLink>
 	) : (
 		<div class={`clickable-item ${style.listItem}`} onClick={onClick}>
 			{children}

@@ -1,7 +1,6 @@
 import { setTitle } from "../components/header";
 import api from "@/api";
 import { List, ListItem } from "@/components";
-import { useRoute } from "@/router";
 
 type ExploreList = Awaited<ReturnType<typeof api.ComicSource.get>>["explore"];
 

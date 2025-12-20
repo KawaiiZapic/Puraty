@@ -1,8 +1,6 @@
 import type { FunctionalComponent } from "preact";
 
-import { useRouter } from ".";
-
-export const RouterLink: FunctionalComponent<{
+export const RouteLink: FunctionalComponent<{
 	href: string;
 	class?: string;
 }> = props => {

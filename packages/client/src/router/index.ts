@@ -88,3 +88,5 @@ export const useRoute = () => {
 	}, []);
 	return route;
 };
+
+export { RouteLink } from "./RouteLink";

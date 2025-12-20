@@ -1,29 +1,28 @@
 import api from "@/api";
-import { RouterLink } from "@/router/RouterLink";
 
 import style from "./index.module.css";
 
 export default () => {
 	return (
 		<div>
-			<RouterLink
+			<RouteLink
 				href="/settings/comic-sources"
 				class={`${style.listItem} clickable-item`}
 			>
 				管理漫画源
-			</RouterLink>
-			<RouterLink
+			</RouteLink>
+			<RouteLink
 				href="/settings/cache"
 				class={`${style.listItem} clickable-item`}
 			>
 				管理缓存
-			</RouterLink>
-			<RouterLink
+			</RouteLink>
+			<RouteLink
 				href="/settings/misc"
 				class={`${style.listItem} clickable-item`}
 			>
 				其他设置
-			</RouterLink>
+			</RouteLink>
 			<div
 				onClick={() => api.Command.exit()}
 				class={`${style.listItem} clickable-item`}

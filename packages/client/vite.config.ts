@@ -18,7 +18,7 @@ export default defineConfig(() => {
 					},
 					{
 						from: "@/router",
-						imports: ["useRouter", "useRoute"]
+						imports: ["useRouter", "useRoute", "RouteLink"]
 					},
 					{
 						from: "preact",

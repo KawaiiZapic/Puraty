@@ -2,9 +2,6 @@ import { signal } from "@preact/signals";
 import ChevronLeftFilled from "@sicons/material/ChevronLeftFilled.svg";
 import SettingsFilled from "@sicons/material/SettingsFilled.svg";
 
-import { useRouter } from "@/router";
-import { RouterLink } from "@/router/RouterLink";
-
 import style from "./header.module.css";
 
 const title = signal("");
@@ -44,9 +41,9 @@ export default () => {
 			) : (
 				<div class={style.pageTitle}>{title.value || fallbackTitle}</div>
 			)}
-			<RouterLink href="/settings" class={`${style.iconBtn} clickable-item`}>
+			<RouteLink href="/settings" class={`${style.iconBtn} clickable-item`}>
 				<img src={SettingsFilled}></img>
-			</RouterLink>
+			</RouteLink>
 		</div>
 	);
 };

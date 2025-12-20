@@ -4,14 +4,13 @@ import { setTitle } from "../components/header";
 import api from "@/api";
 import { LazyImg } from "@/components/LazyImg";
 import { router } from "@/router";
-import { RouterLink } from "@/router/RouterLink";
 import { useSharedData } from "@/utils/SharedData";
 
 import style from "./explore.module.css";
 
 const ComicItem = ({ comic, sourceId }: { comic: Comic; sourceId: string }) => {
 	return (
-		<RouterLink
+		<RouteLink
 			href={`/comic/${sourceId}/manga/${encodeURIComponent(comic.id)}`}
 		>
 			<div class={[style.comicItemWrapper, "clickable-item"]}>
@@ -36,7 +35,7 @@ const ComicItem = ({ comic, sourceId }: { comic: Comic; sourceId: string }) => {
 					</div>
 				</div>
 			</div>
-		</RouterLink>
+		</RouteLink>
 	);
 };
 

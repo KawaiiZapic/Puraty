@@ -2,7 +2,6 @@ import type { InstalledSourceDetail } from "@puraty/server";
 
 import api from "@/api";
 import { useModal } from "@/components";
-import { useRouter } from "@/router";
 
 import style from "./config.module.css";
 
