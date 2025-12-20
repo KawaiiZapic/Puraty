@@ -17,7 +17,9 @@ export default () => {
 					<ListIcon icon={ExploreOutlined}></ListIcon>探索
 				</ListTitle>
 				{list.map(item => (
-					<ListItem href={"/source/" + item.key}>{item.name}</ListItem>
+					<ListItem href={"/source/" + item.key} key={item.key}>
+						{item.name}
+					</ListItem>
 				))}
 			</List>
 		</div>
