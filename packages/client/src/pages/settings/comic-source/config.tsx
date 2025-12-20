@@ -29,15 +29,17 @@ export default function ComicSourceConfig() {
 
 	const saveSettings = useMemo(() => {
 		let timer: number | null = null;
-		return () => {
+		return (result: Record<string, string>) => {
 			if (timer) {
 				clearTimeout(timer);
 			}
 			timer = setTimeout(() => {
-				api.ComicSource.modify(id, result);
+				api.ComicSource.modify(id, {
+					settingValues: result
+				});
 			}, 500);
 		};
-	}, []);
+	}, [id]);
 
 	const handleUAPLogin = () => {
 		modal
@@ -116,11 +118,10 @@ export default function ComicSourceConfig() {
 	};
 
 	const handleInputChange = (key: string, value: string) => {
-		setResult(prev => ({
-			...prev,
+		saveSettings({
+			...result,
 			[key]: value
-		}));
-		saveSettings();
+		});
 	};
 
 	if (!sourceDetail) {
