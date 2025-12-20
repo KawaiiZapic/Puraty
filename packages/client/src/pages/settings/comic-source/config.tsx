@@ -166,8 +166,6 @@ export default function ComicSourceConfig() {
 					</div>
 				)
 			)}
-
-			{/* 设置项 */}
 			{sourceDetail.settings &&
 				Object.entries(sourceDetail.settings).map(([key, setting]) => {
 					const item = (

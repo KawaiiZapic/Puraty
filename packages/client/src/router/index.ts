@@ -1,10 +1,10 @@
 import { createContext } from "preact";
-import { useContext } from "preact/hooks";
+import { useContext, useEffect, useState } from "preact/hooks";
 
 //import ComicDetail from "@/pages/comic/detail";
 //import ComicExplore from "@/pages/comic/explore";
 //import ComicReader from "@/pages/comic/reader";
-//import ComicSourceDetail from "@/pages/comic-source/explore-list";
+import ComicSourceDetail from "@/pages/comic-source/explore-list";
 import main from "@/pages/main";
 import SettingsIndex from "@/pages/settings";
 import ComicCache from "@/pages/settings/cache";
@@ -45,11 +45,11 @@ const routes: RouteRecord[] = [
 		path: "/settings/misc",
 		component: MiscConfig,
 		title: "其他设置"
+	},
+	{
+		path: "/source/:id",
+		component: ComicSourceDetail
 	}
-	// {
-	// 	path: "/source/:id",
-	// 	component: ComicSourceDetail
-	// },
 	// {
 	// 	path: "/comic/:id/explore/:explore",
 	// 	component: ComicExplore
@@ -80,3 +80,14 @@ export const RouterContext = createContext<ReturnType<typeof createRouter>>(
 	null as never
 );
 export const useRouter = () => useContext(RouterContext);
+
+export const useRoute = () => {
+	const router = useRouter();
+	const [route, setRoute] = useState(() => router.current);
+	useEffect(() => {
+		return router.onUpdate(() => {
+			setRoute(router.current);
+		});
+	}, []);
+	return route;
+};
