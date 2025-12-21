@@ -6,6 +6,11 @@ import { initializeRouter } from "./router";
 import { initConfig } from "./utils/config";
 import { handleSwipe } from "./utils/swipe";
 
+if (import.meta.env.DEV) {
+	await import("preact/devtools");
+	await import("preact/debug");
+}
+
 const load = async () => {
 	const router = initializeRouter();
 	await initConfig();
