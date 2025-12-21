@@ -3,7 +3,7 @@ import path from "tjs:path";
 import { AppData } from "@/db/AppData";
 import { createSubscriber } from "@/utils/subscriber";
 
-import { configValidator, type AppConfig } from "./app.model";
+import { configValidator, defaultValues, type AppConfig } from "./app.model";
 
 const [onConfigReload, reloadConfig] = createSubscriber();
 
@@ -24,6 +24,20 @@ export class MainService {
 		}
 		await reloadConfig(oldConfig, AppData.getAll());
 		return ignoredKeys;
+	}
+
+	static getConfig() {
+		const result = {
+			...defaultValues
+		};
+		const conf = AppData.getAll();
+		Object.keys(result).forEach(k => {
+			if (conf[k]) {
+				// @ts-expect-error merging keys
+				result[k] = conf[k];
+			}
+		});
+		return result;
 	}
 
 	@onConfigReload

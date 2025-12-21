@@ -55,6 +55,12 @@ const ConfigList: Partial<Record<keyof AppConfig, ConfigItem>> = {
 		type: "switch",
 		title: "模拟墨水屏设备渲染",
 		description: "启用后渲染将会被推迟300毫秒（需要重启）"
+	},
+	debugEnableChromiumRemoteDebug: {
+		type: "switch",
+		title: "Chromium 远程调试",
+		description:
+			"启用后将会在 127.0.0.1:19522 启动Chromium的远程调试（需要重启）"
 	}
 };
 export default () => {

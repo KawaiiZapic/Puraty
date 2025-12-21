@@ -1,5 +1,7 @@
 import path from "tjs:path";
 
+import { MainService } from "@/app/app/app.service";
+
 import { env } from "./env";
 
 const exists = async (path: string) => {
@@ -13,6 +15,10 @@ const exists = async (path: string) => {
 
 export const launchUI = async (signal?: AbortSignal) => {
 	if (env.DEV || (await exists(path.join(APP_DIR, "browser.pid")))) return;
+	const chromiumDebug = MainService.getConfig().debugEnableChromiumRemoteDebug;
+	const extraOptions = [
+		chromiumDebug && "--remote-debugging-port=19522"
+	].filter(v => typeof v === "string");
 	const p = tjs.spawn(
 		[
 			"/usr/bin/chromium/bin/kindle_browser",
@@ -34,6 +40,7 @@ export const launchUI = async (signal?: AbortSignal) => {
 			"--enable-low-res-tiling",
 			"--disable-site-isolation-trials",
 			"--enable-grayscale-mode",
+			...extraOptions,
 			"http://localhost:3000"
 		],
 		{
