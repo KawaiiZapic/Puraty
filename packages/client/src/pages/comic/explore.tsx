@@ -3,6 +3,7 @@ import type { Comic, ExplorePageResult } from "@puraty/server";
 import { setTitle } from "../components/header";
 import api from "@/api";
 import { LazyImg } from "@/components/LazyImg";
+import LoadingWrapper from "@/components/LoadingWrapper";
 import { useSharedData } from "@/utils/SharedData";
 
 import style from "./explore.module.css";
@@ -44,19 +45,35 @@ export default () => {
 
 	const shared = useSharedData(`explore-${id}-${explore}`, {
 		page: 0,
+		isEnded: false,
 		results: [] as ExplorePageResult[]
 	});
 
 	const [results, setResults] = useState<ExplorePageResult[]>(
 		shared.value.results
 	);
-	const [isEnded, setIsEnded] = useState(false);
+	const [isEnded, setIsEnded] = useState(shared.value.isEnded);
+	const [errorMsg, setErrorMsg] = useState("");
 	const observerTarget = useRef<HTMLDivElement>(null);
 
-	useEffect(() => {
+	const observer = useMemo(() => {
+		return new IntersectionObserver(
+			entries => {
+				if (entries[0].isIntersecting) {
+					fetchNext();
+				}
+			},
+			{
+				rootMargin: `0px 0px ${screen.availHeight * 1.5}px 0px`,
+				threshold: 0
+			}
+		);
+	}, []);
+
+	const fetchNext = useMemo(() => {
 		let isLoading = false;
+		let isObserved = false;
 		const { results } = shared.value;
-		setTitle(results[0]?.title ?? "");
 
 		const isEnd = (detail: ExplorePageResult) => {
 			const page = shared.value.page;
@@ -75,53 +92,56 @@ export default () => {
 			return false;
 		};
 
-		const fetchData = async (newPage: number) => {
-			if (!id || !explore || isLoading) return;
+		return async () => {
+			if (!id || !explore || isLoading || isEnded) return;
+
+			const page = shared.value.page;
 
 			isLoading = true;
+			setErrorMsg("");
 			try {
 				let next: string | undefined = undefined;
-				const last = results[newPage - 2];
+				const last = results[page - 1];
 				if (last && last.type === "multiPageComicList") {
 					next = last.data?.next;
 				}
 
-				const detail = await api.Comic.explore(id, explore, newPage, next);
+				const detail = await api.Comic.explore(id, explore, page + 1, next);
 
 				if (isEnd(detail)) {
 					setIsEnded(true);
-					isLoading = false;
+					shared.value.isEnded = true;
 					return;
 				}
 
 				results.push(detail);
-				shared.value.page = newPage;
-				setResults(prev => [...prev, detail]);
+				shared.value.page = page + 1;
+				setResults([...results]);
 				setTitle(detail.title);
+				if (!isObserved && observerTarget.current) {
+					observer.observe(observerTarget.current);
+					isObserved = true;
+				}
 			} catch (e) {
 				console.error(e);
+				setErrorMsg("加载失败");
+			} finally {
+				isLoading = false;
 			}
-			isLoading = false;
 		};
-		const observer = new IntersectionObserver(
-			entries => {
-				if (!isLoading && !isEnded && entries[0].isIntersecting) {
-					const page = shared.value.page;
-					fetchData(page + 1);
-				}
-			},
-			{
-				rootMargin: "0px 0px 3000px 0px",
-				threshold: 0
-			}
-		);
+	}, []);
 
-		if (observerTarget.current) {
+	useEffect(() => {
+		setTitle(results[0]?.title ?? "");
+		if (isEnded) return;
+		if (shared.value.page === 0) {
+			fetchNext();
+		} else if (observerTarget.current) {
 			observer.observe(observerTarget.current);
 		}
 
 		return () => observer.disconnect();
-	}, []);
+	}, [isEnded]);
 
 	const renderContent = () => {
 		return results.map(result => {
@@ -160,7 +180,16 @@ export default () => {
 		<div>
 			{renderContent()}
 			<div ref={observerTarget} class={style.comicListLastPlaceholder}>
-				{isEnded ? "没有更多了" : "正在加载"}
+				{isEnded ? (
+					"没有更多了"
+				) : (
+					<LoadingWrapper
+						style={""}
+						loading={errorMsg === ""}
+						errorMsg={errorMsg}
+						onRetry={fetchNext}
+					/>
+				)}
 			</div>
 		</div>
 	);
