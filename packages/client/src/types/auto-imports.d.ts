@@ -9,6 +9,7 @@ declare global {
   const ComponentType: typeof import("preact").ComponentType
   const Fragment: typeof import('preact').Fragment
   const FunctionalComponent: typeof import("preact").FunctionalComponent
+  const If: typeof import('@/utils/if').If
   const RouteLink: typeof import('@/router').RouteLink
   const VNode: typeof import("preact").VNode
   const createContext: typeof import('preact').createContext

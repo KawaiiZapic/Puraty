@@ -24,6 +24,10 @@ export default defineConfig(() => {
 						from: "preact",
 						imports: ["FunctionalComponent", "ComponentType", "VNode"],
 						type: true
+					},
+					{
+						from: "@/utils/if",
+						imports: ["If"]
 					}
 				],
 				dts: "src/types/auto-imports.d.ts"
