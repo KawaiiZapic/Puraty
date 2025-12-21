@@ -12,7 +12,7 @@ export const RouteLink: FunctionalComponent<{
 			if (!router.__router.matchLocation(props.href)) {
 				router.navigate(props.href);
 			}
-		}, 100);
+		}, 200);
 	}, []);
 	return (
 		<a class={props.class} onClick={handler} href={props.href}>

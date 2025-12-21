@@ -1,20 +1,21 @@
 export interface AppConfig {
 	httpProxy: string;
 	readerPreloadPages: number;
+	debugEnableSlowRendering: boolean;
 }
 
 export const defaultValues: AppConfig = {
 	httpProxy: "",
-	readerPreloadPages: 3
+	readerPreloadPages: 3,
+	debugEnableSlowRendering: false
 };
 
-export const configValidator: Record<keyof AppConfig, (v: unknown) => boolean> =
-	{
-		httpProxy: (v: unknown) =>
-			typeof v === "string" && (/^https?:\/\/.*?:\d{1,5}/.test(v) || v === ""),
-		readerPreloadPages: (v: unknown) =>
-			typeof v === "string" &&
-			parseInt(v).toString() === v &&
-			parseInt(v) > 0 &&
-			parseInt(v) < 15
-	};
+export const configValidator: Partial<
+	Record<keyof AppConfig, (v: unknown) => boolean>
+> = {
+	httpProxy: v =>
+		typeof v === "string" && (/^https?:\/\/.*?:\d{1,5}/.test(v) || v === ""),
+	readerPreloadPages: v =>
+		typeof v === "number" && Number.isInteger(v) && v > 0 && v < 15,
+	debugEnableSlowRendering: v => typeof v === "boolean"
+};

@@ -23,7 +23,7 @@ html.fullscreen {
 
 .clickable-item,
 button {
-	transition-delay: 0.1s;
+	transition-delay: 0.2s;
 	user-select: none;
 }
 

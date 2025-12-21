@@ -6,7 +6,7 @@ let config: AppConfig;
 
 export const initConfig = async () => {
 	const v = await api.App.config();
-	config = v;
+	return (config = v);
 };
 
 export const getConfig = () => {
