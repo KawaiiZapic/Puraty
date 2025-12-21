@@ -13,7 +13,7 @@ const LoadingWrapper: FunctionalComponent<{
 	return showWrapper ? (
 		<div style={"padding: 2rem 0; text-align: center"}>
 			<div style="padding: 1rem 0;">{tipText}</div>
-			{onRetry ?? (
+			{onRetry && (
 				<button
 					style={btnStyle}
 					disabled={loading}
