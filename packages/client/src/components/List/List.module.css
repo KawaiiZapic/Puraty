@@ -1,0 +1,32 @@
+.listItem {
+	padding: 1rem 0.75rem;
+	display: block;
+}
+
+.listWithIcon .listItem {
+	padding-left: 1rem;
+}
+
+.listWrapper {
+	margin: 0;
+	list-style: none;
+	padding: 0;
+}
+
+.listTitle {
+	font-size: 1.25rem;
+	padding: 0.75rem 0.25rem;
+	margin: 0 0.5rem;
+	display: flex;
+	border-bottom: 3px solid #ccc;
+}
+
+.listTitle:first-child {
+	padding-top: 0.5rem;
+}
+
+.listIcon {
+	margin-right: 0.5rem;
+	width: 1.25rem;
+	height: 1.25rem;
+}

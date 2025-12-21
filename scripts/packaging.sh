@@ -2,6 +2,6 @@
 
 rm -rf dist
 mkdir dist
-cp -r packages/frontend/dist dist/frontend
+cp -r packages/client/dist dist/client
 cp -r packages/server/dist dist/server
 cp -r packages/launcher/* dist/

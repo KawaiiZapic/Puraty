@@ -1,0 +1,122 @@
+import type { Router } from "@/router/router";
+
+declare global {
+	interface RouteMeta {
+		disableSwipe: boolean;
+	}
+}
+
+const TOP_BAR_HEIGHT = 100;
+
+export const handleSwipe = ($: HTMLElement, router: Router) => {
+	const scrollIndicator = document.createElement("div");
+	Object.assign(scrollIndicator.style, {
+		position: "fixed",
+		right: "0",
+		top: `${TOP_BAR_HEIGHT}px`,
+		height: `calc(100vh - ${TOP_BAR_HEIGHT}px)`,
+		width: "12px",
+		background: "#ccc",
+		display: "none"
+	});
+	const scrollThumb = document.createElement("div");
+	Object.assign(scrollThumb.style, {
+		position: "fixed",
+		right: "0",
+		top: "var(--scroll-top)",
+		height: "var(--scroll-height)",
+		width: "12px",
+		background: "#000"
+	});
+	scrollIndicator.appendChild(scrollThumb);
+
+	$.appendChild(scrollIndicator);
+	Object.assign($.style, {
+		overflow: "hidden",
+		maxHeight: "100vh"
+	});
+	let lastScrollHeight = 0;
+	let scrollThumbHeight = 0;
+	let elementHeight = $.getBoundingClientRect().height - TOP_BAR_HEIGHT;
+	window.addEventListener("resize", () => {
+		elementHeight = $.getBoundingClientRect().height - TOP_BAR_HEIGHT;
+	});
+	const updateThumbPosition = () => {
+		const availableMoveSpace = elementHeight - scrollThumbHeight;
+		scrollIndicator.style.setProperty(
+			"--scroll-top",
+			TOP_BAR_HEIGHT +
+				($.scrollTop / (lastScrollHeight - elementHeight - TOP_BAR_HEIGHT)) *
+					availableMoveSpace +
+				"px"
+		);
+	};
+	setInterval(() => {
+		if (lastScrollHeight === $.scrollHeight) return;
+		lastScrollHeight = $.scrollHeight;
+		if (
+			!document.documentElement.classList.contains("fullscreen") &&
+			lastScrollHeight >
+				elementHeight + TOP_BAR_HEIGHT + 1 /* element Height might be +- 0.5 */
+		) {
+			scrollThumbHeight =
+				(elementHeight / (lastScrollHeight - TOP_BAR_HEIGHT)) * elementHeight;
+			$.style.paddingRight = "12px";
+			scrollIndicator.style.display = "";
+			scrollIndicator.style.setProperty(
+				"--scroll-height",
+				scrollThumbHeight + "px"
+			);
+			updateThumbPosition();
+		} else {
+			$.style.paddingRight = "";
+			scrollIndicator.style.display = "none";
+		}
+	}, 500);
+	let currentTouch: Touch | undefined;
+	let startTime = 0;
+	($ as HTMLElement).addEventListener("touchstart", e => {
+		if (router.current?.meta?.disableSwipe) return;
+		currentTouch = e.touches[0];
+		startTime = Date.now();
+	});
+
+	($ as HTMLElement).addEventListener("touchend", e => {
+		if (!currentTouch || lastScrollHeight <= elementHeight + TOP_BAR_HEIGHT)
+			return;
+		const endTouch = Array.from(e.changedTouches).find(
+			v => v.identifier === currentTouch!.identifier
+		);
+		if (!endTouch) return;
+		const duration = Date.now() - startTime;
+		const xAccel = (endTouch.clientX - currentTouch.clientX) / duration;
+		const yAccel = (endTouch.clientY - currentTouch.clientY) / duration;
+		let result = "";
+		if (Math.abs(xAccel) > Math.abs(yAccel)) {
+			result = xAccel > 0 ? "+x" : "-x";
+		} else {
+			result = yAccel > 0 ? "+y" : "-y";
+		}
+
+		if (Math.abs(yAccel) > 0.2) {
+			const scroll = elementHeight * 0.8;
+			if (result === "+y") {
+				$.scrollTop -= scroll;
+			} else if (result === "-y") {
+				$.scrollTop += scroll;
+			}
+			updateThumbPosition();
+		}
+	});
+
+	($ as HTMLElement).addEventListener("touchcancel", e => {
+		if (!currentTouch) return;
+		if (
+			Array.from(e.changedTouches).find(
+				v => v.identifier === currentTouch!.identifier
+			)
+		) {
+			currentTouch = undefined;
+		}
+	});
+};
