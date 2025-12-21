@@ -1,31 +1,12 @@
 import type { FunctionalComponent, VNode } from "preact";
-import type { Dispatch } from "preact/hooks";
+import type { Dispatch, StateUpdater } from "preact/hooks";
 
-const TeleportContext = createContext<
-	Dispatch<{
-		type: string;
-		VNode: VNode;
-	}>
->(null as never);
+const TeleportContext = createContext<Dispatch<StateUpdater<VNode[]>>>(
+	null as never
+);
 
 export const TeleportWrapper: FunctionalComponent = ({ children }) => {
-	const [list, updateList] = useReducer(
-		(
-			state,
-			action: {
-				type: string;
-				VNode: VNode;
-			}
-		) => {
-			switch (action.type) {
-				case "remove":
-					return state.filter(item => item !== action.VNode);
-				default:
-					return [...state, action.VNode];
-			}
-		},
-		[] as VNode[]
-	);
+	const [list, updateList] = useState<VNode[]>([]);
 	return (
 		<TeleportContext.Provider value={updateList}>
 			{children}
@@ -39,15 +20,9 @@ export const useTeleport = () => {
 	const updateList = useContext(TeleportContext);
 	return {
 		warp(render: VNode) {
-			updateList({
-				type: "append",
-				VNode: render
-			});
+			updateList(prev => [...prev, render]);
 			return () => {
-				updateList({
-					type: "remove",
-					VNode: render
-				});
+				updateList(prev => prev.filter(item => item !== render));
 			};
 		}
 	};
