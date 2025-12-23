@@ -2,19 +2,16 @@ export class IfCondition<T> {
 	private conditionResult?: unknown;
 	private hasMatched = false;
 
-	constructor(when: unknown, result: T) {
-		if (when) {
-			this.conditionResult = result;
-			this.hasMatched = true;
-		}
-	}
+	constructor() {}
 
-	ElseIf<R>(when: unknown, result: R): IfCondition<T | R> {
-		if (!this.hasMatched && !!when) {
-			this.conditionResult = result;
-			this.hasMatched = true;
-		}
-		return this;
+	ElseIf(when: unknown): <R>(result: R) => IfCondition<T | R> {
+		return result => {
+			if (!this.hasMatched && !!when) {
+				this.hasMatched = true;
+				this.conditionResult = result;
+			}
+			return this;
+		};
 	}
 
 	Else(): T | undefined;
@@ -31,6 +28,6 @@ export class IfCondition<T> {
 	}
 }
 
-export const If = <T>(when: unknown, result: T) => {
-	return new IfCondition<T>(when, result);
+export const If = (when: unknown): (<T>(result: T) => IfCondition<T>) => {
+	return new IfCondition().ElseIf(when) as never;
 };

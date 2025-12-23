@@ -8,7 +8,15 @@ import { defineConfig } from "vite";
 export default defineConfig(() => {
 	return {
 		plugins: [
-			preact(),
+			preact({
+				babel: {
+					plugins: [
+						[
+							"./plugins/BabelTransformIf"
+						]
+					]
+				}
+			}),
 			AutoImport({
 				imports: [
 					"preact",
@@ -43,6 +51,10 @@ export default defineConfig(() => {
 				{
 					find: "@",
 					replacement: path.resolve("src")
+				},
+				{
+					find: "navigo",
+					replacement: "navigo/lib/es"
 				}
 			]
 		},

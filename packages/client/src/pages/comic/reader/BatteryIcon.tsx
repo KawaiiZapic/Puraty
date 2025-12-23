@@ -8,10 +8,9 @@ export const BatteryIcon: FunctionComponent<{
 }> = ({ capacity }) => {
 	return (
 		<span class={style.batteryIcon}>
-			{If(typeof capacity === "number", <span>{capacity}%</span>).Else()}
+			{If(typeof capacity === "number")(<span>{capacity}%</span>).End()}
 			<span class={style.wrapper}>
-				{If(
-					typeof capacity === "number",
+				{If(typeof capacity === "number")(
 					<span
 						class={style.inner}
 						style={{
