@@ -5,7 +5,7 @@ import { RouterContext } from "@/router";
 import type { Router } from "@/router/router";
 import { RouteView } from "@/router/RouteView";
 
-import Header from "./components/header";
+import { Header } from "./components/header";
 
 export default (({ router }) => {
 	return (

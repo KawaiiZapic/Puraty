@@ -63,22 +63,25 @@ const ConfigList: Partial<Record<keyof AppConfig, ConfigItem>> = {
 			"启用后将会在 127.0.0.1:19522 启动Chromium的远程调试（需要重启）"
 	}
 };
-export default () => {
+const MainSettingsPage = () => {
 	const modal = useModal();
 	const current = getConfig();
 
-	const applyNewConfig = useCallback((result: Partial<AppConfig>) => {
-		api.App.modifyConfig(result as unknown as Record<string, unknown>).then(
-			({ ignoredKeys }) => {
-				if (ignoredKeys.length) {
-					modal.alert(
-						`${ignoredKeys.map(v => ConfigList[v as keyof AppConfig]?.title ?? v).join(", ")}的值无效`
-					);
+	const applyNewConfig = useCallback(
+		(result: Partial<AppConfig>) => {
+			api.App.modifyConfig(result as Record<string, unknown>).then(
+				({ ignoredKeys }) => {
+					if (ignoredKeys.length) {
+						modal.alert(
+							`${ignoredKeys.map(v => ConfigList[v as keyof AppConfig]?.title ?? v).join(", ")}的值无效`
+						);
+					}
+					initConfig();
 				}
-				initConfig();
-			}
-		);
-	}, []);
+			);
+		},
+		[modal]
+	);
 
 	return (
 		<form>
@@ -112,7 +115,9 @@ export default () => {
 					$input = (
 						<select name={k} value={stringValue} onInput={onUpdate}>
 							{s.options?.map(opt => (
-								<option value={opt.value}>{opt.text ?? opt.value}</option>
+								<option value={opt.value} key={opt.value}>
+									{opt.text ?? opt.value}
+								</option>
 							))}
 						</select>
 					);
@@ -121,7 +126,7 @@ export default () => {
 					$input = <input name={k} value={stringValue}></input>;
 				}
 				return (
-					<div class={style.sourceConfigItem}>
+					<div class={style.sourceConfigItem} key={k}>
 						<div>
 							<div>{s.title}</div>
 							<div class={style.itemDescription}>{s.description}</div>
@@ -133,3 +138,5 @@ export default () => {
 		</form>
 	);
 };
+
+export default MainSettingsPage;

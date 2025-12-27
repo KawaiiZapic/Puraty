@@ -194,7 +194,9 @@ export default function ComicSourceConfig() {
 									onChange={e => handleInputChange(key, e.currentTarget.value)}
 								>
 									{setting.options?.map(opt => (
-										<option value={opt.value}>{opt.text ?? opt.value}</option>
+										<option value={opt.value} key={opt.value}>
+											{opt.text ?? opt.value}
+										</option>
 									))}
 								</select>
 							)}

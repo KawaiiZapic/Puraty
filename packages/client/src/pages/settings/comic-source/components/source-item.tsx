@@ -6,7 +6,7 @@ import api from "@/api";
 
 import style from "./source-item.module.css";
 
-const fc: FunctionalComponent<{
+const SourceItem: FunctionalComponent<{
 	item: ListSourceDetail;
 }> = ({ item }) => {
 	const [isLoading, setLoading] = useState(false);
@@ -73,4 +73,4 @@ const fc: FunctionalComponent<{
 	);
 };
 
-export default fc;
+export default SourceItem;

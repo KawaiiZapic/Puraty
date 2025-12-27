@@ -10,28 +10,37 @@ export default defineConfig(() => {
 		plugins: [
 			preact({
 				babel: {
-					plugins: [
-						[
-							"./plugins/BabelTransformIf"
-						]
-					]
+					plugins: [["./plugins/BabelTransformIf"]]
 				}
 			}),
 			AutoImport({
 				imports: [
-					"preact",
+					{
+						from: "@/utils/TypedUseState",
+						imports: ["useState", "useReducer"]
+					},
 					{
 						from: "preact",
-						imports: ["createContext", "createRef", "Fragment", "h"]
+						imports: [
+							"createContext",
+							"createRef",
+							"Fragment",
+							"h"
+						]
+					},
+					{
+						from: "preact/hooks",
+						imports: [
+							"useCallback",
+							"useMemo",
+							"useEffect",
+							"useRef",
+							"useContext"
+						]
 					},
 					{
 						from: "@/router",
 						imports: ["useRouter", "useRoute", "RouteLink"]
-					},
-					{
-						from: "preact",
-						imports: ["FunctionalComponent", "ComponentType", "VNode"],
-						type: true
 					},
 					{
 						from: "@/utils/if",

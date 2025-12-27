@@ -60,7 +60,7 @@ const ReaderOverlay: FunctionalComponent<{
 	);
 };
 
-export default () => {
+const ReaderPage = () => {
 	const { id, comicId, chapter } = useRoute()!.params;
 	const data = useSharedData<ComicDetails>(`comic-${id}-${comicId}`);
 	const [images, setImages] = useState<string[]>([]);
@@ -132,3 +132,5 @@ export default () => {
 		</>
 	);
 };
+
+export default ReaderPage;

@@ -4,7 +4,7 @@ import ExploreOutlined from "@sicons/material/ExploreOutlined.svg";
 import api from "@/api";
 import { List, ListIcon, ListItem, ListTitle } from "@/components";
 
-export default () => {
+const MainPage = () => {
 	const [list, setList] = useState<InstalledSourceDetail[]>([]);
 	useEffect(() => {
 		api.ComicSource.list().then(setList);
@@ -24,3 +24,5 @@ export default () => {
 		</div>
 	);
 };
+
+export default MainPage;

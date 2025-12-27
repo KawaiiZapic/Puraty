@@ -19,15 +19,9 @@ declare global {
   const useContext: typeof import('preact/hooks').useContext
   const useEffect: typeof import('preact/hooks').useEffect
   const useMemo: typeof import('preact/hooks').useMemo
-  const useReducer: typeof import('preact/hooks').useReducer
+  const useReducer: typeof import('@/utils/TypedUseState').useReducer
   const useRef: typeof import('preact/hooks').useRef
   const useRoute: typeof import('@/router').useRoute
   const useRouter: typeof import('@/router').useRouter
-  const useState: typeof import('preact/hooks').useState
-}
-// for type re-export
-declare global {
-  // @ts-ignore
-  export type { FunctionalComponent, ComponentType, VNode } from 'preact'
-  import('preact')
+  const useState: typeof import('@/utils/TypedUseState').useState
 }

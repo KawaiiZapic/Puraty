@@ -2,7 +2,7 @@ import api from "@/api";
 
 import style from "./index.module.css";
 
-export default () => {
+const SettingsPage = () => {
 	return (
 		<div>
 			<RouteLink
@@ -32,3 +32,5 @@ export default () => {
 		</div>
 	);
 };
+
+export default SettingsPage;

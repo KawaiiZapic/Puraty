@@ -3,16 +3,21 @@ import type { ComponentType, FunctionalComponent } from "preact";
 const RouteViewIndex = createContext(0);
 
 export const RouteView: FunctionalComponent = () => {
-	const [currentRoute, setCurrent] = useState<ComponentType[]>([]);
 	const routeLevel = useContext(RouteViewIndex);
 	const router = useRouter();
+	const [currentRoute, setCurrent] = useState<ComponentType[]>([
+		router.matched[routeLevel].component
+	]);
 	useEffect(() => {
-		setCurrent([router.matched[routeLevel].component]);
 		return router.beforeEnter(() => {
 			const newEl = router.matched[routeLevel].component;
-			if (newEl !== currentRoute[0]) {
-				setCurrent([newEl]);
-			}
+			setCurrent(prev => {
+				if (prev[0] !== newEl) {
+					return [newEl];
+				} else {
+					return prev;
+				}
+			});
 		});
 	}, []);
 	return (

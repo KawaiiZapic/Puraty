@@ -4,7 +4,7 @@ import { List, ListItem } from "@/components";
 
 type ExploreList = Awaited<ReturnType<typeof api.ComicSource.get>>["explore"];
 
-export default () => {
+const ExploreListPage = () => {
 	const route = useRoute();
 	const id = route?.params.id;
 	const [list, setList] = useState<ExploreList>();
@@ -19,10 +19,12 @@ export default () => {
 	return (
 		<List>
 			{list?.map(item => (
-				<ListItem href={`/comic/${id}/explore/${item.id}`}>
+				<ListItem key={item.id} href={`/comic/${id}/explore/${item.id}`}>
 					{item.title}
 				</ListItem>
 			))}
 		</List>
 	);
 };
+
+export default ExploreListPage;

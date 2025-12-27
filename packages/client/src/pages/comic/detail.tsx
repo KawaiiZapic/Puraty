@@ -73,8 +73,11 @@ const TagGroup: FunctionalComponent<{
 		<div class={style.comicTagGroup}>
 			<div class={`${style.comicTag} ${style.comicTagLeader}`}>{name}</div>
 			<div class={style.comicTagList}>
-				{tags.map(t => (
-					<div class={`${style.comicTag} clickable-item`}>{t}</div>
+				{tags.map((t, i) => (
+					// Tags may be duplicate
+					<div class={`${style.comicTag} clickable-item`} key={i}>
+						{t}
+					</div>
 				))}
 			</div>
 		</div>
@@ -90,7 +93,7 @@ const DetailTags: FunctionalComponent<{
 
 	const tagGroups = Object.entries(tags).map(([group, groupTags]) => {
 		const tagList = Array.isArray(groupTags) ? groupTags : [groupTags];
-		return <TagGroup name={group} tags={tagList} />;
+		return <TagGroup name={group} tags={tagList} key={group} />;
 	});
 
 	return <div>{tagGroups}</div>;
@@ -118,6 +121,7 @@ const DetailChapters: FunctionalComponent<{
 				<div
 					class={`${style.comicChapterItem} clickable-item`}
 					onClick={() => onChapterSelect(subChapter)}
+					key={subChapter}
 				>
 					{chapter} - {subChapterName}
 				</div>
@@ -152,7 +156,7 @@ const DetailDetails: FunctionalComponent<{
 	);
 };
 
-export default () => {
+const ComicDetailPage = () => {
 	const router = useRouter();
 	const route = useRoute();
 	const id = route?.params?.id;
@@ -213,3 +217,5 @@ export default () => {
 		</div>
 	);
 };
+
+export default ComicDetailPage;

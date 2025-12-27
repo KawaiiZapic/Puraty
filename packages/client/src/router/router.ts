@@ -202,9 +202,6 @@ export const createRouter = (
 		parents?: RegisteredRouteRecord[]
 	) => {
 		routes.forEach(route => {
-			if (!route.component.displayName) {
-				route.component.displayName = "Route@" + (route.name ?? route.path);
-			}
 			const handler = () => {};
 			const selfRoute = {
 				...route,

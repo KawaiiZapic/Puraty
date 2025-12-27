@@ -1,4 +1,4 @@
-import { Component } from "preact";
+import type { FunctionalComponent } from "preact";
 
 const io = new IntersectionObserver(
 	e => {
@@ -18,33 +18,22 @@ const io = new IntersectionObserver(
 	}
 );
 
-export class LazyImg extends Component<
+export const LazyImg: FunctionalComponent<
 	Partial<HTMLImageElement> & { class?: string }
-> {
-	shouldComponentUpdate() {
-		return false;
-	}
-
-	render() {
-		const attr = this.props;
-		const ref = createRef<HTMLImageElement>();
-		const newAttr: Record<string, unknown> = {};
-		for (const key in attr) {
-			if (key !== "src") {
-				// @ts-expect-error complex merging
-				newAttr[key] = attr[key];
-			} else if (attr.src) {
-				newAttr["data-lazy-src"] = attr.src;
-			}
+> = attr => {
+	const newAttr: Record<string, unknown> = {};
+	for (const key in attr) {
+		if (key !== "src") {
+			// @ts-expect-error complex merging
+			newAttr[key] = attr[key];
+		} else if (attr.src) {
+			newAttr["data-lazy-src"] = attr.src;
 		}
-		newAttr.ref = ref;
-
-		useEffect(() => {
-			const curr = ref.current;
-			if (!curr) return;
-			io.observe(curr);
-			return () => io.unobserve(curr);
-		}, [ref]);
-		return h("img", newAttr, null);
 	}
-}
+	newAttr.ref = (el: HTMLImageElement) => {
+		if (!el) return;
+		io.observe(el);
+		return () => io.unobserve(el);
+	};
+	return h("img", newAttr, null);
+};

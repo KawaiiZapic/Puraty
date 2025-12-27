@@ -9,7 +9,7 @@ export const setTitle = (newVal: string) => {
 	title.value = newVal;
 };
 
-export default () => {
+export const Header = () => {
 	const router = useRouter();
 	const toHome = () => {
 		if (history.length === 0) {
@@ -18,11 +18,11 @@ export default () => {
 			history.go(-1);
 		}
 	};
-	const [isHome, setIsHome] = useState(false);
-	const [fallbackTitle, setFallbackTitle] = useState("");
+	const [isHome, setIsHome] = useState(router.current?.path === "/");
+	const [fallbackTitle, setFallbackTitle] = useState(
+		router.current?.title || ""
+	);
 	useEffect(() => {
-		setIsHome(router.current?.path === "/");
-		setFallbackTitle(router.current?.title || "");
 		return router.onEnter(({ path, title }) => {
 			setIsHome(path === "/");
 			setFallbackTitle(title || "");

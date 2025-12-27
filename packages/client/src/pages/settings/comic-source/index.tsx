@@ -13,7 +13,7 @@ export interface ListSourceDetail {
 	installedVersion?: string;
 }
 
-export default () => {
+const ComicSourcePage = () => {
 	const [isLoading, setLoading] = useState(true);
 	const [installed, setInstalled] = useState<ListSourceDetail[]>([]);
 	const [available, setAvailable] = useState<ListSourceDetail[]>([]);
@@ -61,3 +61,5 @@ export default () => {
 		</>
 	);
 };
+
+export default ComicSourcePage;

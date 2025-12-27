@@ -42,7 +42,7 @@ export const Prompt = function <const T extends PromptField[]>({
 				<form ref={formRef}>
 					{fields.map(field => {
 						return (
-							<div class={style.promptField}>
+							<div class={style.promptField} key={field.key}>
 								<div class={style.promptFieldTitle}>
 									{field.title ?? field.key}
 								</div>

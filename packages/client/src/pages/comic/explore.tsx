@@ -17,7 +17,7 @@ const ComicItem = ({ comic, sourceId }: { comic: Comic; sourceId: string }) => {
 			<LazyImg
 				class={style.comicItemImage}
 				src={api.proxy(sourceId, comic.cover, comic.id)}
-			></LazyImg>
+			/>
 			<div class={style.comicItemMeta}>
 				<div class={style.comicItemTitle}>{comic.title}</div>
 				<div class={style.comicItemSubtitle}>
@@ -29,8 +29,11 @@ const ComicItem = ({ comic, sourceId }: { comic: Comic; sourceId: string }) => {
 						.join(" - ")}
 				</div>
 				<div class={style.comicItemTagWrapper}>
-					{comic.tags?.map(t => (
-						<div class={style.comicItemTag}>{t}</div>
+					{comic.tags?.map((t, i) => (
+						// Tags may be duplicate
+						<div class={style.comicItemTag} key={i}>
+							{t}
+						</div>
 					))}
 				</div>
 			</div>
@@ -38,7 +41,7 @@ const ComicItem = ({ comic, sourceId }: { comic: Comic; sourceId: string }) => {
 	);
 };
 
-export default () => {
+const ExplorePage = () => {
 	const route = useRoute();
 	const id = route?.params?.id;
 	const explore = route?.params?.explore;
@@ -194,3 +197,5 @@ export default () => {
 		</div>
 	);
 };
+
+export default ExplorePage;
