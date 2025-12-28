@@ -10,7 +10,7 @@ import style from "./index.module.css";
 
 const getTime = () => {
 	const date = new Date();
-	return `${date.getHours()}:${date.getMinutes()}`;
+	return `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
 };
 
 const ReaderOverlay: FunctionalComponent<{
