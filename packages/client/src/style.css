@@ -48,6 +48,7 @@ button {
 	color: #333;
 	padding: 0.25rem 0.75rem;
 }
+
 button:active {
 	border: 3px white solid;
 }
@@ -65,4 +66,28 @@ input[type="checkbox"] {
 a[href].clickable-item {
 	color: inherit;
 	text-decoration: inherit;
+}
+
+input {
+	appearance: none;
+	border: 2px black solid;
+	padding: 0 0.25rem;
+	outline: none;
+}
+
+select {
+	appearance: none;
+	padding: 0.25rem 1rem 0.25rem 0.25rem;
+	outline: none;
+	border: 2px black solid;
+	font-size: 0.75rem;
+	background: url("@sicons/material/KeyboardArrowDownFilled.svg") no-repeat;
+	background-size: auto 75%;
+	background-position: right center;
+}
+
+input[type="checkbox"]:checked {
+	background: url("@sicons/material/CheckBoxSharp.svg") no-repeat;
+	background-size: 150%;
+	background-position: center;
 }

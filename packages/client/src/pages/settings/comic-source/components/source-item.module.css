@@ -16,6 +16,7 @@
 
 .listItemBtn {
 	padding: 0.5rem;
+	white-space: nowrap;
 }
 
 .listWarnMark {
