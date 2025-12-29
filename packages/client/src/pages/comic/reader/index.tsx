@@ -5,7 +5,8 @@ import type { FunctionalComponent } from "preact";
 import api from "@/api";
 import { useSharedData } from "@/utils/SharedData";
 
-import { BatteryIcon } from "./BatteryIcon";
+import { BatteryIcon } from "./components/BatteryIcon";
+import { useGesture } from "./gesture";
 import style from "./index.module.css";
 
 const getTime = () => {
@@ -13,12 +14,24 @@ const getTime = () => {
 	return `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
 };
 
+const TimeNow: FunctionalComponent = () => {
+	const [time, setTime] = useState(getTime());
+	useEffect(() => {
+		const timer = setInterval(() => {
+			setTime(getTime());
+		}, 1000);
+		return () => {
+			clearInterval(timer);
+		};
+	}, []);
+	return <span class={style.time}>{time}</span>;
+};
+
 const ReaderOverlay: FunctionalComponent<{
 	detail: ComicDetails | null;
 	onClose: () => void;
 }> = ({ detail, onClose }) => {
 	const router = useRouter();
-	const [time, setTime] = useState(getTime());
 	const toHome = () => {
 		if (history.length === 0) {
 			router.navigate("/");
@@ -32,21 +45,12 @@ const ReaderOverlay: FunctionalComponent<{
 		}
 	};
 
-	useEffect(() => {
-		const timer = setInterval(() => {
-			setTime(getTime());
-		}, 1000);
-		return () => {
-			clearInterval(timer);
-		};
-	}, []);
-
 	return (
 		<div class={style.layer} onClick={handleClick}>
 			<div class={style.layerTop}>
 				<div class={style.layerTopQuickInfo}>
-					<span class={style.time}>{time}</span>
-					<span style={"flex-grow: 1"} />
+					<TimeNow />
+					<span class="flex-grow-1" />
 					<BatteryIcon />
 				</div>
 				<div class={style.layerTopMain}>
@@ -67,25 +71,53 @@ const ReaderPage = () => {
 	const [page, setPage] = useState(0);
 	const [loading, setLoading] = useState(true);
 	const [overlayVisible, setOverlayVisible] = useState(false);
+	const g = useGesture();
 
-	const handleClick = useCallback(
-		(e: MouseEvent) => {
-			e.preventDefault();
+	const handlePageTurn = useCallback(
+		(next: boolean) => {
 			let offset = 0;
-			if (e.clientX > (innerWidth / 3) * 2) {
-				offset--;
-			} else if (e.clientX < innerWidth / 3) {
+			if (next) {
 				offset++;
 			} else {
-				setOverlayVisible(true);
-				return;
+				offset--;
 			}
 			if (offset !== 0) {
-				setPage(prev => prev + offset);
-				setLoading(true);
+				setPage(prev => {
+					const next = Math.min(Math.max(0, prev + offset), images.length - 1);
+					if (next !== prev) {
+						setLoading(true);
+					}
+					return next;
+				});
 			}
 		},
 		[images]
+	);
+
+	g.useGesture(
+		"click",
+		e => {
+			if ((e.isCenter() && !e.isLeft() && !e.isRight()) || e.isTop()) {
+				setTimeout(() => setOverlayVisible(true), 100);
+			} else if (e.isLeft() || e.isRight()) {
+				handlePageTurn(e.isLeft());
+			}
+		},
+		[handlePageTurn]
+	);
+
+	g.useGesture(
+		"swipe",
+		e => {
+			if (e.direction === "left") {
+				handlePageTurn(false);
+			} else if (e.direction === "right") {
+				handlePageTurn(true);
+			} else if (e.direction === "down") {
+				setOverlayVisible(true);
+			}
+		},
+		[handlePageTurn]
 	);
 
 	const currentSrc = useMemo(() => {
@@ -118,7 +150,7 @@ const ReaderPage = () => {
 					onClose={() => setOverlayVisible(false)}
 				/>
 			)}
-			<div class={style.wrapper} onClick={handleClick}>
+			<div class={style.wrapper} {...g.listener}>
 				<img
 					class={style.image}
 					src={currentSrc}
