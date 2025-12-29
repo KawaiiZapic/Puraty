@@ -10,8 +10,8 @@
 		"type-check": "tsc --noEmit",
 		"dev": "node scripts/dev.js",
 		"lint": "eslint --cache --max-warnings=0 . && pnpm prettier",
-		"lint:fix": "eslint --cache --fix --max-warnings=0 . && pnpm prettier",
-		"prettier": "prettier --ignore-unknown --write .",
+		"lint:fix": "pnpm lint --fix && pnpm prettier",
+		"prettier": "prettier --ignore-unknown --cache --log-level warn --write .",
 		"lint-staged": "lint-staged"
 	},
 	"keywords": [],

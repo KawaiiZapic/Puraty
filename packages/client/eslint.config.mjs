@@ -11,6 +11,11 @@ export default defineConfig(
 	react.configs.flat.recommended,
 	reactHooks.configs.flat.recommended,
 	{
+		settings: {
+			react: {
+				version: "16.0"
+			}
+		},
 		rules: {
 			// Handle by build process
 			"react/react-in-jsx-scope": "off",
