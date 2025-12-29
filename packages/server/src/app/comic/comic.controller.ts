@@ -11,16 +11,20 @@ import {
 	Query
 } from "@/utils/decorators";
 import { createHttpError } from "@/utils/error";
+import { LRU } from "@/utils/LRU";
 import { QueueLock } from "@/utils/QueueLock";
 import type { ComicDetails, ImageLoadingConfig } from "@/venera-lib";
 
 import { ComicCache } from "./comic.db";
-import type { ExplorePageResult } from "./comic.model";
+import type { ComicChapterResult, ExplorePageResult } from "./comic.model";
 import { ComicService } from "./comic.service";
 
 @Controller("/comic")
 export class ComicHandler {
 	private queueLock = new QueueLock(5);
+
+	private ComicDetailsCache = new LRU<ComicDetails>(50);
+	private ComicChapterCache = new LRU<ComicChapterResult>(50);
 
 	@Get("/:id/explore/:explore")
 	async explore(
@@ -59,6 +63,10 @@ export class ComicHandler {
 
 	@Get("/:id/manga/:comicId")
 	async detail(@Path("id") id: string, @Path("comicId") comicId: string) {
+		const cacheKey = `${id}-${comicId}`;
+		if (this.ComicDetailsCache.has(cacheKey)) {
+			return this.ComicDetailsCache.get(cacheKey)!;
+		}
 		const source = await ComicSourceService.get(id);
 		try {
 			const r = {
@@ -77,6 +85,7 @@ export class ComicHandler {
 				}
 				r.tags = translateTags;
 			}
+			this.ComicDetailsCache.set(cacheKey, r);
 			return r;
 		} catch (e) {
 			console.error(e);
@@ -89,13 +98,19 @@ export class ComicHandler {
 		@Path("id") id: string,
 		@Path("comicId") comicId: string,
 		@Path("chapter") chapter: string
-	) {
+	): Promise<ComicChapterResult> {
+		const cacheKey = `${id}-${comicId}-${chapter}`;
+		if (this.ComicChapterCache.has(cacheKey)) {
+			return this.ComicChapterCache.get(cacheKey)!;
+		}
 		const source = await ComicSourceService.get(id);
 		try {
-			return {
+			const result: ComicChapterResult = {
 				...(await source.comic.loadEp(decodeURIComponent(comicId), chapter)),
 				hasImageLoadHook: !!source.comic.onImageLoad
 			};
+			this.ComicChapterCache.set(cacheKey, result);
+			return result;
 		} catch (e) {
 			console.error(e);
 			throw createHttpError(500, "Comic source failed to load data: " + e, e);

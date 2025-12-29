@@ -30,3 +30,8 @@ export interface ComicCacheItem {
 	size: number;
 	referenceCount: number;
 }
+
+export interface ComicChapterResult {
+	images: string[];
+	hasImageLoadHook: boolean;
+}
