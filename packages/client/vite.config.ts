@@ -2,12 +2,14 @@ import path from "node:path";
 
 import preact from "@preact/preset-vite";
 import autoprefixer from "autoprefixer";
+import unocss from "unocss/vite";
 import AutoImport from "unplugin-auto-import/vite";
 import { defineConfig } from "vite";
 
 export default defineConfig(() => {
 	return {
 		plugins: [
+			unocss(),
 			preact({
 				babel: {
 					plugins: [["./plugins/BabelTransformIf"]]
@@ -21,12 +23,7 @@ export default defineConfig(() => {
 					},
 					{
 						from: "preact",
-						imports: [
-							"createContext",
-							"createRef",
-							"Fragment",
-							"h"
-						]
+						imports: ["createContext", "createRef", "Fragment", "h"]
 					},
 					{
 						from: "preact/hooks",

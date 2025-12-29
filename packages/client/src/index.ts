@@ -6,6 +6,8 @@ import { initializeRouter } from "./router";
 import { initConfig } from "./utils/config";
 import { handleSwipe } from "./utils/swipe";
 
+import "virtual:uno.css";
+
 if (import.meta.env.DEV) {
 	await import("preact/debug");
 }
