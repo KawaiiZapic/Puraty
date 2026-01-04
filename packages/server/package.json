@@ -10,7 +10,7 @@
 		"type-check": "tsc --noEmit",
 		"dev": "node scripts/dev.js",
 		"lint": "eslint --cache --max-warnings=0 . && pnpm prettier",
-		"lint:fix": "pnpm lint --fix && pnpm prettier",
+		"lint:fix": "eslint --cache --max-warnings=0 --fix . && pnpm prettier",
 		"prettier": "prettier --ignore-unknown --cache --log-level warn --write .",
 		"lint-staged": "lint-staged"
 	},
@@ -24,18 +24,20 @@
 	},
 	"packageManager": "pnpm@10.11.0",
 	"devDependencies": {
+		"@puraty/tools": "workspace:",
 		"@txikijs/types": "^24.12.0",
-		"esbuild": "^0.25.9",
-		"@puraty/tools": "workspace:"
+		"esbuild": "^0.25.9"
 	},
 	"dependencies": {
 		"@types/crypto-js": "^4.2.2",
+		"@types/semver": "^7.7.1",
 		"base64-js": "^1.5.1",
 		"cheerio": "^1.1.2",
 		"crypto-js": "^4.2.0",
 		"domhandler": "^5.0.3",
 		"h3": "2.0.0-beta.3",
-		"h3-txikijs-adapter": "^0.2.1"
+		"h3-txikijs-adapter": "^0.2.1",
+		"semver": "^7.7.3"
 	},
 	"lint-staged": {
 		"**/*.{js,ts}": [

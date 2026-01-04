@@ -136,6 +136,11 @@ export default function ComicSourceConfig() {
 					<pre>{sourceDetail.initializedError}</pre>
 				</div>
 			)}
+			{If(sourceDetail.incompatible === true)(
+				<div class={style.sourceInitializeError}>
+					<div>漫画源版本过新，可能有部分功能不兼容</div>
+				</div>
+			).End()}
 			{!sourceDetail.isLogged ? (
 				<>
 					{sourceDetail.features.UAPLogin && (

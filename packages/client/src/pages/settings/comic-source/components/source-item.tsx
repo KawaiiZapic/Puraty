@@ -42,15 +42,14 @@ const SourceItem: FunctionalComponent<{
 			setLoading(false);
 		}
 	};
-	const initializedMark =
-		item.initialized === false ? (
-			<img class={style.listWarnMark} src={WarningAmberOutlined}></img>
-		) : undefined;
+
 	return (
 		<div class={style.listItemWrapper}>
 			<div class={style.listItemMeta}>
 				<div>
-					{initializedMark}
+					{If(item.initialized === false || item.incompatible === true)(
+						<img class={style.listWarnMark} src={WarningAmberOutlined}></img>
+					).End()}
 					{item.name}
 				</div>
 				<div class={style.listItemDesc}>

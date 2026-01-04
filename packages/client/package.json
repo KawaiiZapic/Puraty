@@ -9,7 +9,7 @@
 		"preview": "vite preview --host",
 		"type-check": "pnpm -F server exec tsc -b --emitDeclarationOnly && tsc --noEmit",
 		"lint": "eslint --cache --max-warnings=0 . && pnpm prettier",
-		"lint:fix": "pnpm lint --fix . && pnpm prettier",
+		"lint:fix": "eslint --cache --max-warnings=0 --fix . && pnpm prettier",
 		"prettier": "prettier --ignore-unknown --cache --log-level warn --write .",
 		"lint-staged": "lint-staged"
 	},

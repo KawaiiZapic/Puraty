@@ -11,6 +11,7 @@ export interface ListSourceDetail {
 	fileName?: string;
 	initialized?: boolean;
 	installedVersion?: string;
+	incompatible?: boolean;
 }
 
 const ComicSourcePage = () => {
@@ -24,7 +25,8 @@ const ComicSourcePage = () => {
 				return {
 					name: v.name,
 					key: v.key,
-					installedVersion: v.version
+					installedVersion: v.version,
+					incompatible: v.incompatible
 				};
 			});
 			setInstalled(_installed);
@@ -35,6 +37,7 @@ const ComicSourcePage = () => {
 					if (idx > -1) {
 						_installed[idx] = {
 							...it,
+							incompatible: _installed[idx].incompatible,
 							installedVersion: _installed[idx].installedVersion
 						};
 					}

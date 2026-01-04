@@ -18,3 +18,6 @@ export {
 	setClipboard
 } from "./utils";
 export { Cookie } from "@/db/Cookies";
+
+// 2026-01-03
+export const CompatibleVersion = "1.6.0";

@@ -32,6 +32,7 @@ export interface InstalledSourceDetail {
 	settings?: Record<string, AnySettingItem>;
 	settingValues: Record<string, unknown>;
 	initializedError: string;
+	incompatible: boolean;
 }
 
 export interface SourceModifyBody {

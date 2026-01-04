@@ -7,6 +7,14 @@
 	box-sizing: border-box;
 }
 
+.sourceInitializeError > div::before {
+	content: "";
+	padding: 0.5em;
+	background: url("@sicons/material/WarningAmberOutlined.svg") center/contain
+		no-repeat;
+	margin-right: 0.25rem;
+}
+
 .sourceInitializeError {
 	overflow: hidden;
 	margin: 0.5rem;

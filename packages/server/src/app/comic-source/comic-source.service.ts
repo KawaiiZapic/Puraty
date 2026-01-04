@@ -1,3 +1,4 @@
+import semver from "semver";
 import path from "tjs:path";
 
 import {
@@ -211,7 +212,8 @@ export class ComicSourceService {
 				CookieLogin: source.account?.loginWithCookies?.fields,
 				logout: typeof source.account?.logout === "function"
 			},
-			initializedError: source.initializeError
+			initializedError: source.initializeError,
+			incompatible: semver.gt(source.minAppVersion, VeneraLib.CompatibleVersion)
 		} satisfies InstalledSourceDetail;
 	}
 }
