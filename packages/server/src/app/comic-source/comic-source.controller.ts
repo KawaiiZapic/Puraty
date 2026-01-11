@@ -1,6 +1,7 @@
 import { HTTPError, type H3Event } from "h3";
 
 import {
+	Bool,
 	Controller,
 	Delete,
 	Get,
@@ -30,8 +31,8 @@ export class ComicSourceHandler {
 	}
 
 	@Get("/installed")
-	list(@NotRequired @Query("allowInitializeError") allowErr = "false") {
-		return ComicSourceService.list(allowErr === "true");
+	list(@Bool @NotRequired @Query("allowInitializeError") allowErr = false) {
+		return ComicSourceService.list(allowErr);
 	}
 
 	@Post("/add")

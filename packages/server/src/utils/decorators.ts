@@ -3,7 +3,7 @@ import { getQuery, HTTPError, type H3 } from "h3";
 
 const s = Symbol();
 
-type ExtraParamInfo = { notRequired?: boolean; convert?: "integer" };
+type ExtraParamInfo = { notRequired?: boolean; convert?: "integer" | "bool" };
 type ParamInfo = (
 	| {
 			type: "path" | "query";
@@ -150,6 +150,13 @@ export const Integer: ParameterDecorator = (target, prop, idx) => {
 	});
 };
 
+export const Bool: ParameterDecorator = (target, prop, idx) => {
+	const func = (target as any)[prop!];
+	setParamInfo(func, idx, {
+		convert: "bool"
+	});
+};
+
 const typeConvert = (v: unknown, convert: ExtraParamInfo["convert"]) => {
 	if (typeof v === "undefined") {
 		return v;
@@ -161,6 +168,10 @@ const typeConvert = (v: unknown, convert: ExtraParamInfo["convert"]) => {
 				return undefined;
 			}
 			return r;
+		}
+	} else if (convert === "bool") {
+		if (typeof v === "string") {
+			return v === "true";
 		}
 	}
 	return v;
