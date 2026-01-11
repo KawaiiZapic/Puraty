@@ -39,7 +39,7 @@ export interface SourceModifyBody {
 	settingValues?: Record<string, string>;
 }
 
-export interface UAPLoginBody {
+export interface BasicLoginBody {
 	username: string;
 	password: string;
 }

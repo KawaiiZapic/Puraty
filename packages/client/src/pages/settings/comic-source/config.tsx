@@ -60,7 +60,7 @@ export default function ComicSourceConfig() {
 				if (!r.username || !r.password) return;
 				setIsLoading(true);
 				try {
-					await api.ComicSource.doUAPLogin(id, r.username, r.password);
+					await api.ComicSource.basicLogin(id, r.username, r.password);
 					setSourceDetail(prev => (prev ? { ...prev, isLogged: true } : null));
 					modal.alert("登录成功");
 				} catch (e) {
@@ -83,7 +83,7 @@ export default function ComicSourceConfig() {
 			.then(async r => {
 				setIsLoading(true);
 				try {
-					await api.ComicSource.doCookieLogin(id, r);
+					await api.ComicSource.cookieLogin(id, r);
 					setSourceDetail(prev => (prev ? { ...prev, isLogged: true } : null));
 					modal.alert("登录成功");
 				} catch (e) {

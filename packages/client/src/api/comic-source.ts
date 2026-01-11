@@ -29,10 +29,10 @@ export const ComicSource = {
 	execCallback(id: string, callback: string) {
 		return Req.post(`/api/comic-source/${id}/callback/${callback}`);
 	},
-	doUAPLogin(id: string, username: string, password: string) {
+	basicLogin(id: string, username: string, password: string) {
 		return Req.post(`/api/comic-source/${id}/login`, { username, password });
 	},
-	doCookieLogin(id: string, values: Record<string, string | undefined>) {
+	cookieLogin(id: string, values: Record<string, string | undefined>) {
 		return Req.post(`/api/comic-source/${id}/cookie-login`, values);
 	},
 	logout(id: string) {

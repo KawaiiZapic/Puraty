@@ -15,10 +15,10 @@ import {
 } from "@/utils/decorators";
 import { createHttpError } from "@/utils/error";
 
-import { ComicSourceData, InstalledSource } from "./comic-source.db";
+import { ComicSourceData } from "./comic-source.db";
 import type {
 	InstallBody,
-	UAPLoginBody,
+	BasicLoginBody,
 	SourceModifyBody
 } from "./comic-source.model";
 import { ComicSourceService } from "./comic-source.service";
@@ -44,12 +44,7 @@ export class ComicSourceHandler {
 
 	@Delete("/:id")
 	async delete(@Path("id") id: string) {
-		const list = InstalledSource.list();
-		if (id in list) {
-			await ComicSourceService.uninstall(id);
-		} else {
-			throw createHttpError(404, "Comic source not found: " + id);
-		}
+		await ComicSourceService.uninstall(id);
 	}
 
 	@Get("/:id")
@@ -83,7 +78,7 @@ export class ComicSourceHandler {
 	}
 
 	@Post("/:id/login")
-	async doUAPLogin(@Path("id") id: string, @Json loginBody: UAPLoginBody) {
+	async basicLogin(@Path("id") id: string, @Json loginBody: BasicLoginBody) {
 		const s = await ComicSourceService.get(id);
 		if (typeof s.account?.login !== "function")
 			throw createHttpError(
@@ -107,7 +102,7 @@ export class ComicSourceHandler {
 	}
 
 	@Post("/:id/cookie-login")
-	async doCookieLogin(
+	async cookieLogin(
 		@Path("id") id: string,
 		@Json loginBody: Record<string, string>
 	) {
