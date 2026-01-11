@@ -173,6 +173,9 @@ const ComicDetailPage = () => {
 				chapter = "1";
 			} else {
 				chapter = Object.keys(data.value.chapters)[0] ?? "1";
+				if (typeof data.value.chapters[chapter] !== "string") {
+					chapter = Object.keys(data.value.chapters[chapter])[0];
+				}
 			}
 		}
 
