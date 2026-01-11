@@ -5,13 +5,22 @@ import {
 	ComicSourceData,
 	InstalledSource
 } from "@/app/comic-source/comic-source.db";
+import {
+	LoginFailedError,
+	NetworkRequestError,
+	NotSupportedError,
+	SourceInitializeError,
+	SourceInstallError,
+	SourceNotFoundError
+} from "@/utils/error";
 import type { ComicSource } from "@/venera-lib";
 import * as VeneraLib from "@/venera-lib";
 import type { AnySettingItem } from "@/venera-lib/Source";
 
-import type {
-	InstalledSourceDetail,
-	NetworkSourceDetail
+import {
+	type BasicLoginBody,
+	type InstalledSourceDetail,
+	type NetworkSourceDetail
 } from "./comic-source.model";
 
 const IMPORT_TEMPLATE = `import { ${Object.keys(VeneraLib).join(", ")} } from "${path.dirname(new URL(import.meta.url).pathname)}/venera-lib/index.js";
@@ -27,17 +36,15 @@ export class ComicSourceService {
 				ComicSourceService._instances[id].initializeError &&
 				!allowInitializeError
 			) {
-				throw new Error(
-					"Failed to initialize source " +
-						id +
-						": " +
-						ComicSourceService._instances[id].initializeError
+				throw new SourceInitializeError(
+					id,
+					ComicSourceService._instances[id].initializeError
 				);
 			}
 			return ComicSourceService._instances[id];
 		}
 		if (!(id in InstalledSource.list())) {
-			throw new Error("Source not found: " + id);
+			throw new SourceNotFoundError(id);
 		}
 		let dir = "";
 		try {
@@ -65,22 +72,15 @@ export class ComicSourceService {
 				s.initializeError =
 					String(e) + (e instanceof Error ? `\n${e.stack}` : "");
 				if (!allowInitializeError) {
-					throw e;
+					throw new SourceInitializeError(id, s.initializeError);
 				}
 			}
 			return s;
 		} catch (e) {
 			if (e instanceof Error) {
-				throw new Error(
-					"Failed to initialize source " +
-						id +
-						": " +
-						e.message +
-						"\n" +
-						e.stack
-				);
+				throw new SourceInitializeError(id, e.message + "\n" + e.stack);
 			}
-			throw new Error("Failed to initialize source " + id + ": " + e);
+			throw new SourceInitializeError(id, String(e));
 		} finally {
 			if (dir) {
 				await tjs.remove(dir);
@@ -89,12 +89,17 @@ export class ComicSourceService {
 	}
 
 	static async install(url: string, key: string) {
+		let source: string;
 		try {
-			let source = await (
+			source = await (
 				await fetch(
 					"https://cdn.jsdelivr.net/gh/venera-app/venera-configs@latest/" + url
 				)
 			).text();
+		} catch (e) {
+			throw new NetworkRequestError(url, e);
+		}
+		try {
 			source =
 				IMPORT_TEMPLATE +
 				source.replace(
@@ -118,18 +123,14 @@ export class ComicSourceService {
 			);
 			InstalledSource.install(key, v);
 			delete ComicSourceService._instances[key];
-			return v;
 		} catch (e) {
-			try {
-				await tjs.remove(path.join(APP_DIR, `comic-source/${key}.js`));
-			} catch {}
-			throw e;
+			throw new SourceInstallError(key, String(e));
 		}
 	}
 
 	static async uninstall(id: string) {
 		if (!(id in InstalledSource.list())) {
-			throw new Error("Source not found: " + id);
+			throw new SourceNotFoundError(id);
 		}
 		try {
 			await tjs.remove(path.join(APP_DIR, `comic-source/${id}.js`));
@@ -162,6 +163,46 @@ export class ComicSourceService {
 
 	static getSettings(id: string) {
 		return ComicSourceData.getAll("setting", id);
+	}
+
+	static async basicLogin(id: string, loginBody: BasicLoginBody) {
+		const s = await ComicSourceService.get(id);
+		if (typeof s.account?.login !== "function")
+			throw new NotSupportedError(
+				id + " does not support login with username and password."
+			);
+		try {
+			const r = await s.account.login(loginBody.username, loginBody.password);
+			if (typeof r === "undefined") {
+				throw "Unknown reason";
+			}
+
+			ComicSourceService.setLoginStatus(id, [
+				loginBody.username,
+				loginBody.password
+			]);
+		} catch (e) {
+			console.error(e);
+			throw new LoginFailedError(String(e));
+		}
+	}
+
+	static async cookieLogin(id: string, loginBody: Record<string, string>) {
+		const s = await ComicSourceService.get(id);
+		if (typeof s.account?.loginWithCookies?.validate !== "function")
+			throw new NotSupportedError(id + " does not support login with cookies.");
+		const fields = s.account.loginWithCookies.fields;
+		try {
+			const f = fields.map(f => loginBody[f] ?? "");
+			const r = await s.account.loginWithCookies.validate(f);
+			if (!r) {
+				throw "Invalid cookies.";
+			}
+			ComicSourceService.setLoginStatus(id, ["", ""]);
+		} catch (e) {
+			console.error(e);
+			throw new LoginFailedError(String(e));
+		}
 	}
 
 	static setLoginStatus(id: string, account?: [string, string]) {

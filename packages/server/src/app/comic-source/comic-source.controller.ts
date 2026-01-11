@@ -13,7 +13,6 @@ import {
 	Query,
 	ReqEvent
 } from "@/utils/decorators";
-import { createHttpError } from "@/utils/error";
 
 import { ComicSourceData } from "./comic-source.db";
 import type {
@@ -79,26 +78,7 @@ export class ComicSourceHandler {
 
 	@Post("/:id/login")
 	async basicLogin(@Path("id") id: string, @Json loginBody: BasicLoginBody) {
-		const s = await ComicSourceService.get(id);
-		if (typeof s.account?.login !== "function")
-			throw createHttpError(
-				400,
-				id + " does not support login via username and password."
-			);
-		try {
-			const r = await s.account.login(loginBody.username, loginBody.password);
-			if (typeof r === "undefined") {
-				throw "Login failed.";
-			}
-
-			ComicSourceService.setLoginStatus(id, [
-				loginBody.username,
-				loginBody.password
-			]);
-		} catch (e) {
-			console.error(e);
-			throw createHttpError(400, String(e));
-		}
+		return ComicSourceService.basicLogin(id, loginBody);
 	}
 
 	@Post("/:id/cookie-login")
@@ -106,21 +86,7 @@ export class ComicSourceHandler {
 		@Path("id") id: string,
 		@Json loginBody: Record<string, string>
 	) {
-		const s = await ComicSourceService.get(id);
-		if (typeof s.account?.loginWithCookies?.validate !== "function")
-			throw createHttpError(400, id + " does not support login via cookies.");
-		const fields = s.account.loginWithCookies.fields;
-		try {
-			const f = fields.map(f => loginBody[f] ?? "");
-			const r = await s.account.loginWithCookies.validate(f);
-			if (!r) {
-				throw "Login failed.";
-			}
-			ComicSourceService.setLoginStatus(id, ["", ""]);
-		} catch (e) {
-			console.error(e);
-			throw createHttpError(400, String(e));
-		}
+		return ComicSourceService.cookieLogin(id, loginBody);
 	}
 
 	@Post("/:id/logout")
