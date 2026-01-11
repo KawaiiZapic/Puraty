@@ -1,7 +1,9 @@
 import type { ComicDetails } from "@puraty/server";
-import AccessTimeOutlined from "@sicons/material/AccessTimeOutlined.svg";
 import FileUploadFilled from "@sicons/material/FileUploadFilled.svg";
+import FileUploadSharp from "@sicons/material/FileUploadSharp.svg";
 import ImageFilled from "@sicons/material/ImageFilled.svg";
+import UpdateOutlined from "@sicons/material/UpdateOutlined.svg";
+import type { FunctionalComponent } from "preact";
 
 import api from "@/api";
 import LoadingWrapper from "@/components/LoadingWrapper";
@@ -22,13 +24,13 @@ const DetailMeta: FunctionalComponent<{ comic: ComicDetails }> = ({
 
 			{comic.uploadTime && (
 				<div class={style.comicMetaItem}>
-					<img src={AccessTimeOutlined}></img> {comic.uploadTime}
+					<img src={FileUploadSharp}></img> {comic.uploadTime}
 				</div>
 			)}
 
 			{comic.updateTime && (
 				<div class={style.comicMetaItem}>
-					<img src={AccessTimeOutlined}></img> {comic.updateTime}
+					<img src={UpdateOutlined}></img> {comic.updateTime}
 				</div>
 			)}
 
@@ -56,7 +58,7 @@ const DetailHeader: FunctionalComponent<{
 					{comic.subTitle ?? comic.subtitle}
 				</div>
 				<DetailMeta comic={comic} />
-				<div style="flex-grow: 1;"></div>
+				<div class="flex-grow-1"></div>
 				<div>
 					<button onClick={onRead}>阅读</button>
 				</div>
