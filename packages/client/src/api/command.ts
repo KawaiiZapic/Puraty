@@ -11,5 +11,8 @@ export const Command = {
 	},
 	exitFullscreen() {
 		return Req.delete<void>("/api/command/fullscreen");
+	},
+	battery() {
+		return Req.get("/api/command/battery");
 	}
 } satisfies CommandHandler;

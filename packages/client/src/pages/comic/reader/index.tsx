@@ -6,7 +6,7 @@ import api from "@/api";
 import { getConfig } from "@/utils/config";
 import { useSharedData } from "@/utils/SharedData";
 
-import { BatteryIcon } from "./components/BatteryIcon";
+import { BatteryIcon, UpdateBatteryStatus } from "./components/BatteryIcon";
 import { useGesture } from "./gesture";
 import style from "./index.module.css";
 
@@ -162,6 +162,7 @@ const ReaderPage = () => {
 
 	useEffect(() => {
 		load();
+		UpdateBatteryStatus();
 	}, [id, comicId]);
 
 	return (
