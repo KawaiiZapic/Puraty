@@ -3,6 +3,7 @@ import ChevronLeftFilled from "@sicons/material/ChevronLeftFilled.svg";
 import type { FunctionalComponent } from "preact";
 
 import api from "@/api";
+import { getConfig } from "@/utils/config";
 import { useSharedData } from "@/utils/SharedData";
 
 import { BatteryIcon } from "./components/BatteryIcon";
@@ -72,6 +73,27 @@ const ReaderPage = () => {
 	const [loading, setLoading] = useState(true);
 	const [overlayVisible, setOverlayVisible] = useState(false);
 	const g = useGesture();
+	const config = getConfig();
+
+	const cachedImages = useRef<HTMLImageElement[]>([]);
+
+	useEffect(() => {
+		const cached = cachedImages.current;
+		for (let i = 0; i < images.length; i++) {
+			if (
+				i < page - config.readerPreloadPages ||
+				i > page + config.readerPreloadPages
+			) {
+				if (cached[i]) {
+					delete cached[i];
+				}
+			} else if (!cached[i]) {
+				const img = new Image();
+				img.src = api.proxy(id!, images[i], comicId!, chapter, i.toString());
+				cached[i] = img;
+			}
+		}
+	}, [page, images]);
 
 	const handlePageTurn = useCallback(
 		(next: boolean) => {
