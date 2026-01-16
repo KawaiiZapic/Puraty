@@ -1,17 +1,17 @@
-import { HTTPError, type H3Event } from "h3";
+import { HTTPError } from "h3";
 
 import {
 	Bool,
 	Controller,
 	Delete,
 	Get,
+	getCurrentEvent,
 	Json,
 	NotRequired,
 	Patch,
 	Path,
 	Post,
-	Query,
-	ReqEvent
+	Query
 } from "@/utils/decorators";
 
 import { ComicSourceData } from "./comic-source.db";
@@ -35,7 +35,8 @@ export class ComicSourceHandler {
 	}
 
 	@Post("/add")
-	async add(@Json body: InstallBody, @ReqEvent e: H3Event) {
+	async add(@Json body: InstallBody) {
+		const e = getCurrentEvent();
 		const v = await ComicSourceService.install(body.url, body.key);
 		e.res.status = 201;
 		return { key: body.key, version: v };

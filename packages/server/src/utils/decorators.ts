@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { getQuery, HTTPError, type H3 } from "h3";
+import { getQuery, HTTPError, type H3, type H3Event } from "h3";
 
 const s = Symbol();
 
@@ -129,13 +129,6 @@ export const Json: ParameterDecorator = (target, prop, idx) => {
 	});
 };
 
-export const ReqEvent: ParameterDecorator = (target, prop, idx) => {
-	const func = (target as any)[prop!];
-	setParamInfo(func, idx, {
-		type: "event"
-	});
-};
-
 export const NotRequired: ParameterDecorator = (target, prop, idx) => {
 	const func = (target as any)[prop!];
 	setParamInfo(func, idx, {
@@ -177,14 +170,17 @@ const typeConvert = (v: unknown, convert: ExtraParamInfo["convert"]) => {
 	return v;
 };
 
+let _H3Event = null as unknown as H3Event;
+export const getCurrentEvent = () => {
+	return _H3Event;
+};
+
 export const initializeHandlers = (app: H3) => {
 	controllers.forEach(info => {
 		app.on(info.method, "/api" + info.proto[s] + info.path, async e => {
 			const args: unknown[] = await Promise.all(
 				info.params.map(async v => {
-					if (v.type === "event") {
-						return e;
-					} else if (v.type === "json") {
+					if (v.type === "json") {
 						try {
 							const r = typeConvert(await e.req.json(), v.convert);
 							if (typeof r === "undefined") {
@@ -217,6 +213,7 @@ export const initializeHandlers = (app: H3) => {
 					}
 				})
 			);
+			_H3Event = e;
 			return info.value.apply(instances.get(info.proto), args);
 		});
 	});
