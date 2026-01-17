@@ -105,8 +105,8 @@ importers:
         specifier: 2.0.0-beta.3
         version: 2.0.0-beta.3
       h3-txikijs-adapter:
-        specifier: ^0.2.1
-        version: 0.2.1(h3@2.0.0-beta.3)
+        specifier: ^0.2.4
+        version: 0.2.4(h3@2.0.0-beta.3)
       semver:
         specifier: ^7.7.3
         version: 7.7.3
@@ -1373,8 +1373,8 @@ packages:
     resolution: {integrity: sha512-ax7ZYomf6jqPTQ4+XCpUGyXKHk5WweS+e05MBO4/y3WJ5RkmPXNKvX+bx1behVILVwr6JSQvZAku021CHPXG3Q==}
     engines: {node: '>=10'}
 
-  h3-txikijs-adapter@0.2.1:
-    resolution: {integrity: sha512-uf3G5Qkn0y1ROv0vJA6b5uFiDLb6HJCdTCctjik535QvQsnjL20Fn30YxDYOpp5/yLT3WmbBpRc4rHK4sC5/qQ==}
+  h3-txikijs-adapter@0.2.4:
+    resolution: {integrity: sha512-UobQjnq5x9uN8h28TV+nEBtC1n8VFbaXQ/pEJtotHeVi8OqhVPR1zjFESLR73i2288mFf1Xyu2hANUZf8PRaoA==}
     peerDependencies:
       h3: ^2.0.0
 
@@ -3865,7 +3865,7 @@ snapshots:
     dependencies:
       duplexer: 0.1.2
 
-  h3-txikijs-adapter@0.2.1(h3@2.0.0-beta.3):
+  h3-txikijs-adapter@0.2.4(h3@2.0.0-beta.3):
     dependencies:
       h3: 2.0.0-beta.3
       http-headers: 3.0.2
