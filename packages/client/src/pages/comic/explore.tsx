@@ -178,8 +178,31 @@ const ExplorePage = () => {
 						</div>
 					</div>
 				));
+			} else if (result.type === "mixed") {
+				return result.data.data.map(part => {
+					if (Array.isArray(part)) {
+						return part.map(comic => (
+							<ComicItem key={comic.id} sourceId={id!} comic={comic} />
+						));
+					} else {
+						return (
+							<div key={part.title}>
+								<div class="px-3 py-2" style="font-size: 1.25rem">
+									{part.title}
+								</div>
+								<div>
+									{part.comics.map(comic => (
+										<ComicItem key={comic.id} sourceId={id!} comic={comic} />
+									))}
+								</div>
+							</div>
+						);
+					}
+				});
+			} else {
+				// @ts-expect-error Unknown explore page type
+				throw new Error(`Unknown explore page type: ${result.type}`);
 			}
-			return null;
 		});
 	};
 
