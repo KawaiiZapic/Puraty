@@ -1,5 +1,6 @@
 import * as cheerio from "cheerio/slim";
 import type { AnyNode } from "domhandler";
+import { isTag } from "domhandler";
 
 export class HtmlDocument {
 	private $: cheerio.CheerioAPI;
@@ -87,7 +88,15 @@ export class HtmlElement {
 	}
 
 	get nodes(): HtmlNode[] {
-		throw new Error("Not implemented");
+		return this.$el
+			.contents()
+			.filter((i, e) => {
+				return e.parent === this.$el[0];
+			})
+			.map((i, e) => {
+				return new HtmlNode(this.$(e), this.$);
+			})
+			.toArray();
 	}
 
 	get innerHTML(): string | null {
@@ -106,7 +115,8 @@ export class HtmlElement {
 	}
 
 	get localName() {
-		throw new Error("Not implemented");
+		if (!isTag(this.$el[0])) throw new Error("Not a tag element");
+		return this.$el[0].name;
 	}
 
 	get previousElementSibling(): HtmlElement | null {

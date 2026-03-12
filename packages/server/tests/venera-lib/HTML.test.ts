@@ -9,6 +9,7 @@ const html = `<!doctype html>
 </head>
 <body id="body">
   <div id="div-1" class="div-1">
+		not a element content
     <div id="div-2">
       content-2
       <img src="/" class="child-image">
@@ -42,9 +43,11 @@ assert.eq("get attributes", Object.keys(el.attributes).length, 2);
 assert.eq("querySelector", el.querySelector("img")?.attributes.src, "/");
 assert.eq("querySelectorAll", el.querySelectorAll("div").length, 3);
 assert.eq("children", el.children.length, 3);
+assert.eq("nodes", el.nodes.length, 7);
 assert.eq("parent", el.parent.id, "body");
 assert.eq("classNames", el.classNames.length, 1);
 assert.eq("id", el.id, "div-1");
+assert.eq("localName", el.localName, "div");
 
 const child = el.children[1];
 assert.eq("child is wanted child node", child.id, "div-3");
