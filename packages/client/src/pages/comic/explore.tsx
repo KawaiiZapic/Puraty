@@ -1,4 +1,4 @@
-import type { Comic, ExplorePageResult } from "@puraty/server";
+import type { Comic, ExplorePageResult, PageJumpTarget } from "@puraty/server";
 
 import { setTitle } from "../components/header";
 import api from "@/api";
@@ -147,56 +147,47 @@ const ExplorePage = () => {
 	}, [isEnded]);
 
 	const renderContent = () => {
+		const renderToSimpleList = (comics: Comic[]) => {
+			return comics.map(comic => (
+				<ComicItem key={comic.id} sourceId={id!} comic={comic} />
+			));
+		};
+		const renderToPart = (
+			partId: string,
+			comics: Comic[],
+			viewMore?: PageJumpTarget
+		) => {
+			return (
+				<div key={partId}>
+					<div class="px-3 py-2 flex items-center">
+						<span class="flex-grow-1 text-xl">{partId}</span>
+						{If(viewMore)(<div class="clickable-item p-1">查看更多</div>).End()}
+					</div>
+					<div class="px-3">
+						{comics.map(comic => (
+							<ComicItem key={comic.id} sourceId={id!} comic={comic} />
+						))}
+					</div>
+				</div>
+			);
+		};
 		return results.map(result => {
 			if (result.type === "multiPageComicList") {
-				return result.data.comics.map(comic => (
-					<ComicItem key={comic.id} sourceId={id!} comic={comic} />
-				));
+				return renderToSimpleList(result.data.comics);
 			} else if (result.type === "singlePageWithMultiPart") {
-				return Object.keys(result.data).map(partId => (
-					<div key={partId}>
-						<div class="px-3 py-2" style="font-size: 1.25rem">
-							{partId}
-						</div>
-						<div class="px-3">
-							{result.data[partId].map(comic => (
-								<ComicItem key={comic.id} sourceId={id!} comic={comic} />
-							))}
-						</div>
-					</div>
-				));
+				return Object.keys(result.data).map(partId =>
+					renderToPart(partId, result.data[partId])
+				);
 			} else if (result.type === "multiPartPage") {
-				return result.data.map(part => (
-					<div key={part.title}>
-						<div class="px-3 py-2" style="font-size: 1.25rem">
-							{part.title}
-						</div>
-						<div>
-							{part.comics.map(comic => (
-								<ComicItem key={comic.id} sourceId={id!} comic={comic} />
-							))}
-						</div>
-					</div>
-				));
+				return result.data.map(part =>
+					renderToPart(part.title, part.comics, part.viewMore)
+				);
 			} else if (result.type === "mixed") {
 				return result.data.data.map(part => {
 					if (Array.isArray(part)) {
-						return part.map(comic => (
-							<ComicItem key={comic.id} sourceId={id!} comic={comic} />
-						));
+						return renderToSimpleList(part);
 					} else {
-						return (
-							<div key={part.title}>
-								<div class="px-3 py-2" style="font-size: 1.25rem">
-									{part.title}
-								</div>
-								<div>
-									{part.comics.map(comic => (
-										<ComicItem key={comic.id} sourceId={id!} comic={comic} />
-									))}
-								</div>
-							</div>
-						);
+						return renderToPart(part.title, part.comics, part.viewMore);
 					}
 				});
 			} else {

@@ -45,7 +45,10 @@ export interface MPCLExplorePage extends BaseExplorePage {
 export interface MixedExplorePage extends BaseExplorePage {
 	type: "mixed";
 	load(page: number | null): Promise<{
-		data: (Comic[] | { title: string; comics: Comic[]; viewMore?: string })[];
+		data: (
+			| Comic[]
+			| { title: string; comics: Comic[]; viewMore?: PageJumpTarget }
+		)[];
 		maxPage: number;
 	}>;
 }

@@ -28,6 +28,7 @@ export type CommandHandler = Abstraction<
 >;
 
 export type * from "@/venera-lib/Data";
+export type * from "@/venera-lib/Source";
 export type * from "@/app/comic/comic.model";
 export type * from "@/app/commands/command.model";
 export type { AppConfig } from "@/app/app/app.model";
