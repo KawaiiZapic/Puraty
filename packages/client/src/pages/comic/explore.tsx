@@ -155,23 +155,27 @@ const ExplorePage = () => {
 			} else if (result.type === "singlePageWithMultiPart") {
 				return Object.keys(result.data).map(partId => (
 					<div key={partId}>
-						<div style="padding: 0.5rem 0.25rem; font-size: 1.25rem">
+						<div class="px-3 py-2" style="font-size: 1.25rem">
 							{partId}
 						</div>
-						{result.data[partId].map(comic => (
-							<ComicItem key={comic.id} sourceId={id!} comic={comic} />
-						))}
+						<div class="px-3">
+							{result.data[partId].map(comic => (
+								<ComicItem key={comic.id} sourceId={id!} comic={comic} />
+							))}
+						</div>
 					</div>
 				));
 			} else if (result.type === "multiPartPage") {
 				return result.data.map(part => (
 					<div key={part.title}>
-						<div style="padding: 0.5rem 0.25rem; font-size: 1.25rem">
+						<div class="px-3 py-2" style="font-size: 1.25rem">
 							{part.title}
 						</div>
-						{part.comics.map(comic => (
-							<ComicItem key={comic.id} sourceId={id!} comic={comic} />
-						))}
+						<div>
+							{part.comics.map(comic => (
+								<ComicItem key={comic.id} sourceId={id!} comic={comic} />
+							))}
+						</div>
 					</div>
 				));
 			}
