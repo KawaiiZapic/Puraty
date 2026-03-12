@@ -19,7 +19,14 @@ const MainPage = () => {
 				{list !== null &&
 					list.length > 0 &&
 					list.map(item => (
-						<ListItem href={"/source/" + item.key} key={item.key}>
+						<ListItem
+							href={
+								item.explore?.length === 1
+									? `/comic/${item.key}/explore/0`
+									: `/source/${item.key}`
+							}
+							key={item.key}
+						>
 							{item.name}
 						</ListItem>
 					))}
