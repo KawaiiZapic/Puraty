@@ -150,6 +150,10 @@ export class HtmlNode {
 	}
 
 	toElement(): HtmlElement | null {
+		// toElement in Venera is broken, it returns null even for element
+		// keep it broken for compatibility
+		return null;
+		if (this.type !== "tag") return null;
 		return new HtmlElement(this.$el, this.$);
 	}
 }

@@ -49,19 +49,33 @@ assert.eq("classNames", el.classNames.length, 1);
 assert.eq("id", el.id, "div-1");
 assert.eq("localName", el.localName, "div");
 
-const child = el.children[1];
-assert.eq("child is wanted child node", child.id, "div-3");
-assert.eq("text", child.text, "content-3");
-assert.eq("innerHTML", child.innerHTML, `<b>content-3</b>`);
-assert.eq("prevEl", child.previousElementSibling?.id, "div-2");
-assert.eq("nextEl", child.nextElementSibling?.id, "a-1");
+const element = el.children[1];
+assert.eq("child has a child node", element.id, "div-3");
+assert.eq("text", element.text, "content-3");
+assert.eq("innerHTML", element.innerHTML, `<b>content-3</b>`);
+assert.eq("prevEl", element.previousElementSibling?.id, "div-2");
+assert.eq("nextEl", element.nextElementSibling?.id, "a-1");
 assert.eq(
 	"nextEl should return null when there is not next el",
-	child.nextElementSibling?.nextElementSibling,
+	element.nextElementSibling?.nextElementSibling,
 	null
 );
 assert.eq(
 	"prevEl should return null when there is not prev el",
-	child.previousElementSibling?.previousElementSibling,
+	element.previousElementSibling?.previousElementSibling,
+	null
+);
+
+const node = element.querySelector("b")!.nodes[0];
+assert.eq("node is text node", node.type, "text");
+assert.eq("node text", node.text, "content-3");
+assert.eq("node is not a element", node.toElement(), null);
+
+const node2 = element.nodes[0];
+assert.eq("node2 is element node", node2.type, "tag");
+assert.eq("node2 text", node2.text, "content-3");
+assert.eq(
+	"node2 is a element, but Venera implementation is broken and always return null",
+	node2.toElement(),
 	null
 );
