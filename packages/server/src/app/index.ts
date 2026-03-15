@@ -1,5 +1,4 @@
 import { H3, HTTPError } from "h3";
-import { serve } from "h3-txikijs-adapter";
 import path from "tjs:path";
 
 import "./comic-source/comic-source.controller";
@@ -61,8 +60,12 @@ export class App {
 	}
 
 	serve(signal: AbortSignal) {
-		return serve(this.app, {
-			signal
+		const server = tjs.serve({
+			fetch: this.app.fetch,
+			port: 3000
+		});
+		signal.addEventListener("abort", () => {
+			server.close();
 		});
 	}
 }

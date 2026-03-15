@@ -184,8 +184,7 @@ export class ComicHandler {
 					return new Response(buffer, {
 						status: 200,
 						headers: {
-							"content-type": res.headers.get("content-type") ?? "",
-							"content-length": res.headers.get("content-length") ?? ""
+							"content-type": res.headers.get("content-type") ?? ""
 						}
 					});
 				} else {

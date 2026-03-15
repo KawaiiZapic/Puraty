@@ -104,9 +104,6 @@ importers:
       h3:
         specifier: 2.0.0-beta.3
         version: 2.0.0-beta.3
-      h3-txikijs-adapter:
-        specifier: ^0.2.4
-        version: 0.2.4(h3@2.0.0-beta.3)
       semver:
         specifier: ^7.7.3
         version: 7.7.3
@@ -115,8 +112,8 @@ importers:
         specifier: 'workspace:'
         version: link:../tools
       '@txikijs/types':
-        specifier: ^24.12.0
-        version: 24.12.0
+        specifier: ^26.3.0
+        version: 26.3.0
       esbuild:
         specifier: ^0.25.9
         version: 0.25.9
@@ -624,8 +621,8 @@ packages:
   '@sicons/material@0.13.0':
     resolution: {integrity: sha512-x27JNXHPS1CbXh6LD6jSHDKnvcPAD3Bponjus4EGFxv9ZMdrzvbGIkUdft7vBr0oo2ASSvjemwoFULQPAqxRJQ==}
 
-  '@txikijs/types@24.12.0':
-    resolution: {integrity: sha512-NllY8bX3sn2PLx83QlNuKpWNqbPXWEZk8Uwh4E0fhe0hGHiBzFemXb9KS0wq3ymfzyiOKOT5YohKf8+z60HCdg==}
+  '@txikijs/types@26.3.0':
+    resolution: {integrity: sha512-mWmTPmWLl+qdV8IoqpTVcs1OCHuauHwkdIfFjuR264esEERlRUkfRDN8zOyvJRBYDewXaEOSHtuagGYuTU62AA==}
 
   '@types/crypto-js@4.2.2':
     resolution: {integrity: sha512-sDOLlVbHhXpAUAL0YHDUUwDZf3iN4Bwi4W6a0W0b+QcAezUbRtH4FVb+9J4h+XFPW7l/gQ9F8qC7P+Ec4k8QVQ==}
@@ -1373,11 +1370,6 @@ packages:
     resolution: {integrity: sha512-ax7ZYomf6jqPTQ4+XCpUGyXKHk5WweS+e05MBO4/y3WJ5RkmPXNKvX+bx1behVILVwr6JSQvZAku021CHPXG3Q==}
     engines: {node: '>=10'}
 
-  h3-txikijs-adapter@0.2.4:
-    resolution: {integrity: sha512-UobQjnq5x9uN8h28TV+nEBtC1n8VFbaXQ/pEJtotHeVi8OqhVPR1zjFESLR73i2288mFf1Xyu2hANUZf8PRaoA==}
-    peerDependencies:
-      h3: ^2.0.0
-
   h3@2.0.0-beta.3:
     resolution: {integrity: sha512-AW9ry5z/YOmzuY0R1jk5jwc7jkGkeSOzyQ0+4qzVGdqY6I2JrslzKjAmcqUjfB6f+kdyIvUGOompt/Dl3MI+FA==}
     engines: {node: '>=20.11.1'}
@@ -1426,9 +1418,6 @@ packages:
 
   htmlparser2@10.0.0:
     resolution: {integrity: sha512-TwAZM+zE5Tq3lrEHvOlvwgj1XLWQCtaaibSN11Q+gGBAS7Y1uZSWwXXRe4iF6OXnaq1riyQAPFOBtYc77Mxq0g==}
-
-  http-headers@3.0.2:
-    resolution: {integrity: sha512-87E1I+2Wg4dxxz4rcxElo3dxO/w1ZtgL1yA0Sb6vH3qU16vRKq1NjWQv9SCY3ly2OQROcoxHZOUpmelS+k6wOw==}
 
   iconv-lite@0.6.3:
     resolution: {integrity: sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==}
@@ -1706,9 +1695,6 @@ packages:
 
   navigo@8.11.1:
     resolution: {integrity: sha512-e3sc1UzakF+bWquC8/dbPCgo7LgPEW1ekgwb4pmEcl8tOc/I7lML8r7HBql+b0VRk7tJWTZqtkeObwJAVR1pxg==}
-
-  next-line@1.1.0:
-    resolution: {integrity: sha512-+I10J3wKNoKddNxn0CNpoZ3eTZuqxjNM3b1GImVx22+ePI+Y15P8g/j3WsbP0fhzzrFzrtjOAoq5NCCucswXOQ==}
 
   node-fetch-native@1.6.7:
     resolution: {integrity: sha512-g9yhqoedzIUm0nTnTqAQvueMPVOuIY16bqgAJJC8XOOubYFNwz6IER9qs0Gq2Xd0+CecCKFjtdDTMA4u4xG06Q==}
@@ -2790,7 +2776,7 @@ snapshots:
 
   '@sicons/material@0.13.0': {}
 
-  '@txikijs/types@24.12.0': {}
+  '@txikijs/types@26.3.0': {}
 
   '@types/crypto-js@4.2.2': {}
 
@@ -3865,11 +3851,6 @@ snapshots:
     dependencies:
       duplexer: 0.1.2
 
-  h3-txikijs-adapter@0.2.4(h3@2.0.0-beta.3):
-    dependencies:
-      h3: 2.0.0-beta.3
-      http-headers: 3.0.2
-
   h3@2.0.0-beta.3:
     dependencies:
       cookie-es: 2.0.0
@@ -3913,10 +3894,6 @@ snapshots:
       domhandler: 5.0.3
       domutils: 3.2.2
       entities: 6.0.1
-
-  http-headers@3.0.2:
-    dependencies:
-      next-line: 1.1.0
 
   iconv-lite@0.6.3:
     dependencies:
@@ -4198,8 +4175,6 @@ snapshots:
   natural-compare@1.4.0: {}
 
   navigo@8.11.1: {}
-
-  next-line@1.1.0: {}
 
   node-fetch-native@1.6.7: {}
 
