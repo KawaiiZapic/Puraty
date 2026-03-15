@@ -1,4 +1,5 @@
 import CryptoJS from "crypto-js";
+import { createHash } from "tjs:hashing";
 
 const _toWordArr = (buf: ArrayBuffer): CryptoJS.lib.WordArray => {
 	return CryptoJS.lib.WordArray.create(buf);
@@ -41,16 +42,20 @@ export const Convert = {
 		return _toArrBuf(CryptoJS.enc.Base64.parse(value), true);
 	},
 	md5: (value: ArrayBuffer): ArrayBuffer => {
-		return _toArrBuf(CryptoJS.MD5(_toWordArr(value)));
+		return createHash("md5").update(new TextDecoder().decode(value)).bytes()
+			.buffer as ArrayBuffer;
 	},
 	sha1: (value: ArrayBuffer): ArrayBuffer => {
-		return _toArrBuf(CryptoJS.SHA1(_toWordArr(value)));
+		return createHash("sha1").update(new TextDecoder().decode(value)).bytes()
+			.buffer as ArrayBuffer;
 	},
 	sha256: (value: ArrayBuffer): ArrayBuffer => {
-		return _toArrBuf(CryptoJS.SHA256(_toWordArr(value)));
+		return createHash("sha256").update(new TextDecoder().decode(value)).bytes()
+			.buffer as ArrayBuffer;
 	},
 	sha512: (value: ArrayBuffer): ArrayBuffer => {
-		return _toArrBuf(CryptoJS.SHA512(_toWordArr(value)));
+		return createHash("sha512").update(new TextDecoder().decode(value)).bytes()
+			.buffer as ArrayBuffer;
 	},
 	_hmac: (
 		key: ArrayBuffer,
