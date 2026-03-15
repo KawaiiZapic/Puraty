@@ -28,6 +28,8 @@ export interface InstalledSourceDetail {
 		UAPLogin: boolean;
 		CookieLogin?: string[];
 		logout: boolean;
+		search: boolean;
+		idMatch?: string;
 	};
 	settings?: Record<string, AnySettingItem>;
 	settingValues: Record<string, unknown>;

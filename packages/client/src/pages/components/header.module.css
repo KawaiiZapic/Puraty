@@ -29,6 +29,10 @@
 	margin-left: 0.75rem;
 }
 
+.iconBtn + .searchBar {
+	margin-left: 0;
+}
+
 .pageTitle {
 	flex-grow: 1;
 	margin-left: 0.5rem;

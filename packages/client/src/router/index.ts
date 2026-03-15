@@ -3,6 +3,7 @@ import ComicExplore from "@/pages/comic/explore";
 import ComicReader from "@/pages/comic/reader";
 import ComicSourceDetail from "@/pages/comic-source/explore-list";
 import main from "@/pages/main";
+import SearchPage from "@/pages/search";
 import SettingsIndex from "@/pages/settings";
 import ComicCache from "@/pages/settings/cache";
 import ComicSourceList from "@/pages/settings/comic-source";
@@ -62,6 +63,14 @@ const routes: RouteRecord[] = [
 		meta: {
 			fullscreen: true,
 			disableSwipe: true
+		}
+	},
+	{
+		path: "/search",
+		component: SearchPage,
+		title: "搜索",
+		meta: {
+			showSearch: true
 		}
 	}
 ];

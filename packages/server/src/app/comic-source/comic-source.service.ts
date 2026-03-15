@@ -251,7 +251,9 @@ export class ComicSourceService {
 			features: {
 				UAPLogin: typeof source.account?.login === "function",
 				CookieLogin: source.account?.loginWithCookies?.fields,
-				logout: typeof source.account?.logout === "function"
+				logout: typeof source.account?.logout === "function",
+				search: typeof source.search?.load === "function",
+				idMatch: source.comic.idMatch
 			},
 			initializedError: source.initializeError,
 			incompatible: semver.gt(source.minAppVersion, VeneraLib.CompatibleVersion)

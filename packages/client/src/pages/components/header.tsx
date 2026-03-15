@@ -4,9 +4,20 @@ import SettingsFilled from "@sicons/material/SettingsFilled.svg";
 
 import style from "./header.module.css";
 
+declare global {
+	interface RouteMeta {
+		showSearch: boolean;
+	}
+}
+
 const title = signal("");
 export const setTitle = (newVal: string) => {
 	title.value = newVal;
+};
+
+const internalSearchText = signal("");
+export const useSearchText = () => {
+	return internalSearchText.value;
 };
 
 export const Header = () => {
@@ -19,12 +30,16 @@ export const Header = () => {
 		}
 	};
 	const [isHome, setIsHome] = useState(router.current?.path === "/");
+	const [showSearch, setShowSearch] = useState(
+		isHome || router.current?.meta?.showSearch === true
+	);
 	const [fallbackTitle, setFallbackTitle] = useState(
 		router.current?.title || ""
 	);
 	useEffect(() => {
-		return router.onEnter(({ path, title }) => {
+		return router.onEnter(({ path, title, meta }) => {
 			setIsHome(path === "/");
+			setShowSearch(path === "/" || meta?.showSearch === true);
 			setFallbackTitle(title || "");
 			setTitle("");
 		});
@@ -36,8 +51,16 @@ export const Header = () => {
 					<img src={ChevronLeftFilled}></img>
 				</div>
 			)}
-			{isHome ? (
-				<input class={style.searchBar} placeholder="搜索"></input>
+			{showSearch ? (
+				<input
+					value={internalSearchText.value}
+					onInput={e =>
+						(internalSearchText.value = (e.target as HTMLInputElement).value)
+					}
+					onFocus={() => isHome && router.navigate("/search")}
+					class={style.searchBar}
+					placeholder="搜索"
+				/>
 			) : (
 				<div class={style.pageTitle}>{title.value || fallbackTitle}</div>
 			)}
