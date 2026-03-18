@@ -27,7 +27,7 @@ const SearchPage = () => {
 								new RegExp(source.features.idMatch).test(searchText)
 						)(
 							<ListItem
-								key={source.key}
+								key={`direct-open__${source.key}`}
 								href={`/comic/${source.key}/manga/${searchText}`}
 							>
 								在{source.name}打开漫画 {searchText}
