@@ -123,12 +123,12 @@ const ExplorePage = () => {
 					<SimpleList provider={id!} comics={result.data.comics} key={i} />
 				);
 			} else if (result.type === "singlePageWithMultiPart") {
-				return Object.keys(result.data).map(partId => (
+				return Object.keys(result.data).map((partId, j) => (
 					<MultiPartListItem
 						partId={partId}
 						provider={id!}
 						comics={result.data[partId]}
-						key={i}
+						key={j}
 					/>
 				));
 			} else if (result.type === "multiPartPage") {
@@ -142,9 +142,9 @@ const ExplorePage = () => {
 					/>
 				));
 			} else if (result.type === "mixed") {
-				return result.data.data.map(part => {
+				return result.data.data.map((part, j) => {
 					if (Array.isArray(part)) {
-						return <SimpleList provider={id!} comics={part} key={i} />;
+						return <SimpleList provider={id!} comics={part} key={j} />;
 					} else {
 						return (
 							<MultiPartListItem
@@ -152,7 +152,7 @@ const ExplorePage = () => {
 								provider={id!}
 								comics={part.comics}
 								viewMore={part.viewMore}
-								key={i}
+								key={j}
 							/>
 						);
 					}
