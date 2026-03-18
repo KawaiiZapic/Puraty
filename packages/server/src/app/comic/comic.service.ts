@@ -1,7 +1,9 @@
-import CryptoJS from "crypto-js";
+import { createHash } from "tjs:hashing";
 import path from "tjs:path";
 
 import { ComicCache } from "./comic.db";
+
+const sha1sum = (msg: string) => createHash("sha1").update(msg).digest();
 
 const getExt = (url: string) => {
 	try {
@@ -18,9 +20,9 @@ export class ComicService {
 		chapter?: string,
 		page?: string
 	) {
-		const hash = CryptoJS.SHA1(
+		const hash = sha1sum(
 			`${source}_${comicId ?? ""}_${chapter ?? ""}_${page ?? ""}`
-		).toString(CryptoJS.enc.Hex);
+		);
 		const fname = hash + getExt(url);
 		const h2 = hash.substring(0, 2);
 		const file = path.join(APP_DIR, "cache", h2, fname);
@@ -44,9 +46,9 @@ export class ComicService {
 		chapter?: string,
 		page?: string
 	) {
-		const hash = CryptoJS.SHA1(
+		const hash = sha1sum(
 			`${source}_${comicId ?? ""}_${chapter ?? ""}_${page ?? ""}`
-		).toString(CryptoJS.enc.Hex);
+		);
 		const h2 = hash.substring(0, 2);
 		const fname = hash + getExt(url);
 		const file = path.join(APP_DIR, "cache", h2, fname);
