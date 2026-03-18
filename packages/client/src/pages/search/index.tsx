@@ -16,7 +16,10 @@ const SearchPage = () => {
 				<>
 					{list?.map(source =>
 						If(source.features.search)(
-							<ListItem key={source.key}>
+							<ListItem
+								key={source.key}
+								href={`/search/${source.key}?q=${encodeURIComponent(searchText)}`}
+							>
 								在{source.name}搜索：{searchText}
 							</ListItem>
 						).End()

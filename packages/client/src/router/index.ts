@@ -4,6 +4,7 @@ import ComicReader from "@/pages/comic/reader";
 import ComicSourceDetail from "@/pages/comic-source/explore-list";
 import main from "@/pages/main";
 import SearchPage from "@/pages/search";
+import SearchResultPage from "@/pages/search/result";
 import SettingsIndex from "@/pages/settings";
 import ComicCache from "@/pages/settings/cache";
 import ComicSourceList from "@/pages/settings/comic-source";
@@ -17,7 +18,10 @@ const routes: RouteRecord[] = [
 	{
 		path: "/",
 		name: "home",
-		component: main
+		component: main,
+		meta: {
+			showSearch: true
+		}
 	},
 	{
 		path: "/settings",
@@ -67,8 +71,17 @@ const routes: RouteRecord[] = [
 	},
 	{
 		path: "/search",
+		name: "search",
 		component: SearchPage,
 		title: "搜索",
+		meta: {
+			showSearch: true
+		}
+	},
+	{
+		path: "/search/:provider",
+		component: SearchResultPage,
+		title: "搜索结果",
 		meta: {
 			showSearch: true
 		}

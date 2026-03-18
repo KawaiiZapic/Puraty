@@ -61,6 +61,20 @@ export class ComicHandler {
 		}
 	}
 
+	@Get("/:id/search")
+	async search(@Path("id") id: string, @Query("q") keyword: string) {
+		const source = await ComicSourceService.get(id);
+		try {
+			if (!source.search) {
+				throw new Error("Comic source does not support search: " + id);
+			}
+			return await source.search.load(keyword, [], 1);
+		} catch (e) {
+			console.error(e);
+			throw createHttpError(500, "Comic source failed to load data: " + e, e);
+		}
+	}
+
 	@Get("/:id/manga/:comicId")
 	async detail(@Path("id") id: string, @Path("comicId") comicId: string) {
 		const cacheKey = `${id}-${comicId}`;

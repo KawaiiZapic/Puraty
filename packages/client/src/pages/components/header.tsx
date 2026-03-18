@@ -29,17 +29,19 @@ export const Header = () => {
 			history.go(-1);
 		}
 	};
-	const [isHome, setIsHome] = useState(router.current?.path === "/");
+	const [isHome, setIsHome] = useState(router.current?.name === "home");
+	const [isSearch, setIsSearch] = useState(router.current?.name === "search");
 	const [showSearch, setShowSearch] = useState(
-		isHome || router.current?.meta?.showSearch === true
+		router.current?.meta?.showSearch === true
 	);
 	const [fallbackTitle, setFallbackTitle] = useState(
 		router.current?.title || ""
 	);
 	useEffect(() => {
-		return router.onEnter(({ path, title, meta }) => {
-			setIsHome(path === "/");
-			setShowSearch(path === "/" || meta?.showSearch === true);
+		return router.onEnter(({ title, meta, name }) => {
+			setIsHome(name === "home");
+			setIsSearch(name === "search");
+			setShowSearch(meta?.showSearch === true);
 			setFallbackTitle(title || "");
 			setTitle("");
 		});
@@ -57,7 +59,13 @@ export const Header = () => {
 					onInput={e =>
 						(internalSearchText.value = (e.target as HTMLInputElement).value)
 					}
-					onFocus={() => isHome && router.navigate("/search")}
+					onFocus={() => {
+						if (isHome) {
+							router.navigate("/search");
+						} else if (!isSearch) {
+							history.go(-1);
+						}
+					}}
 					class={style.searchBar}
 					placeholder="搜索"
 				/>

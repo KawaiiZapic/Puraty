@@ -24,5 +24,8 @@ export const Comic = {
 	},
 	cleanCache(before: number) {
 		return Req.delete("/api/comic/image/cache", { before });
+	},
+	search(id: string, keyword: string) {
+		return Req.get(`/api/comic/${id}/search`, { q: keyword });
 	}
 } satisfies ComicHandler;
