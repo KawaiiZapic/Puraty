@@ -59,6 +59,8 @@ const ExplorePage = () => {
 						lastRecord.data.comics[0].id === detail.data.comics[0]?.id
 					);
 				}
+			} else if (detail.type === "singlePageWithMultiPart" && page !== 0) {
+				return true;
 			}
 			return false;
 		};
