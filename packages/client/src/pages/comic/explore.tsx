@@ -1,45 +1,13 @@
-import type { Comic, ExplorePageResult, PageJumpTarget } from "@puraty/server";
+import type { ExplorePageResult } from "@puraty/server";
 
 import { setTitle } from "../components/header";
 import api from "@/api";
-import { LazyImg } from "@/components/LazyImg";
+import { SimpleList } from "@/components/Comic/SimpleList";
 import LoadingWrapper from "@/components/LoadingWrapper";
 import { useSharedData } from "@/utils/SharedData";
 
+import { MultiPartListItem } from "./components/MultiPartListItem";
 import style from "./explore.module.css";
-
-const ComicItem = ({ comic, sourceId }: { comic: Comic; sourceId: string }) => {
-	return (
-		<RouteLink
-			href={`/comic/${sourceId}/manga/${encodeURIComponent(comic.id)}`}
-			class={`${style.comicItemWrapper} clickable-item`}
-		>
-			<LazyImg
-				class={style.comicItemImage}
-				src={api.proxy(sourceId, comic.cover, comic.id)}
-			/>
-			<div class={style.comicItemMeta}>
-				<div class={style.comicItemTitle}>{comic.title}</div>
-				<div class={style.comicItemSubtitle}>
-					{comic.subTitle ?? comic.subtitle}
-				</div>
-				<div class={style.comicItemSubtitle}>
-					{[comic.description, comic.maxPage ? `${comic.maxPage} 页` : ""]
-						.filter(v => !!v)
-						.join(" - ")}
-				</div>
-				<div class={style.comicItemTagWrapper}>
-					{comic.tags?.map((t, i) => (
-						// Tags may be duplicate
-						<div class={style.comicItemTag} key={i}>
-							{t}
-						</div>
-					))}
-				</div>
-			</div>
-		</RouteLink>
-	);
-};
 
 const ExplorePage = () => {
 	const route = useRoute();
@@ -147,47 +115,44 @@ const ExplorePage = () => {
 	}, [isEnded]);
 
 	const renderContent = () => {
-		const renderToSimpleList = (comics: Comic[]) => {
-			return comics.map(comic => (
-				<ComicItem key={comic.id} sourceId={id!} comic={comic} />
-			));
-		};
-		const renderToPart = (
-			partId: string,
-			comics: Comic[],
-			viewMore?: PageJumpTarget
-		) => {
-			return (
-				<div key={partId}>
-					<div class="px-3 py-2 flex items-center">
-						<span class="flex-grow-1 text-xl">{partId}</span>
-						{If(viewMore)(<div class="clickable-item p-1">查看更多</div>).End()}
-					</div>
-					<div class="px-3">
-						{comics.map(comic => (
-							<ComicItem key={comic.id} sourceId={id!} comic={comic} />
-						))}
-					</div>
-				</div>
-			);
-		};
-		return results.map(result => {
+		return results.map((result, i) => {
 			if (result.type === "multiPageComicList") {
-				return renderToSimpleList(result.data.comics);
+				return (
+					<SimpleList provider={id!} comics={result.data.comics} key={i} />
+				);
 			} else if (result.type === "singlePageWithMultiPart") {
-				return Object.keys(result.data).map(partId =>
-					renderToPart(partId, result.data[partId])
-				);
+				return Object.keys(result.data).map(partId => (
+					<MultiPartListItem
+						partId={partId}
+						provider={id!}
+						comics={result.data[partId]}
+						key={i}
+					/>
+				));
 			} else if (result.type === "multiPartPage") {
-				return result.data.map(part =>
-					renderToPart(part.title, part.comics, part.viewMore)
-				);
+				return result.data.map(part => (
+					<MultiPartListItem
+						partId={part.title}
+						provider={id!}
+						comics={part.comics}
+						viewMore={part.viewMore}
+						key={i}
+					/>
+				));
 			} else if (result.type === "mixed") {
 				return result.data.data.map(part => {
 					if (Array.isArray(part)) {
-						return renderToSimpleList(part);
+						return <SimpleList provider={id!} comics={part} key={i} />;
 					} else {
-						return renderToPart(part.title, part.comics, part.viewMore);
+						return (
+							<MultiPartListItem
+								partId={part.title}
+								provider={id!}
+								comics={part.comics}
+								viewMore={part.viewMore}
+								key={i}
+							/>
+						);
 					}
 				});
 			} else {
