@@ -6,20 +6,20 @@ type ExploreList = Awaited<ReturnType<typeof api.ComicSource.get>>["explore"];
 
 const ExploreListPage = () => {
 	const route = useRoute();
-	const id = route?.params.id;
+	const provider = route?.params.provider;
 	const [list, setList] = useState<ExploreList>();
 	useEffect(() => {
-		if (!id) return;
-		api.ComicSource.get(id).then(detail => {
+		if (!provider) return;
+		api.ComicSource.get(provider).then(detail => {
 			setTitle(detail.name);
 			setList(detail.explore);
 		});
-	}, [id]);
+	}, [provider]);
 	(async () => {})();
 	return (
 		<List>
 			{list?.map(item => (
-				<ListItem key={item.id} href={`/comic/${id}/explore/${item.id}`}>
+				<ListItem key={item.id} href={`/comic/${provider}/explore/${item.id}`}>
 					{item.title}
 				</ListItem>
 			))}

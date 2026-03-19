@@ -66,8 +66,8 @@ const ReaderOverlay: FunctionalComponent<{
 };
 
 const ReaderPage = () => {
-	const { id, comicId, chapter } = useRoute()!.params;
-	const data = useSharedData<ComicDetails>(`comic-${id}-${comicId}`);
+	const { provider, comicId, chapter } = useRoute()!.params;
+	const data = useSharedData<ComicDetails>(`comic-${provider}-${comicId}`);
 	const [images, setImages] = useState<string[]>([]);
 	const [page, setPage] = useState(0);
 	const [loading, setLoading] = useState(true);
@@ -89,7 +89,13 @@ const ReaderPage = () => {
 				}
 			} else if (!cached[i]) {
 				const img = new Image();
-				img.src = api.proxy(id!, images[i], comicId!, chapter, i.toString());
+				img.src = api.proxy(
+					provider!,
+					images[i],
+					comicId!,
+					chapter,
+					i.toString()
+				);
 				cached[i] = img;
 			}
 		}
@@ -144,7 +150,13 @@ const ReaderPage = () => {
 
 	const currentSrc = useMemo(() => {
 		if (images.length === 0) return "";
-		return api.proxy(id!, images[page], comicId!, chapter, page.toString());
+		return api.proxy(
+			provider!,
+			images[page],
+			comicId!,
+			chapter,
+			page.toString()
+		);
 	}, [page, images]);
 
 	const onImageLoad = useCallback(() => {
@@ -152,18 +164,18 @@ const ReaderPage = () => {
 	}, []);
 
 	const load = async () => {
-		if (!id || !comicId) return;
+		if (!provider || !comicId) return;
 		if (!data.value) {
-			data.value = await api.Comic.detail(id, comicId);
+			data.value = await api.Comic.detail(provider, comicId);
 		}
-		const pages = await api.Comic.pages(id, comicId, chapter);
+		const pages = await api.Comic.pages(provider, comicId, chapter);
 		setImages(pages.images);
 	};
 
 	useEffect(() => {
 		load();
 		UpdateBatteryStatus();
-	}, [id, comicId]);
+	}, [provider, comicId]);
 
 	return (
 		<>

@@ -39,7 +39,7 @@ const routes: RouteRecord[] = [
 		title: "管理漫画源"
 	},
 	{
-		path: "/settings/comic-sources/:id",
+		path: "/settings/comic-sources/:provider",
 		component: ComicSourceConfig,
 		title: "漫画源设置"
 	},
@@ -49,20 +49,20 @@ const routes: RouteRecord[] = [
 		title: "其他设置"
 	},
 	{
-		path: "/source/:id",
+		path: "/source/:provider",
 		component: ComicSourceDetail
 	},
 	{
-		path: "/comic/:id/explore/:explore",
+		path: "/comic/:provider/explore/:explore",
 		component: ComicExplore
 	},
 	{
-		path: "/comic/:id/manga/:comicId",
+		path: "/comic/:provider/manga/:comicId",
 		component: ComicDetail,
 		title: "漫画详情"
 	},
 	{
-		path: "/comic/:id/manga/:comicId/:chapter",
+		path: "/comic/:provider/manga/:comicId/:chapter",
 		component: ComicReader,
 		meta: {
 			fullscreen: true,

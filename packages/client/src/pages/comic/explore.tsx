@@ -11,10 +11,10 @@ import style from "./explore.module.css";
 
 const ExplorePage = () => {
 	const route = useRoute();
-	const id = route?.params?.id;
+	const provider = route?.params?.provider;
 	const explore = route?.params?.explore;
 
-	const shared = useSharedData(`explore-${id}-${explore}`, {
+	const shared = useSharedData(`explore-${provider}-${explore}`, {
 		page: 0,
 		isEnded: false,
 		results: [] as ExplorePageResult[]
@@ -66,7 +66,7 @@ const ExplorePage = () => {
 		};
 
 		return async () => {
-			if (!id || !explore || isLoading || isEnded) return;
+			if (!provider || !explore || isLoading || isEnded) return;
 
 			const page = shared.value.page;
 
@@ -79,7 +79,12 @@ const ExplorePage = () => {
 					next = last.data?.next;
 				}
 
-				const detail = await api.Comic.explore(id, explore, page + 1, next);
+				const detail = await api.Comic.explore(
+					provider,
+					explore,
+					page + 1,
+					next
+				);
 
 				if (isEnd(detail)) {
 					setIsEnded(true);
@@ -120,13 +125,17 @@ const ExplorePage = () => {
 		return results.map((result, i) => {
 			if (result.type === "multiPageComicList") {
 				return (
-					<SimpleList provider={id!} comics={result.data.comics} key={i} />
+					<SimpleList
+						provider={provider!}
+						comics={result.data.comics}
+						key={i}
+					/>
 				);
 			} else if (result.type === "singlePageWithMultiPart") {
 				return Object.keys(result.data).map((partId, j) => (
 					<MultiPartListItem
 						partId={partId}
-						provider={id!}
+						provider={provider!}
 						comics={result.data[partId]}
 						key={j}
 					/>
@@ -135,7 +144,7 @@ const ExplorePage = () => {
 				return result.data.map(part => (
 					<MultiPartListItem
 						partId={part.title}
-						provider={id!}
+						provider={provider!}
 						comics={part.comics}
 						viewMore={part.viewMore}
 						key={i}
@@ -144,12 +153,12 @@ const ExplorePage = () => {
 			} else if (result.type === "mixed") {
 				return result.data.data.map((part, j) => {
 					if (Array.isArray(part)) {
-						return <SimpleList provider={id!} comics={part} key={j} />;
+						return <SimpleList provider={provider!} comics={part} key={j} />;
 					} else {
 						return (
 							<MultiPartListItem
 								partId={part.title}
-								provider={id!}
+								provider={provider!}
 								comics={part.comics}
 								viewMore={part.viewMore}
 								key={j}

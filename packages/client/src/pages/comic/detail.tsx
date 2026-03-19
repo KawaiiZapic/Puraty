@@ -161,9 +161,9 @@ const DetailDetails: FunctionalComponent<{
 const ComicDetailPage = () => {
 	const router = useRouter();
 	const route = useRoute();
-	const id = route?.params?.id;
+	const provider = route?.params?.provider;
 	const comicId = route?.params?.comicId;
-	const data = useSharedData<ComicDetails>(`comic-${id}-${comicId}`);
+	const data = useSharedData<ComicDetails>(`comic-${provider}-${comicId}`);
 	const [loading, setLoading] = useState(true);
 
 	const openManga = (_chapter?: string) => {
@@ -182,7 +182,7 @@ const ComicDetailPage = () => {
 		}
 
 		router.navigate(
-			`/comic/${id}/manga/${encodeURIComponent(comicId!)}/${chapter}`
+			`/comic/${provider}/manga/${encodeURIComponent(comicId!)}/${chapter}`
 		);
 	};
 
@@ -190,11 +190,11 @@ const ComicDetailPage = () => {
 		const load = async () => {
 			setLoading(true);
 			try {
-				if (!id || !comicId) {
+				if (!provider || !comicId) {
 					return;
 				}
 				if (!data.value) {
-					data.value = await api.Comic.detail(id, comicId);
+					data.value = await api.Comic.detail(provider, comicId);
 				}
 				setLoading(false);
 			} catch (error) {
@@ -203,13 +203,13 @@ const ComicDetailPage = () => {
 		};
 
 		load();
-	}, [id, comicId]);
+	}, [provider, comicId]);
 
 	return (
 		<div class={style.comicDetailWrapper}>
 			<LoadingWrapper loading={loading}>
 				<DetailHeader
-					sourceId={id!}
+					sourceId={provider!}
 					comicId={comicId!}
 					comic={data.value}
 					onRead={() => openManga()}

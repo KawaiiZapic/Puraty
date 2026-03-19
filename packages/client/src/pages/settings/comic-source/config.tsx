@@ -6,7 +6,7 @@ import { useModal } from "@/components";
 import style from "./config.module.css";
 
 export default function ComicSourceConfig() {
-	const id = useRouter().current!.params.id!;
+	const provider = useRoute()!.params.provider;
 	const [sourceDetail, setSourceDetail] =
 		useState<InstalledSourceDetail | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
@@ -14,7 +14,7 @@ export default function ComicSourceConfig() {
 	const modal = useModal();
 
 	useEffect(() => {
-		api.ComicSource.get(id).then(v => {
+		api.ComicSource.get(provider).then(v => {
 			setSourceDetail(v);
 			const initialValues = { ...v.settingValues } as Record<string, string>;
 			for (const k in v.settings) {
@@ -25,7 +25,7 @@ export default function ComicSourceConfig() {
 			}
 			setResult(initialValues);
 		});
-	}, [id]);
+	}, [provider]);
 
 	const saveSettings = useMemo(() => {
 		let timer: number | null = null;
@@ -34,12 +34,12 @@ export default function ComicSourceConfig() {
 				clearTimeout(timer);
 			}
 			timer = setTimeout(() => {
-				api.ComicSource.modify(id, {
+				api.ComicSource.modify(provider, {
 					settingValues: result
 				});
 			}, 500);
 		};
-	}, [id]);
+	}, [provider]);
 
 	const handleUAPLogin = () => {
 		modal
@@ -60,7 +60,7 @@ export default function ComicSourceConfig() {
 				if (!r.username || !r.password) return;
 				setIsLoading(true);
 				try {
-					await api.ComicSource.basicLogin(id, r.username, r.password);
+					await api.ComicSource.basicLogin(provider, r.username, r.password);
 					setSourceDetail(prev => (prev ? { ...prev, isLogged: true } : null));
 					modal.alert("登录成功");
 				} catch (e) {
@@ -83,7 +83,7 @@ export default function ComicSourceConfig() {
 			.then(async r => {
 				setIsLoading(true);
 				try {
-					await api.ComicSource.cookieLogin(id, r);
+					await api.ComicSource.cookieLogin(provider, r);
 					setSourceDetail(prev => (prev ? { ...prev, isLogged: true } : null));
 					modal.alert("登录成功");
 				} catch (e) {
@@ -97,7 +97,7 @@ export default function ComicSourceConfig() {
 	const handleLogout = async () => {
 		setIsLoading(true);
 		try {
-			await api.ComicSource.logout(id);
+			await api.ComicSource.logout(provider);
 			setSourceDetail(prev => (prev ? { ...prev, isLogged: false } : null));
 			modal.alert("已退出登录");
 		} catch (e) {
@@ -111,7 +111,7 @@ export default function ComicSourceConfig() {
 	const handleCallback = async (key: string) => {
 		setIsLoading(true);
 		try {
-			await api.ComicSource.execCallback(id, key);
+			await api.ComicSource.execCallback(provider, key);
 		} finally {
 			setIsLoading(false);
 		}
