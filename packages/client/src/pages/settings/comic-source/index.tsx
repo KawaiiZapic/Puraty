@@ -1,5 +1,7 @@
 import api from "@/api";
 import LoadingWrapper from "@/components/LoadingWrapper";
+import { useComicSources, useComicSourcesRefresher } from "@/context/source";
+import { useSharedData } from "@/utils/SharedData";
 
 import SourceItem from "./components/source-item";
 
@@ -15,13 +17,20 @@ export interface ListSourceDetail {
 }
 
 const ComicSourcePage = () => {
+	const sharedAvailable = useSharedData<ListSourceDetail[]>(
+		"available-sources",
+		[]
+	);
+	const installedSources = useComicSources();
+	const refreshSource = useComicSourcesRefresher();
+
 	const [isLoading, setLoading] = useState(true);
-	const [installed, setInstalled] = useState<ListSourceDetail[]>([]);
 	const [available, setAvailable] = useState<ListSourceDetail[]>([]);
+	const [installed, setInstalled] = useState<ListSourceDetail[]>([]);
 	const load = useCallback(async () => {
 		setLoading(true);
 		try {
-			const _installed = (await api.ComicSource.list(true)).map(v => {
+			const _installed = installedSources.map(v => {
 				return {
 					name: v.name,
 					key: v.key,
@@ -29,8 +38,11 @@ const ComicSourcePage = () => {
 					incompatible: v.incompatible
 				};
 			});
-			setInstalled(_installed);
-			const _available = await api.ComicSource.available();
+			const _available =
+				sharedAvailable.value.length > 0
+					? sharedAvailable.value
+					: await api.ComicSource.available();
+			sharedAvailable.value = _available;
 			setAvailable(
 				_available.filter(it => {
 					const idx = _installed.findIndex(it2 => it2.key === it.key);
@@ -44,13 +56,19 @@ const ComicSourcePage = () => {
 					return idx < 0;
 				})
 			);
+			setInstalled(_installed);
 		} catch (_) {
 			console.error(_);
 		} finally {
 			setLoading(false);
 		}
+	}, [installedSources]);
+	useEffect(() => void load(), [installedSources]);
+	useEffect(() => {
+		return () => {
+			refreshSource();
+		};
 	}, []);
-	useEffect(() => void load(), []);
 	return (
 		<>
 			{installed.map(source => (

@@ -37,6 +37,7 @@ window.addEventListener(
 		if (typeof history.state?.historyIndex !== "number") return;
 		sharedData.forEach((data, k) => {
 			if (data.at > history.state.historyIndex) {
+				data.value = null;
 				sharedData.delete(k);
 			}
 		});

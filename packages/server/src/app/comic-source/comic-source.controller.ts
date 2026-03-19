@@ -36,6 +36,11 @@ export class ComicSourceHandler {
 
 	@Post("/add")
 	async add(@Json body: InstallBody) {
+		if (typeof body.url !== "string" || typeof body.key !== "string") {
+			throw HTTPError.status(400, undefined, {
+				message: "Required parameter url or key not existed"
+			});
+		}
 		const e = getCurrentEvent();
 		const v = await ComicSourceService.install(body.url, body.key);
 		e.res.status = 201;

@@ -1,8 +1,6 @@
-import type { InstalledSourceDetail } from "@puraty/server";
-
 import { useSearchText } from "../components/header";
-import api from "@/api";
 import { List, ListItem } from "@/components";
+import { useComicSources } from "@/context/source";
 
 const safeRegExpTest = (regExp: string, str: string) => {
 	try {
@@ -14,10 +12,7 @@ const safeRegExpTest = (regExp: string, str: string) => {
 
 const SearchPage = () => {
 	const searchText = useSearchText();
-	const [list, setList] = useState<InstalledSourceDetail[] | null>(null);
-	useEffect(() => {
-		api.ComicSource.list().then(setList);
-	}, []);
+	const list = useComicSources();
 	return (
 		<List>
 			{If(searchText)(

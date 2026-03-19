@@ -27,7 +27,8 @@ const load = async () => {
 		};
 	}
 	const router = initializeRouter();
-	render(h(App, { router, config }), document.body);
+	const sources = await api.ComicSource.list();
+	render(h(App, { router, config, sources }), document.body);
 	handleSwipe(document.scrollingElement! as HTMLElement, router);
 };
 

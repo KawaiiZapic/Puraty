@@ -1,21 +1,20 @@
-import { setTitle } from "../components/header";
-import api from "@/api";
-import { List, ListItem } from "@/components";
+import type { InstalledSourceDetail } from "@puraty/server";
 
-type ExploreList = Awaited<ReturnType<typeof api.ComicSource.get>>["explore"];
+import { setTitle } from "../components/header";
+import { List, ListItem } from "@/components";
+import { useComicSource } from "@/context/source";
+
+type ExploreList = InstalledSourceDetail["explore"];
 
 const ExploreListPage = () => {
 	const route = useRoute();
-	const provider = route?.params.provider;
+	const providerId = route?.params.provider;
+	const provider = useComicSource(providerId!);
 	const [list, setList] = useState<ExploreList>();
-	useEffect(() => {
-		if (!provider) return;
-		api.ComicSource.get(provider).then(detail => {
-			setTitle(detail.name);
-			setList(detail.explore);
-		});
-	}, [provider]);
-	(async () => {})();
+	if (provider) {
+		setTitle(provider.name);
+		setList(provider.explore);
+	}
 	return (
 		<List>
 			{list?.map(item => (

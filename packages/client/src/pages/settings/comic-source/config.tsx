@@ -1,31 +1,30 @@
-import type { InstalledSourceDetail } from "@puraty/server";
-
 import api from "@/api";
 import { useModal } from "@/components";
+import { useComicSource, useComicSourcesRefresher } from "@/context/source";
 
 import style from "./config.module.css";
 
 export default function ComicSourceConfig() {
 	const provider = useRoute()!.params.provider;
-	const [sourceDetail, setSourceDetail] =
-		useState<InstalledSourceDetail | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
-	const [result, setResult] = useState<Record<string, string>>({});
 	const modal = useModal();
-
-	useEffect(() => {
-		api.ComicSource.get(provider).then(v => {
-			setSourceDetail(v);
-			const initialValues = { ...v.settingValues } as Record<string, string>;
-			for (const k in v.settings) {
-				const s = v.settings[k];
+	const sourceDetail = useComicSource(provider);
+	const refreshSource = useComicSourcesRefresher();
+	const result = useMemo(() => {
+		if (sourceDetail) {
+			const initialValues = {
+				...(sourceDetail?.settingValues || {})
+			} as Record<string, string>;
+			for (const k in sourceDetail.settings) {
+				const s = sourceDetail.settings[k];
 				if (!(k in initialValues) && s.type !== "callback" && s.default) {
 					initialValues[k] = String(s.default);
 				}
 			}
-			setResult(initialValues);
-		});
-	}, [provider]);
+			return initialValues;
+		}
+		return {};
+	}, [sourceDetail]);
 
 	const saveSettings = useMemo(() => {
 		let timer: number | null = null;
@@ -61,7 +60,7 @@ export default function ComicSourceConfig() {
 				setIsLoading(true);
 				try {
 					await api.ComicSource.basicLogin(provider, r.username, r.password);
-					setSourceDetail(prev => (prev ? { ...prev, isLogged: true } : null));
+					refreshSource();
 					modal.alert("登录成功");
 				} catch (e) {
 					modal.alert("登录失败: " + api.normalizeError(e));
@@ -84,7 +83,7 @@ export default function ComicSourceConfig() {
 				setIsLoading(true);
 				try {
 					await api.ComicSource.cookieLogin(provider, r);
-					setSourceDetail(prev => (prev ? { ...prev, isLogged: true } : null));
+					refreshSource();
 					modal.alert("登录成功");
 				} catch (e) {
 					modal.alert("登录失败: " + api.normalizeError(e));
@@ -98,7 +97,7 @@ export default function ComicSourceConfig() {
 		setIsLoading(true);
 		try {
 			await api.ComicSource.logout(provider);
-			setSourceDetail(prev => (prev ? { ...prev, isLogged: false } : null));
+			refreshSource();
 			modal.alert("已退出登录");
 		} catch (e) {
 			modal.alert("无法退出登录: " + api.normalizeError(e));
@@ -112,6 +111,7 @@ export default function ComicSourceConfig() {
 		setIsLoading(true);
 		try {
 			await api.ComicSource.execCallback(provider, key);
+			refreshSource();
 		} finally {
 			setIsLoading(false);
 		}
