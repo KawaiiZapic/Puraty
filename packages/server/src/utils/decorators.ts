@@ -196,7 +196,7 @@ export const initializeHandlers = (app: H3) => {
 						}
 					} else if (v.type === "path") {
 						const r = typeConvert(e.context.params?.[v.id], v.convert);
-						if (v.notRequired && typeof r === "undefined") {
+						if (!v.notRequired && typeof r === "undefined") {
 							throw HTTPError.status(400, undefined, {
 								message: "Required parameter " + v.id + "@path not existed"
 							});
@@ -204,7 +204,7 @@ export const initializeHandlers = (app: H3) => {
 						return r;
 					} else if (v.type === "query") {
 						const r = typeConvert(getQuery(e)[v.id], v.convert);
-						if (v.notRequired && typeof r === "undefined") {
+						if (!v.notRequired && typeof r === "undefined") {
 							throw HTTPError.status(400, undefined, {
 								message: "Required parameter " + v.id + "@query not existed"
 							});
