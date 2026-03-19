@@ -4,6 +4,14 @@ import { useSearchText } from "../components/header";
 import api from "@/api";
 import { List, ListItem } from "@/components";
 
+const safeRegExpTest = (regExp: string, str: string) => {
+	try {
+		return new RegExp(regExp).test(str);
+	} catch {
+		return false;
+	}
+};
+
 const SearchPage = () => {
 	const searchText = useSearchText();
 	const [list, setList] = useState<InstalledSourceDetail[] | null>(null);
@@ -27,7 +35,7 @@ const SearchPage = () => {
 					{list?.map(source =>
 						If(
 							source.features.idMatch &&
-								new RegExp(source.features.idMatch).test(searchText)
+								safeRegExpTest(source.features.idMatch, searchText)
 						)(
 							<ListItem
 								key={`direct-open__${source.key}`}
