@@ -1,9 +1,9 @@
 import { render, options } from "preact";
 
+import api from "./api";
 import App from "./pages/App";
 import "./style.css";
 import { initializeRouter } from "./router";
-import { initConfig } from "./utils/config";
 import { handleSwipe } from "./utils/swipe";
 
 import "virtual:uno.css";
@@ -13,7 +13,7 @@ if (import.meta.env.DEV) {
 }
 
 const load = async () => {
-	const config = await initConfig();
+	const config = await api.App.config();
 	if (config.debugEnableSlowRendering) {
 		/* Simulation of eInk screen respond speed by delay rendering */
 		let timer = 0;
@@ -27,7 +27,7 @@ const load = async () => {
 		};
 	}
 	const router = initializeRouter();
-	render(h(App, { router }), document.body);
+	render(h(App, { router, config }), document.body);
 	handleSwipe(document.scrollingElement! as HTMLElement, router);
 };
 

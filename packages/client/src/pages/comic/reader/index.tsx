@@ -3,7 +3,7 @@ import ChevronLeftFilled from "@sicons/material/ChevronLeftFilled.svg";
 import type { FunctionalComponent } from "preact";
 
 import api from "@/api";
-import { getConfig } from "@/utils/config";
+import { useConfig } from "@/context/config";
 import { useSharedData } from "@/utils/SharedData";
 
 import { BatteryIcon, UpdateBatteryStatus } from "./components/BatteryIcon";
@@ -73,7 +73,7 @@ const ReaderPage = () => {
 	const [loading, setLoading] = useState(true);
 	const [overlayVisible, setOverlayVisible] = useState(false);
 	const g = useGesture();
-	const config = getConfig();
+	const config = useConfig();
 
 	const cachedImages = useRef<HTMLImageElement[]>([]);
 

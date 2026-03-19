@@ -3,7 +3,7 @@ import type { VNode } from "preact";
 
 import api from "@/api";
 import { useModal } from "@/components";
-import { getConfig, initConfig } from "@/utils/config";
+import { useConfig, useConfigUpdater } from "@/context/config";
 
 import style from "./index.module.css";
 
@@ -65,7 +65,8 @@ const ConfigList: Partial<Record<keyof AppConfig, ConfigItem>> = {
 };
 const MainSettingsPage = () => {
 	const modal = useModal();
-	const current = getConfig();
+	const current = useConfig();
+	const configUpdater = useConfigUpdater();
 
 	const applyNewConfig = useCallback(
 		(result: Partial<AppConfig>) => {
@@ -76,11 +77,11 @@ const MainSettingsPage = () => {
 							`${ignoredKeys.map(v => ConfigList[v as keyof AppConfig]?.title ?? v).join(", ")}的值无效`
 						);
 					}
-					initConfig();
+					api.App.config().then(configUpdater);
 				}
 			);
 		},
-		[modal]
+		[modal, configUpdater]
 	);
 
 	return (
