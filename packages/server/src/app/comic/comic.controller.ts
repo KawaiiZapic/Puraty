@@ -62,13 +62,21 @@ export class ComicHandler {
 	}
 
 	@Get("/:id/search")
-	async search(@Path("id") id: string, @Query("q") keyword: string) {
+	async search(
+		@Path("id") id: string,
+		@Query("q") keyword: string,
+		@Query("page") page: number = 1,
+		@Query("next") next: string | null = null
+	) {
 		const source = await ComicSourceService.get(id);
 		try {
-			if (!source.search) {
-				throw new Error("Comic source does not support search: " + id);
+			if (source.search?.load) {
+				return await source.search.load(keyword, [], page);
+			} else if (source.search?.loadNext) {
+				return await source.search.loadNext(keyword, [], next);
+			} else {
+				throw new Error(`Comic source ${id} does not support search`);
 			}
-			return await source.search.load(keyword, [], 1);
 		} catch (e) {
 			console.error(e);
 			throw createHttpError(500, "Comic source failed to load data: " + e, e);

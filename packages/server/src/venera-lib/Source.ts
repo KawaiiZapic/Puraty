@@ -70,12 +70,6 @@ interface SearchOptionItem {
 	label: string;
 	default?: string;
 }
-
-export interface ComicSearchResult {
-	comics: Comic[];
-	maxPage: number;
-}
-
 interface SearchOptions {
 	enableTagsSuggestions: boolean;
 	optionList: SearchOptionItem[];
@@ -83,12 +77,18 @@ interface SearchOptions {
 		keyword: string,
 		options: string[],
 		page: number
-	): Promise<ComicSearchResult>;
+	): Promise<{
+		comics: Comic[];
+		maxPage: number;
+	}>;
 	loadNext(
 		keyword: string,
 		options: string[],
 		next: string | null
-	): Promise<ComicSearchResult>;
+	): Promise<{
+		comics: Comic[];
+		next: string;
+	}>;
 }
 
 interface SelectSettingItem {

@@ -1,3 +1,4 @@
+import type { Comic } from "@/venera-lib";
 import type {
 	BaseExplorePage,
 	MPPExplorePage,
@@ -34,4 +35,10 @@ export interface ComicCacheItem {
 export interface ComicChapterResult {
 	images: string[];
 	hasImageLoadHook: boolean;
+}
+
+export interface ComicSearchResult {
+	comics: Comic[];
+	next?: string;
+	maxPage?: number;
 }

@@ -25,7 +25,13 @@ export const Comic = {
 	cleanCache(before: number) {
 		return Req.delete("/api/comic/image/cache", { before });
 	},
-	search(id: string, keyword: string) {
-		return Req.get(`/api/comic/${id}/search`, { q: keyword });
+	search(id: string, keyword: string, page = 1, next?: string) {
+		const query = new URLSearchParams();
+		query.set("page", page.toString());
+		query.set("q", keyword);
+		if (next) {
+			query.set("next", next);
+		}
+		return Req.get(`/api/comic/${id}/search?${query}`);
 	}
 } satisfies ComicHandler;
