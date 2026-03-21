@@ -49,12 +49,10 @@ const setParamInfo = (
 	info: ParamInfo | ExtraParamInfo
 ) => {
 	const { params } = initControllerInfo(func);
-	if (!params[idx]) {
-		params[idx] = {
-			...(info as any)
-		};
-	}
-	return params[idx];
+	params[idx] = {
+		...params[idx],
+		...(info as any)
+	};
 };
 
 export const Controller = (path?: string): ClassDecorator => {

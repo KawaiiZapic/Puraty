@@ -65,8 +65,8 @@ export class ComicHandler {
 	async search(
 		@Path("id") id: string,
 		@Query("q") keyword: string,
-		@Query("page") page: number = 1,
-		@Query("next") next: string | null = null
+		@NotRequired @Integer @Query("page") page: number = 1,
+		@NotRequired @Query("next") next: string | null = null
 	) {
 		const source = await ComicSourceService.get(id);
 		try {
