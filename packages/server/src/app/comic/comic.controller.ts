@@ -1,5 +1,3 @@
-import path from "tjs:path";
-
 import { ComicSourceService } from "@/app/comic-source/comic-source.service";
 import {
 	Controller,
@@ -13,7 +11,7 @@ import {
 import { createHttpError } from "@/utils/error";
 import { LRU } from "@/utils/LRU";
 import { QueueLock } from "@/utils/QueueLock";
-import type { ComicDetails, ImageLoadingConfig } from "@/venera-lib";
+import type { ComicDetails } from "@/venera-lib";
 
 import { ComicCache } from "./comic.db";
 import type { ComicChapterResult, ExplorePageResult } from "./comic.model";
@@ -148,83 +146,23 @@ export class ComicHandler {
 		@Query("image") image: string
 	) {
 		await this.queueLock.acquire();
-		const source = await ComicSourceService.get(id);
 		try {
-			const f = await ComicService.getImageCache(
+			const result = await ComicService.fetchImage(
 				id,
-				image,
 				comicId,
 				epId,
-				page
+				page,
+				image
 			);
-			if (!f) {
-				let res: Response | undefined = undefined;
-				let retry = 0;
-				while (!res && retry < 3) {
-					try {
-						let realUrl = image;
-						let imageLoadingConfig: ImageLoadingConfig | null = null;
-						if (source.comic.onImageLoad && comicId && epId) {
-							imageLoadingConfig = await source.comic.onImageLoad(
-								image,
-								comicId,
-								epId
-							);
-						} else if (source.comic.onThumbnailLoad && comicId) {
-							imageLoadingConfig = await source.comic.onThumbnailLoad(image);
-						}
-						if (imageLoadingConfig) {
-							if (imageLoadingConfig.url) {
-								realUrl = imageLoadingConfig.url;
-							}
-							if (imageLoadingConfig.modifyImage) {
-								// TODO: image load hooks
-								console.warn(
-									"Source required image load hooks, but not implemented yet."
-								);
-							}
-						}
-						res = await fetch(realUrl, {
-							signal: AbortSignal.timeout(30000)
-						});
-					} catch (e) {
-						retry++;
-						console.error(e);
-					}
+			return new Response(result.data, {
+				status: 200,
+				headers: {
+					"content-type": result.contentType,
+					"content-length": result.size.toString()
 				}
-				if (res?.ok) {
-					const buffer = await res.arrayBuffer();
-					const ubuffer = new Uint8Array(buffer);
-					await ComicService.saveImageCache(
-						ubuffer,
-						id,
-						image,
-						comicId,
-						epId,
-						page
-					);
-					return new Response(buffer, {
-						status: 200,
-						headers: {
-							"content-type": res.headers.get("content-type") ?? ""
-						}
-					});
-				} else {
-					throw createHttpError(
-						500,
-						"Failed to load image, image url return a not ok status"
-					);
-				}
-			} else {
-				const resp = new Response(f.readable, {
-					status: 200,
-					headers: {
-						"content-type": "image/" + path.extname(f.path).substring(1),
-						"content-length": (await f.stat()).size.toString()
-					}
-				});
-				return resp;
-			}
+			});
+		} catch (e) {
+			throw createHttpError(500, "Failed to load image: " + e, e);
 		} finally {
 			this.queueLock.release();
 		}

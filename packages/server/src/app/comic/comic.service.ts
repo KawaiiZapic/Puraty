@@ -1,6 +1,9 @@
 import { createHash } from "tjs:hashing";
 import path from "tjs:path";
 
+import { ComicSourceService } from "../comic-source/comic-source.service";
+import type { ImageLoadingConfig } from "@/venera-lib";
+
 import { ComicCache } from "./comic.db";
 
 const sha1sum = (msg: string) => createHash("sha1").update(msg).digest();
@@ -67,6 +70,80 @@ export class ComicService {
 				await tjs.remove(path.join(APP_DIR, "cache", h2, item.id));
 			} catch {}
 			ComicCache.delete(item.id);
+		}
+	}
+
+	static async fetchImage(
+		id: string,
+		comicId: string,
+		epId: string,
+		page: string,
+		image: string
+	) {
+		const source = await ComicSourceService.get(id);
+		const f = await ComicService.getImageCache(id, image, comicId, epId, page);
+		if (!f) {
+			let res: Response | undefined = undefined;
+			let retry = 0;
+			while (!res && retry < 3) {
+				try {
+					let realUrl = image;
+					let imageLoadingConfig: ImageLoadingConfig | null = null;
+					if (source.comic.onImageLoad && comicId && epId) {
+						imageLoadingConfig = await source.comic.onImageLoad(
+							image,
+							comicId,
+							epId
+						);
+					} else if (source.comic.onThumbnailLoad && comicId) {
+						imageLoadingConfig = await source.comic.onThumbnailLoad(image);
+					}
+					if (imageLoadingConfig) {
+						if (imageLoadingConfig.url) {
+							realUrl = imageLoadingConfig.url;
+						}
+						if (imageLoadingConfig.modifyImage) {
+							// TODO: image load hooks
+							console.warn(
+								`Source ${id} required image load hooks, but not implemented yet.`
+							);
+						}
+					}
+					res = await fetch(realUrl, {
+						signal: AbortSignal.timeout(30000)
+					});
+				} catch (e) {
+					retry++;
+					console.error(e);
+				}
+			}
+			if (res?.ok) {
+				const buffer = await res.arrayBuffer();
+				const ubuffer = new Uint8Array(buffer);
+				await ComicService.saveImageCache(
+					ubuffer,
+					id,
+					image,
+					comicId,
+					epId,
+					page
+				);
+				return {
+					contentType: res.headers.get("content-type") ?? "",
+					data: ubuffer,
+					size: ubuffer.byteLength
+				};
+			} else {
+				throw new Error(
+					"Failed to load image, image url return a not ok status"
+				);
+			}
+		} else {
+			return {
+				contentType: "image/" + path.extname(f.path).substring(1),
+				data: f.readable,
+				size: (await f.stat()).size
+			};
 		}
 	}
 }
