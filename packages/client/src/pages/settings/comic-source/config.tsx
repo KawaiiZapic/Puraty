@@ -217,6 +217,12 @@ export default function ComicSourceConfig() {
 					);
 					return item;
 				})}
+			{!sourceDetail.features.UAPLogin &&
+				!sourceDetail.features.CookieLogin &&
+				(!sourceDetail.settings ||
+					Object.keys(sourceDetail.settings).length === 0) && (
+					<div class="text-center py-12">无可配置项</div>
+				)}
 		</div>
 	);
 }
