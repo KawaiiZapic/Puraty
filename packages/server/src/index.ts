@@ -1,4 +1,6 @@
 import "./utils/polyfills";
+import { HTTPError } from "h3";
+
 import { App } from "./app";
 import { ac } from "./app/commands/commands.controller";
 import initialize from "./utils/initialize";
@@ -14,6 +16,9 @@ launchUI(ac.signal);
 logger.info("Server started at http://localhost:3000");
 
 globalThis.addEventListener("unhandledrejection", event => {
+	if (event.reason instanceof HTTPError) {
+		return;
+	}
 	logger.error("Unhandled rejection caught:", event.reason);
 	event.preventDefault();
 });
