@@ -1,6 +1,6 @@
 import type { InstalledSourceDetail } from "@puraty/server";
 
-import { setTitle } from "../components/header";
+import { useTitleSetter } from "../components/header";
 import { List, ListItem } from "@/components";
 import { useComicSource } from "@/context/source";
 
@@ -11,6 +11,8 @@ const ExploreListPage = () => {
 	const providerId = route?.params.provider;
 	const provider = useComicSource(providerId!);
 	const [list, setList] = useState<ExploreList>();
+	const setTitle = useTitleSetter();
+
 	if (provider) {
 		setTitle(provider.name);
 		setList(provider.explore);

@@ -1,6 +1,6 @@
 import type { ExplorePageResult } from "@puraty/server";
 
-import { setTitle } from "../components/header";
+import { useTitleSetter } from "../components/header";
 import api from "@/api";
 import { SimpleList } from "@/components/Comic/SimpleList";
 import LoadingWrapper from "@/components/LoadingWrapper";
@@ -13,6 +13,7 @@ const ExplorePage = () => {
 	const route = useRoute();
 	const provider = route?.params?.provider;
 	const explore = route?.params?.explore;
+	const setTitle = useTitleSetter();
 
 	const shared = useSharedData(`explore-${provider}-${explore}`, {
 		page: 0,

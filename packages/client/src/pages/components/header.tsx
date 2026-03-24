@@ -11,8 +11,13 @@ declare global {
 }
 
 const title = signal("");
-export const setTitle = (newVal: string) => {
-	title.value = newVal;
+export const useTitleSetter = () => {
+	useEffect(() => {
+		return () => {
+			title.value = "";
+		};
+	}, []);
+	return useCallback((newValue: string) => (title.value = newValue), []);
 };
 
 const internalSearchText = signal("");
@@ -43,7 +48,6 @@ export const Header = () => {
 			setIsSearch(name === "search");
 			setShowSearch(meta?.showSearch === true);
 			setFallbackTitle(title || "");
-			setTitle("");
 		});
 	}, []);
 	return (
