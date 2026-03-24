@@ -12,3 +12,8 @@ const logger = createLogger("Main");
 app.serve(ac.signal);
 launchUI(ac.signal);
 logger.info("Server started at http://localhost:3000");
+
+globalThis.addEventListener("unhandledrejection", event => {
+	logger.error("Unhandled rejection caught:", event.reason);
+	event.preventDefault();
+});
