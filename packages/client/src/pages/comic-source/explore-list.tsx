@@ -18,7 +18,10 @@ const ExploreListPage = () => {
 	return (
 		<List>
 			{list?.map(item => (
-				<ListItem key={item.id} href={`/comic/${provider}/explore/${item.id}`}>
+				<ListItem
+					key={item.id}
+					href={`/comic/${providerId}/explore/${item.id}`}
+				>
 					{item.title}
 				</ListItem>
 			))}
