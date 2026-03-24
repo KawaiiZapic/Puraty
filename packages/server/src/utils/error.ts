@@ -43,7 +43,7 @@ export class ServiceError extends HTTPError {
 			},
 			data
 		});
-		this.stack = cause instanceof Error ? cause.stack : undefined;
+		this.stack = cause instanceof Error ? cause.stack : this.stack;
 	}
 }
 
