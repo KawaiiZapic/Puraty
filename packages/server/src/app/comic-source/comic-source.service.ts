@@ -195,7 +195,7 @@ export class ComicSourceService {
 			]);
 		} catch (e) {
 			this.logger.error(e);
-			throw new LoginFailedError(String(e));
+			throw new LoginFailedError(e);
 		}
 	}
 
@@ -213,7 +213,7 @@ export class ComicSourceService {
 			ComicSourceService.setLoginStatus(id, ["", ""]);
 		} catch (e) {
 			this.logger.error(e);
-			throw new LoginFailedError(String(e));
+			throw new LoginFailedError(e);
 		}
 	}
 

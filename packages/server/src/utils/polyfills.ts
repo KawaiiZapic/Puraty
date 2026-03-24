@@ -1,11 +1,21 @@
 const oFetch = globalThis.fetch;
 
-globalThis.fetch = async function (...args) {
-	const res = await oFetch.apply(globalThis, args);
-	res.text = async function () {
-		return new TextDecoder().decode(await res.arrayBuffer());
-	};
-	return res;
+globalThis.fetch = async function fetch(...args) {
+	const stack = new Error().stack;
+	try {
+		const res = await oFetch.apply(globalThis, args);
+		res.text = async function () {
+			return new TextDecoder().decode(await res.arrayBuffer());
+		};
+		return res;
+	} catch (e) {
+		if (e instanceof Error) {
+			if (e.message.startsWith("Network request failed")) {
+				e.stack = stack;
+			}
+		}
+		throw e;
+	}
 };
 
 globalThis.AbortSignal.timeout = (timeout: number) => {

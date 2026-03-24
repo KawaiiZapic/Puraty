@@ -5,11 +5,12 @@ export const createHttpError = (
 	message: string,
 	err?: unknown
 ) => {
-	return new HTTPError(message, {
+	const res = new HTTPError(message, {
 		status: code,
-		cause: err,
-		stack: err instanceof Error ? err.stack : undefined
+		cause: err
 	});
+	res.stack = err instanceof Error ? err.stack : undefined;
+	return res;
 };
 
 type ServiceErrorCode =
@@ -25,12 +26,14 @@ export class ServiceError extends HTTPError {
 		code,
 		status,
 		message,
-		data
+		data,
+		cause
 	}: {
 		code: ServiceErrorCode;
 		status: number;
 		message: string;
 		data?: unknown;
+		cause?: unknown;
 	}) {
 		super({
 			status,
@@ -40,6 +43,7 @@ export class ServiceError extends HTTPError {
 			},
 			data
 		});
+		this.stack = cause instanceof Error ? cause.stack : undefined;
 	}
 }
 
@@ -82,15 +86,15 @@ export class SourceInitializeError extends ServiceError {
 }
 
 export class SourceInstallError extends ServiceError {
-	constructor(id: string, message: string) {
+	constructor(id: string, cause: unknown) {
 		super({
 			code: "SOURCE_INSTALL_FAILED",
 			status: 500,
 			message: "Failed to install source: " + id,
 			data: {
-				id,
-				message
-			}
+				id
+			},
+			cause
 		});
 	}
 }
@@ -106,11 +110,12 @@ export class NotSupportedError extends ServiceError {
 }
 
 export class LoginFailedError extends ServiceError {
-	constructor(message: string) {
+	constructor(cause: unknown) {
 		super({
 			code: "LOGIN_FAILED",
 			status: 400,
-			message
+			message: String(cause),
+			cause
 		});
 	}
 }
