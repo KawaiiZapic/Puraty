@@ -10,19 +10,17 @@ const color = {
 const stdout = tjs.stdout.getWriter();
 
 export const createLogger = (_tag: string) => {
-	const normalizeMsg = (msg: unknown) => {
-		if (msg instanceof Error) {
-			return (
-				"\n" +
-				msg.name +
-				": " +
-				msg.message +
-				"\n" +
-				color.gray(msg.stack || "") +
-				"\n"
-			);
-		}
-		return String(msg) + "\n";
+	const normalizeMsg = (msg: unknown[]) => {
+		return msg
+			.map(v => {
+				if (v instanceof Error) {
+					return (
+						"\n" + v.name + ": " + v.message + "\n" + color.gray(v.stack || "")
+					);
+				}
+				return String(v);
+			})
+			.join(" ");
 	};
 	const getTime = () => {
 		return color.gray(new Date().toLocaleTimeString());
@@ -30,17 +28,21 @@ export const createLogger = (_tag: string) => {
 	const encoder = new TextEncoder();
 	const tag = color.blue(`[${_tag}]`);
 	return {
-		info: (msg: unknown) => {
-			stdout.write(encoder.encode(`${getTime()} ${tag} ${normalizeMsg(msg)}`));
-		},
-		error: (msg: unknown) => {
+		info: (...msg: unknown[]) => {
 			stdout.write(
-				encoder.encode(`${getTime()} ${tag} ${color.red(normalizeMsg(msg))}`)
+				encoder.encode(`${getTime()} ${tag} ${normalizeMsg(msg)}\n`)
 			);
 		},
-		warn: (msg: unknown) => {
+		error: (...msg: unknown[]) => {
 			stdout.write(
-				encoder.encode(`${getTime()} ${tag} ${color.yellow(normalizeMsg(msg))}`)
+				encoder.encode(`${getTime()} ${tag} ${color.red(normalizeMsg(msg))}\n`)
+			);
+		},
+		warn: (...msg: unknown[]) => {
+			stdout.write(
+				encoder.encode(
+					`${getTime()} ${tag} ${color.yellow(normalizeMsg(msg))}\n`
+				)
 			);
 		}
 	};
