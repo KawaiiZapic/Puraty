@@ -16,7 +16,7 @@ import {
 import { createLogger } from "@/utils/logger";
 import type { ComicSource } from "@/venera-lib";
 import * as VeneraLib from "@/venera-lib";
-import type { AnySettingItem } from "@/venera-lib/Source";
+import { getMeta, type AnySettingItem } from "@/venera-lib/Source";
 
 import {
 	type BasicLoginBody,
@@ -32,16 +32,32 @@ export class ComicSourceService {
 	static _instances: Record<string, ComicSource> = {};
 	static logger = createLogger("ComicSourceService");
 
-	static async get(id: string, allowInitializeError = false) {
+	static async initSource(source: ComicSource, ignoreInitializeError = false) {
+		const meta = getMeta(source);
+		if (meta.hasInitialized) {
+			return;
+		}
+		try {
+			await source.init?.();
+			meta.hasInitialized = true;
+		} catch (e) {
+			meta.initializeError =
+				String(e) + (e instanceof Error ? `\n${e.stack}` : "");
+			if (!ignoreInitializeError) {
+				throw new SourceInitializeError(source.key, meta.initializeError);
+			}
+		}
+	}
+
+	static async get(id: string, ignoreInitializeError = false, init = true) {
 		if (ComicSourceService._instances[id]) {
-			if (
-				ComicSourceService._instances[id].initializeError &&
-				!allowInitializeError
-			) {
-				throw new SourceInitializeError(
-					id,
-					ComicSourceService._instances[id].initializeError
-				);
+			const s = ComicSourceService._instances[id];
+			const meta = getMeta(s);
+			if (meta.initializeError && !ignoreInitializeError) {
+				throw new SourceInitializeError(id, meta.initializeError);
+			}
+			if (init) {
+				await this.initSource(s, ignoreInitializeError);
 			}
 			return ComicSourceService._instances[id];
 		}
@@ -67,16 +83,10 @@ export class ComicSourceService {
 					}
 				});
 			}
-			ComicSourceService._instances[id] = s;
-			try {
-				await s.init?.();
-			} catch (e) {
-				s.initializeError =
-					String(e) + (e instanceof Error ? `\n${e.stack}` : "");
-				if (!allowInitializeError) {
-					throw new SourceInitializeError(id, s.initializeError);
-				}
+			if (init) {
+				await this.initSource(s, ignoreInitializeError);
 			}
+			ComicSourceService._instances[id] = s;
 			return s;
 		} catch (e) {
 			if (e instanceof Error) {
@@ -216,7 +226,11 @@ export class ComicSourceService {
 	}
 
 	static async getSourceDetail(id: string, allowInitializeError = false) {
-		const source = await ComicSourceService.get(id, allowInitializeError);
+		const source = await ComicSourceService.get(
+			id,
+			allowInitializeError,
+			false
+		);
 		const settingValues = ComicSourceService.getSettings(id);
 		const translatedSettings: Record<string, AnySettingItem> = {};
 
@@ -238,6 +252,7 @@ export class ComicSourceService {
 			}
 			translatedSettings[key] = r;
 		}
+		const meta = getMeta(source);
 		return {
 			name: source.name,
 			key: source.key,
@@ -257,7 +272,7 @@ export class ComicSourceService {
 				search: typeof source.search?.load === "function",
 				idMatch: source.comic.idMatch
 			},
-			initializedError: source.initializeError,
+			initializedError: meta.initializeError,
 			incompatible: semver.gt(source.minAppVersion, VeneraLib.CompatibleVersion)
 		} satisfies InstalledSourceDetail;
 	}

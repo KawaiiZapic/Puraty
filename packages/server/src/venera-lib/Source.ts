@@ -3,6 +3,21 @@ import { ComicSourceData } from "@/app/comic-source/comic-source.db";
 import { APP } from "./App";
 import type { Comic, ComicDetails, ImageLoadingConfig } from "./Data";
 
+export const metaSymbol = Symbol("meta");
+export const getMeta = (source: ComicSource) => {
+	if (!source[metaSymbol]) {
+		source[metaSymbol] = {
+			hasInitialized: false
+		};
+	}
+	return source[metaSymbol];
+};
+
+interface SourceMeta {
+	initializeError?: string;
+	hasInitialized: boolean;
+}
+
 interface AccountLogin {
 	login?: (account: string, pwd: string) => Promise<unknown>;
 	loginWithWebview?: {
@@ -174,24 +189,19 @@ interface ComicLoader {
 }
 
 export abstract class ComicSource {
-	public name = "";
-	public key = "";
-	public version = "";
-	public minAppVersion = "";
-	public url = "";
-	public initializeError = "";
+	public [metaSymbol]: SourceMeta = {
+		hasInitialized: false
+	};
+	public abstract name: string;
+	public abstract key: string;
+	public abstract version: string;
+	public abstract minAppVersion: string;
+	public abstract url: string;
+	public abstract comic: ComicLoader;
 	public settings?: Record<string, AnySettingItem>;
 	public account?: AccountLogin;
 	public explore?: AnyExplorePage[];
 	public search?: SearchOptions;
-	public comic: ComicLoader = {
-		loadInfo() {
-			throw new Error("Not implemented");
-		},
-		loadEp() {
-			throw new Error("Not implemented");
-		}
-	};
 
 	loadData(dataKey: string): string | undefined {
 		return ComicSourceData.get("data", this.key, dataKey);
@@ -224,6 +234,4 @@ export abstract class ComicSource {
 	}
 
 	init(): Promise<void> | void {}
-
-	static sources = {};
 }

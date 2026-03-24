@@ -33,7 +33,7 @@ export interface InstalledSourceDetail {
 	};
 	settings?: Record<string, AnySettingItem>;
 	settingValues: Record<string, unknown>;
-	initializedError: string;
+	initializedError?: string;
 	incompatible: boolean;
 }
 
