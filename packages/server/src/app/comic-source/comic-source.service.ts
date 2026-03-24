@@ -13,6 +13,7 @@ import {
 	SourceInstallError,
 	SourceNotFoundError
 } from "@/utils/error";
+import { createLogger } from "@/utils/logger";
 import type { ComicSource } from "@/venera-lib";
 import * as VeneraLib from "@/venera-lib";
 import type { AnySettingItem } from "@/venera-lib/Source";
@@ -29,6 +30,7 @@ const IMPORT_TEMPLATE = `import { ${Object.keys(VeneraLib).join(", ")} } from "$
 
 export class ComicSourceService {
 	static _instances: Record<string, ComicSource> = {};
+	static logger = createLogger("ComicSourceService");
 
 	static async get(id: string, allowInitializeError = false) {
 		if (ComicSourceService._instances[id]) {
@@ -146,7 +148,7 @@ export class ComicSourceService {
 			try {
 				result.push(await this.getSourceDetail(name, allowInitializeError));
 			} catch (e) {
-				console.error(e);
+				this.logger.error(e);
 			}
 		}
 		return result;
@@ -182,7 +184,7 @@ export class ComicSourceService {
 				loginBody.password
 			]);
 		} catch (e) {
-			console.error(e);
+			this.logger.error(e);
 			throw new LoginFailedError(String(e));
 		}
 	}
@@ -200,7 +202,7 @@ export class ComicSourceService {
 			}
 			ComicSourceService.setLoginStatus(id, ["", ""]);
 		} catch (e) {
-			console.error(e);
+			this.logger.error(e);
 			throw new LoginFailedError(String(e));
 		}
 	}

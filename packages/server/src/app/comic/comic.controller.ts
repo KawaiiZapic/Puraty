@@ -9,6 +9,7 @@ import {
 	Query
 } from "@/utils/decorators";
 import { createHttpError } from "@/utils/error";
+import { createLogger } from "@/utils/logger";
 import { LRU } from "@/utils/LRU";
 import { QueueLock } from "@/utils/QueueLock";
 import type { ComicDetails } from "@/venera-lib";
@@ -19,6 +20,7 @@ import { ComicService } from "./comic.service";
 
 @Controller("/comic")
 export class ComicHandler {
+	private logger = createLogger("ComicHandler");
 	private queueLock = new QueueLock(5);
 
 	private ComicDetailsCache = new LRU<ComicDetails>(50);
@@ -54,7 +56,7 @@ export class ComicHandler {
 				title: source.translate(explorePage.title)
 			} as ExplorePageResult;
 		} catch (e) {
-			console.error(e);
+			this.logger.error(e);
 			throw createHttpError(500, "Comic source failed to load data: " + e, e);
 		}
 	}
@@ -76,7 +78,7 @@ export class ComicHandler {
 				throw new Error(`Comic source ${id} does not support search`);
 			}
 		} catch (e) {
-			console.error(e);
+			this.logger.error(e);
 			throw createHttpError(500, "Comic source failed to load data: " + e, e);
 		}
 	}
@@ -108,7 +110,7 @@ export class ComicHandler {
 			this.ComicDetailsCache.set(cacheKey, r);
 			return r;
 		} catch (e) {
-			console.error(e);
+			this.logger.error(e);
 			throw createHttpError(500, "Comic source failed to load data: " + e, e);
 		}
 	}
@@ -132,7 +134,7 @@ export class ComicHandler {
 			this.ComicChapterCache.set(cacheKey, result);
 			return result;
 		} catch (e) {
-			console.error(e);
+			this.logger.error(e);
 			throw createHttpError(500, "Comic source failed to load data: " + e, e);
 		}
 	}

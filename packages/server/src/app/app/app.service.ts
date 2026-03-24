@@ -1,6 +1,7 @@
 import path from "tjs:path";
 
 import { AppData } from "@/db/AppData";
+import { createLogger } from "@/utils/logger";
 import { createSubscriber } from "@/utils/subscriber";
 
 import { configValidator, defaultValues, type AppConfig } from "./app.model";
@@ -10,6 +11,7 @@ const [onConfigReload, reloadConfig] = createSubscriber();
 export { onConfigReload };
 
 export class MainService {
+	static readonly logger = createLogger("MainService");
 	static async applyNewConfig(config: Record<string, unknown>) {
 		const oldConfig = AppData.getAll();
 		const ignoredKeys: string[] = [];
@@ -18,7 +20,7 @@ export class MainService {
 			if (typeof validator === "undefined" || validator(config[k])) {
 				AppData.set(k, config[k]);
 			} else {
-				console.error(`Invalid value for ${k}: ${config[k]}`);
+				this.logger.error(`Invalid value for ${k}: ${config[k]}`);
 				ignoredKeys.push(k);
 			}
 		}

@@ -2,6 +2,7 @@ import { createHash } from "tjs:hashing";
 import path from "tjs:path";
 
 import { ComicSourceService } from "../comic-source/comic-source.service";
+import { createLogger } from "@/utils/logger";
 import type { ImageLoadingConfig } from "@/venera-lib";
 
 import { ComicCache } from "./comic.db";
@@ -16,6 +17,7 @@ const getExt = (url: string) => {
 	}
 };
 export class ComicService {
+	static logger = createLogger("ComicService");
 	static async getImageCache(
 		source: string,
 		url: string,
@@ -104,7 +106,7 @@ export class ComicService {
 						}
 						if (imageLoadingConfig.modifyImage) {
 							// TODO: image load hooks
-							console.warn(
+							this.logger.warn(
 								`Source ${id} required image load hooks, but not implemented yet.`
 							);
 						}
@@ -114,7 +116,7 @@ export class ComicService {
 					});
 				} catch (e) {
 					retry++;
-					console.error(e);
+					this.logger.error(e);
 				}
 			}
 			if (res?.ok) {
