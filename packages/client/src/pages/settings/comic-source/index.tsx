@@ -38,6 +38,7 @@ const ComicSourcePage = () => {
 					incompatible: v.incompatible
 				};
 			});
+			setInstalled(_installed);
 			const _available =
 				sharedAvailable.value.length > 0
 					? sharedAvailable.value
