@@ -212,9 +212,11 @@ const ReaderPage = () => {
 						style={imageLoading ? "display: none" : ""}
 						onLoad={onImageLoad}
 					></img>
-					<div class={style.pageIndicator}>
-						{page + 1}/{images.length}
-					</div>
+					{If(images.length > 0)(
+						<div class={style.pageIndicator}>
+							{page + 1}/{images.length}
+						</div>
+					).End()}
 				</LoadingWrapper>
 			</div>
 		</>
