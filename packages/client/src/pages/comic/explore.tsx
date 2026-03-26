@@ -142,13 +142,13 @@ const ExplorePage = () => {
 					/>
 				));
 			} else if (result.type === "multiPartPage") {
-				return result.data.map(part => (
+				return result.data.map((part, j) => (
 					<MultiPartListItem
 						partId={part.title}
 						provider={provider!}
 						comics={part.comics}
 						viewMore={part.viewMore}
-						key={i}
+						key={j}
 					/>
 				));
 			} else if (result.type === "mixed") {
