@@ -2,8 +2,8 @@ import type { ExplorePageResult } from "@puraty/server";
 
 import { useTitleSetter } from "../components/header";
 import api from "@/api";
+import { useLoadingWrapper } from "@/components";
 import { SimpleList } from "@/components/Comic/SimpleList";
-import LoadingWrapper from "@/components/LoadingWrapper";
 import { useSharedData } from "@/utils/SharedData";
 
 import { MultiPartListItem } from "./components/MultiPartListItem";
@@ -25,7 +25,6 @@ const ExplorePage = () => {
 		shared.value.results
 	);
 	const [isEnded, setIsEnded] = useState(shared.value.isEnded);
-	const [errorMsg, setErrorMsg] = useState("");
 	const observerTarget = useRef<HTMLDivElement>(null);
 
 	const observer = useMemo(() => {
@@ -72,7 +71,6 @@ const ExplorePage = () => {
 			const page = shared.value.page;
 
 			isLoading = true;
-			setErrorMsg("");
 			try {
 				let next: string | undefined = undefined;
 				const last = results[page - 1];
@@ -101,20 +99,19 @@ const ExplorePage = () => {
 					observer.observe(observerTarget.current);
 					isObserved = true;
 				}
-			} catch (e) {
-				console.error(e);
-				setErrorMsg("加载失败");
 			} finally {
 				isLoading = false;
 			}
 		};
 	}, []);
 
+	const { refresh, LoadingWrapper } = useLoadingWrapper(fetchNext);
+
 	useEffect(() => {
 		setTitle(results[0]?.title ?? "");
 		if (isEnded) return;
 		if (shared.value.page === 0) {
-			fetchNext();
+			refresh();
 		} else if (observerTarget.current) {
 			observer.observe(observerTarget.current);
 		}
@@ -178,16 +175,7 @@ const ExplorePage = () => {
 		<div>
 			{renderContent()}
 			<div ref={observerTarget} class={style.comicListLastPlaceholder}>
-				{isEnded ? (
-					"没有更多了"
-				) : (
-					<LoadingWrapper
-						style={""}
-						loading={errorMsg === ""}
-						errorMsg={errorMsg}
-						onRetry={fetchNext}
-					/>
-				)}
+				{isEnded ? "没有更多了" : <LoadingWrapper style={""} />}
 			</div>
 		</div>
 	);

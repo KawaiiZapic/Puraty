@@ -6,7 +6,7 @@ import UpdateOutlined from "@sicons/material/UpdateOutlined.svg";
 import type { FunctionalComponent } from "preact";
 
 import api from "@/api";
-import LoadingWrapper from "@/components/LoadingWrapper";
+import { useLoadingWrapper } from "@/components/LoadingWrapper";
 import { useSharedData } from "@/utils/SharedData";
 
 import style from "./detail.module.css";
@@ -164,8 +164,6 @@ const ComicDetailPage = () => {
 	const provider = route?.params?.provider;
 	const comicId = route?.params?.comicId;
 	const data = useSharedData<ComicDetails>(`comic-${provider}-${comicId}`);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState<string>();
 
 	const openManga = (_chapter?: string) => {
 		if (!data.value) return;
@@ -188,29 +186,23 @@ const ComicDetailPage = () => {
 	};
 
 	const load = useCallback(async () => {
-		setLoading(true);
-		try {
-			if (!provider || !comicId) {
-				return;
-			}
-			if (!data.value) {
-				data.value = await api.Comic.detail(provider, comicId);
-			}
-		} catch (error) {
-			setError(error instanceof Error ? error.message : String(error));
-			console.error(error);
-		} finally {
-			setLoading(false);
+		if (!provider || !comicId) {
+			return;
+		}
+		if (!data.value) {
+			data.value = await api.Comic.detail(provider, comicId);
 		}
 	}, [provider, comicId]);
 
+	const { LoadingWrapper, refresh } = useLoadingWrapper(load);
+
 	useEffect(() => {
-		load();
+		refresh();
 	}, [provider, comicId]);
 
 	return (
 		<div class={style.comicDetailWrapper}>
-			<LoadingWrapper loading={loading} errorMsg={error} onRetry={load}>
+			<LoadingWrapper>
 				<DetailHeader
 					sourceId={provider!}
 					comicId={comicId!}

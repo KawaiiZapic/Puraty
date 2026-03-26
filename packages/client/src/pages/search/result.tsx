@@ -2,7 +2,7 @@ import type { ComicSearchResult } from "@puraty/server";
 
 import api from "@/api";
 import { SimpleList } from "@/components/Comic/SimpleList";
-import LoadingWrapper from "@/components/LoadingWrapper";
+import { useLoadingWrapper } from "@/components/LoadingWrapper";
 import { useSharedData } from "@/utils/SharedData";
 
 const SearchResultPage = () => {
@@ -20,7 +20,6 @@ const SearchResultPage = () => {
 		shared.value.results
 	);
 	const [isEnded, setIsEnded] = useState(shared.value.isEnded);
-	const [errorMsg, setErrorMsg] = useState("");
 	const observerTarget = useRef<HTMLDivElement>(null);
 
 	const observer = useMemo(() => {
@@ -57,7 +56,6 @@ const SearchResultPage = () => {
 			const page = shared.value.page;
 
 			isLoading = true;
-			setErrorMsg("");
 			try {
 				let next: string | undefined = undefined;
 				const last = results[page - 1];
@@ -79,19 +77,18 @@ const SearchResultPage = () => {
 					observer.observe(observerTarget.current);
 					isObserved = true;
 				}
-			} catch (e) {
-				console.error(e);
-				setErrorMsg("加载失败");
 			} finally {
 				isLoading = false;
 			}
 		};
 	}, []);
 
+	const { LoadingWrapper, refresh } = useLoadingWrapper(fetchNext);
+
 	useEffect(() => {
 		if (isEnded) return;
 		if (shared.value.page === 0) {
-			fetchNext();
+			refresh();
 		} else if (observerTarget.current) {
 			observer.observe(observerTarget.current);
 		}
@@ -109,16 +106,7 @@ const SearchResultPage = () => {
 		<div>
 			{renderContent()}
 			<div ref={observerTarget} class="p-12 text-center">
-				{isEnded ? (
-					"没有更多了"
-				) : (
-					<LoadingWrapper
-						style={""}
-						loading={errorMsg === ""}
-						errorMsg={errorMsg}
-						onRetry={fetchNext}
-					/>
-				)}
+				{isEnded ? "没有更多了" : <LoadingWrapper style={""} />}
 			</div>
 		</div>
 	);
