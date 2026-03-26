@@ -13,6 +13,7 @@ import {
 	Post,
 	Query
 } from "@/utils/decorators";
+import { createHttpError } from "@/utils/error";
 
 import { ComicSourceData } from "./comic-source.db";
 import type {
@@ -26,7 +27,11 @@ import { ComicSourceService } from "./comic-source.service";
 export class ComicSourceHandler {
 	@Get("/available")
 	available() {
-		return ComicSourceService.available();
+		try {
+			return ComicSourceService.available();
+		} catch (error) {
+			throw createHttpError(500, "Failed to get available sources", error);
+		}
 	}
 
 	@Get("/installed")
