@@ -165,6 +165,7 @@ const ComicDetailPage = () => {
 	const comicId = route?.params?.comicId;
 	const data = useSharedData<ComicDetails>(`comic-${provider}-${comicId}`);
 	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string>();
 
 	const openManga = (_chapter?: string) => {
 		if (!data.value) return;
@@ -186,28 +187,30 @@ const ComicDetailPage = () => {
 		);
 	};
 
-	useEffect(() => {
-		const load = async () => {
-			setLoading(true);
-			try {
-				if (!provider || !comicId) {
-					return;
-				}
-				if (!data.value) {
-					data.value = await api.Comic.detail(provider, comicId);
-				}
-				setLoading(false);
-			} catch (error) {
-				console.error(error);
+	const load = useCallback(async () => {
+		setLoading(true);
+		try {
+			if (!provider || !comicId) {
+				return;
 			}
-		};
+			if (!data.value) {
+				data.value = await api.Comic.detail(provider, comicId);
+			}
+		} catch (error) {
+			setError(error instanceof Error ? error.message : String(error));
+			console.error(error);
+		} finally {
+			setLoading(false);
+		}
+	}, [provider, comicId]);
 
+	useEffect(() => {
 		load();
 	}, [provider, comicId]);
 
 	return (
 		<div class={style.comicDetailWrapper}>
-			<LoadingWrapper loading={loading}>
+			<LoadingWrapper loading={loading} errorMsg={error} onRetry={load}>
 				<DetailHeader
 					sourceId={provider!}
 					comicId={comicId!}
