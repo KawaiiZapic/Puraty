@@ -3,6 +3,7 @@ import ChevronLeftFilled from "@sicons/material/ChevronLeftFilled.svg";
 import type { FunctionalComponent } from "preact";
 
 import api from "@/api";
+import { useLoadingWrapper } from "@/components";
 import { useConfig } from "@/context/config";
 import { useSharedData } from "@/utils/SharedData";
 
@@ -70,8 +71,9 @@ const ReaderPage = () => {
 	const data = useSharedData<ComicDetails>(`comic-${provider}-${comicId}`);
 	const [images, setImages] = useState<string[]>([]);
 	const [page, setPage] = useState(0);
-	const [loading, setLoading] = useState(true);
+	const [imageLoading, setImageLoading] = useState(true);
 	const [overlayVisible, setOverlayVisible] = useState(false);
+	const [manga, setManga] = useState<ComicDetails>(data.value);
 	const g = useGesture();
 	const config = useConfig();
 
@@ -113,7 +115,7 @@ const ReaderPage = () => {
 				setPage(prev => {
 					const next = Math.min(Math.max(0, prev + offset), images.length - 1);
 					if (next !== prev) {
-						setLoading(true);
+						setImageLoading(true);
 					}
 					return next;
 				});
@@ -160,20 +162,37 @@ const ReaderPage = () => {
 	}, [page, images]);
 
 	const onImageLoad = useCallback(() => {
-		setLoading(false);
+		setImageLoading(false);
 	}, []);
+
+	useEffect(() => {
+		let clean = false;
+		(async () => {
+			while (!data.value && !clean) {
+				try {
+					data.value = await api.Comic.detail(provider, comicId);
+					setManga(data.value);
+				} catch (e) {
+					console.error(e);
+					await new Promise(resolve => setTimeout(resolve, 1000));
+				}
+			}
+		})();
+		return () => {
+			clean = true;
+		};
+	}, [provider, comicId]);
 
 	const load = async () => {
 		if (!provider || !comicId) return;
-		if (!data.value) {
-			data.value = await api.Comic.detail(provider, comicId);
-		}
 		const pages = await api.Comic.pages(provider, comicId, chapter);
 		setImages(pages.images);
 	};
 
+	const { LoadingWrapper, refresh } = useLoadingWrapper(load);
+
 	useEffect(() => {
-		load();
+		refresh();
 		UpdateBatteryStatus();
 	}, [provider, comicId]);
 
@@ -181,20 +200,22 @@ const ReaderPage = () => {
 		<>
 			{overlayVisible && (
 				<ReaderOverlay
-					detail={data.value}
+					detail={manga}
 					onClose={() => setOverlayVisible(false)}
 				/>
 			)}
 			<div class={style.wrapper} {...g.listener}>
-				<img
-					class={style.image}
-					src={currentSrc}
-					style={loading ? "display: none" : ""}
-					onLoad={onImageLoad}
-				></img>
-				<div class={style.pageIndicator}>
-					{page + 1}/{images.length}
-				</div>
+				<LoadingWrapper>
+					<img
+						class={style.image}
+						src={currentSrc}
+						style={imageLoading ? "display: none" : ""}
+						onLoad={onImageLoad}
+					></img>
+					<div class={style.pageIndicator}>
+						{page + 1}/{images.length}
+					</div>
+				</LoadingWrapper>
 			</div>
 		</>
 	);
