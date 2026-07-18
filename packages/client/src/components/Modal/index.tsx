@@ -1,4 +1,5 @@
 import { Alert } from "./Alert";
+import { Confirm } from "./Confirm";
 import { Prompt, type PromptField } from "./Prompt";
 import { useTeleport } from "./Teleport";
 
@@ -34,6 +35,25 @@ export const useModal = () => {
 				setTimeout(() => {
 					remove();
 				}, timeout);
+			},
+			confirm(message: string, title?: string) {
+				return new Promise<void>((resolve, reject) => {
+					const $ = (
+						<Confirm
+							title={title}
+							message={message}
+							onConfirm={() => {
+								resolve();
+								remove();
+							}}
+							onCancel={() => {
+								reject();
+								remove();
+							}}
+						/>
+					);
+					const remove = portal.warp($);
+				});
 			}
 		}),
 		[portal]

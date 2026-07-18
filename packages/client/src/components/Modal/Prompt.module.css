@@ -14,7 +14,7 @@
 .promptDialog {
 	padding: 1rem;
 	min-width: 720px;
-	min-height: 240px;
+	min-height: 180px;
 	border-radius: 8px;
 	border: 4px black solid;
 	background-color: white;
