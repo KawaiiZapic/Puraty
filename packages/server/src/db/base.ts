@@ -17,7 +17,7 @@ export abstract class BaseDB {
 			if (typeof version !== "string") {
 				throw new Error("Initialize required");
 			} else if (version !== this.VERSION.toString()) {
-				this.upgrade();
+				this.upgrade(version);
 				db.prepare("UPDATE puraty_db_meta SET version=? WHERE name=?").run(
 					this.VERSION,
 					name
@@ -43,5 +43,5 @@ export abstract class BaseDB {
 	}
 
 	protected abstract initialize(): void;
-	protected abstract upgrade(): void;
+	protected abstract upgrade(fromVersion: string): void;
 }
