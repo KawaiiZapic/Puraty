@@ -8,7 +8,6 @@ import "./misc/misc.controller";
 import "./app/app.controller";
 import { initializeHandlers } from "@/utils/decorators";
 import { env } from "@/utils/env";
-import { requestExitFullscreen } from "@/utils/process";
 
 const assertBase = "./client";
 const serveStatic = async (fp: string) => {
@@ -34,7 +33,6 @@ export class App {
 		});
 
 		this.app.get("/", async e => {
-			requestExitFullscreen();
 			e.res.headers.set("content-type", "text/html");
 			const { body, size } = await serveStatic("index.html");
 			e.res.headers.set("content-length", size);

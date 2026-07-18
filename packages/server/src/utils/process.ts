@@ -76,9 +76,8 @@ export const findUIWindowId = async () => {
 		stdout: "pipe"
 	});
 	if (!finder.stdout) return undefined;
-	const buf = new Uint8Array(1024);
-	await finder.stdout.getReader({ mode: "byob" }).read(buf);
-	const lines = new TextDecoder().decode(buf).split("\n");
+	await finder.wait();
+	const lines = (await finder.stdout.text()).split("\n");
 	UIWindowId =
 		lines.find(line => line.includes("com.lab126.browser"))?.split(" ")?.[0] ||
 		"";

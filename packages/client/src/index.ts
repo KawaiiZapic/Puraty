@@ -30,6 +30,11 @@ const load = async () => {
 	const sources = await api.ComicSource.list();
 	render(h(App, { router, config, sources }), document.body);
 	handleSwipe(document.scrollingElement! as HTMLElement, router);
+	const vh = screen.height;
+	while (screen.height <= vh) {
+		await api.Command.exitFullscreen();
+		await new Promise<void>(resolve => setTimeout(() => resolve(), 2000));
+	}
 };
 
 load();
