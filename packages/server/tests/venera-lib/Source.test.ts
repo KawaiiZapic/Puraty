@@ -6,6 +6,11 @@ await initialize(await tjs.makeTempDir("source-test-XXXXXX"));
 
 class TestSource extends ComicSource {
 	key = "test_source";
+	name = "";
+	version = "0";
+	minAppVersion = "0";
+	url = "";
+	comic = null as never;
 }
 
 assert.ok("Create TestSource", () => {
@@ -44,6 +49,11 @@ assert.eq(
 const write_data_2 = "This is my secret data for source 2";
 class TestSource2 extends ComicSource {
 	key = "test_source_2";
+	name = "";
+	version = "0";
+	minAppVersion = "0";
+	url = "";
+	comic = null as never;
 }
 
 assert.eq(
