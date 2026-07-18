@@ -3,9 +3,11 @@ import {
 	Controller,
 	Delete,
 	Get,
+	Json,
 	NotRequired,
 	Integer,
 	Path,
+	Post,
 	Query
 } from "@/utils/decorators";
 import { createHttpError } from "@/utils/error";
@@ -14,8 +16,14 @@ import { LRU } from "@/utils/LRU";
 import { QueueLock } from "@/utils/QueueLock";
 import type { ComicDetails } from "@/venera-lib";
 
-import { ComicCache } from "./comic.db";
-import type { ComicChapterResult, ExplorePageResult } from "./comic.model";
+import { ComicCache, ComicHistory } from "./comic.db";
+import type {
+	ComicChapterResult,
+	ComicHistoryItem,
+	ComicHistoryRecordBody,
+	ExplorePageResult,
+	Paged
+} from "./comic.model";
 import { ComicService } from "./comic.service";
 
 @Controller("/comic")
@@ -25,6 +33,57 @@ export class ComicHandler {
 
 	private ComicDetailsCache = new LRU<ComicDetails>(50);
 	private ComicChapterCache = new LRU<ComicChapterResult>(50);
+
+	@Get("/history")
+	history(
+		@NotRequired @Integer @Query("page") page = 1,
+		@NotRequired @Integer @Query("pageSize") pageSize = 20
+	): Paged<ComicHistoryItem> {
+		if (page < 1) {
+			throw createHttpError(400, "History page must be greater than 0");
+		}
+		if (pageSize < 1 || pageSize > 100) {
+			throw createHttpError(400, "History page size must be between 1 and 100");
+		}
+		const total = ComicHistory.count();
+		return {
+			items: ComicHistory.list(page, pageSize),
+			page,
+			pageSize,
+			total,
+			maxPage: Math.ceil(total / pageSize)
+		};
+	}
+
+	@Post("/history")
+	recordHistory(@Json body: ComicHistoryRecordBody) {
+		const required = [body?.sourceId, body?.comicId, body?.title, body?.cover];
+		const optional = [body?.subtitle, body?.description];
+		if (
+			required.some(value => typeof value !== "string" || value.length === 0) ||
+			optional.some(
+				value => typeof value !== "undefined" && typeof value !== "string"
+			) ||
+			(typeof body?.maxPage !== "undefined" &&
+				(!Number.isInteger(body.maxPage) || body.maxPage < 0))
+		) {
+			throw createHttpError(400, "Invalid comic history record");
+		}
+		ComicHistory.record(body);
+	}
+
+	@Delete("/history/:historyId")
+	deleteHistory(@Integer @Path("historyId") historyId: number) {
+		if (historyId < 1) {
+			throw createHttpError(400, "Invalid comic history id");
+		}
+		ComicHistory.delete(historyId);
+	}
+
+	@Delete("/history")
+	clearHistory() {
+		ComicHistory.clear();
+	}
 
 	@Get("/:id/explore/:explore")
 	async explore(

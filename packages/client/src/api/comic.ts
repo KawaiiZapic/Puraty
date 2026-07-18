@@ -1,8 +1,28 @@
-import type { ComicHandler } from "@puraty/server";
+import type {
+	ComicHandler,
+	ComicHistoryItem,
+	ComicHistoryRecordBody,
+	Paged
+} from "@puraty/server";
 
 import { Req } from ".";
 
 export const Comic = {
+	history(page = 1, pageSize = 20) {
+		return Req.get<Paged<ComicHistoryItem>>("/api/comic/history", {
+			page,
+			pageSize
+		});
+	},
+	recordHistory(item: ComicHistoryRecordBody) {
+		return Req.post<void>("/api/comic/history", item);
+	},
+	deleteHistory(historyId: number) {
+		return Req.delete<void>(`/api/comic/history/${historyId}`);
+	},
+	clearHistory() {
+		return Req.delete<void>("/api/comic/history");
+	},
 	explore(id: string, exploreId: string, page = 1, next?: string) {
 		const query = new URLSearchParams();
 		query.set("page", page.toString());

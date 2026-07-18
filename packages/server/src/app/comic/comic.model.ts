@@ -42,3 +42,26 @@ export interface ComicSearchResult {
 	next?: string;
 	maxPage?: number;
 }
+
+export interface ComicHistoryRecordBody {
+	sourceId: string;
+	comicId: string;
+	title: string;
+	subtitle?: string;
+	cover: string;
+	description?: string;
+	maxPage?: number;
+}
+
+export interface ComicHistoryItem extends ComicHistoryRecordBody {
+	historyId: number;
+	lastReadAt: number;
+}
+
+export interface Paged<T> {
+	items: T[];
+	page: number;
+	pageSize: number;
+	total: number;
+	maxPage: number;
+}

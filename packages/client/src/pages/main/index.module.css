@@ -1,0 +1,24 @@
+.clearButton {
+	margin-left: auto;
+}
+
+.emptyHistory {
+	padding: 1rem 0.75rem;
+	text-align: center;
+}
+
+.historyItem {
+	display: flex;
+	align-items: center;
+	border-bottom: 1px solid black;
+}
+
+.historyItem > a {
+	flex: 1;
+	min-width: 0;
+}
+
+.deleteButton {
+	margin: 0 0.75rem;
+	flex-shrink: 0;
+}

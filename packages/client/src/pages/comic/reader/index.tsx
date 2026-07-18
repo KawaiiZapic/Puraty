@@ -74,10 +74,12 @@ const ReaderPage = () => {
 	const [imageLoading, setImageLoading] = useState(true);
 	const [overlayVisible, setOverlayVisible] = useState(false);
 	const [manga, setManga] = useState<ComicDetails>(data.value);
+	const [loadedReader, setLoadedReader] = useState<string>();
 	const g = useGesture();
 	const config = useConfig();
 
 	const cachedImages = useRef<HTMLImageElement[]>([]);
+	const recordedHistory = useRef<string>();
 
 	useEffect(() => {
 		const cached = cachedImages.current;
@@ -187,6 +189,7 @@ const ReaderPage = () => {
 		if (!provider || !comicId) return;
 		const pages = await api.Comic.pages(provider, comicId, chapter);
 		setImages(pages.images);
+		setLoadedReader(`${provider}-${comicId}-${chapter}`);
 	};
 
 	const { LoadingWrapper, refresh } = useLoadingWrapper(load);
@@ -195,6 +198,24 @@ const ReaderPage = () => {
 		refresh();
 		UpdateBatteryStatus();
 	}, [provider, comicId]);
+
+	useEffect(() => {
+		if (!loadedReader || !manga || recordedHistory.current === loadedReader) {
+			return;
+		}
+		recordedHistory.current = loadedReader;
+		api.Comic.recordHistory({
+			sourceId: provider!,
+			comicId: comicId!,
+			title: manga.title,
+			subtitle: manga.subTitle ?? manga.subtitle,
+			cover: manga.cover,
+			description: manga.description,
+			maxPage: manga.maxPage
+		}).catch(error => {
+			console.error("Failed to record comic history", error);
+		});
+	}, [loadedReader, manga]);
 
 	return (
 		<>
