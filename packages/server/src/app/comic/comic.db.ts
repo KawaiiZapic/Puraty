@@ -125,7 +125,7 @@ export class ComicHistory extends BaseDB {
 
 	protected initialize(): void {
 		this.db.exec(
-			"CREATE TABLE comic_history (historyId INTEGER PRIMARY KEY AUTOINCREMENT, sourceId TEXT NOT NULL, comicId TEXT NOT NULL, title TEXT NOT NULL, subtitle TEXT, cover TEXT NOT NULL, description TEXT, maxPage INTEGER, lastReadAt INTEGER NOT NULL, UNIQUE(sourceId, comicId));"
+			"CREATE TABLE comic_history (historyId INTEGER PRIMARY KEY AUTOINCREMENT, sourceId TEXT NOT NULL, comicId TEXT NOT NULL, title TEXT NOT NULL, cover TEXT NOT NULL, chapter TEXT NOT NULL, page INTEGER NOT NULL, lastReadAt INTEGER NOT NULL, UNIQUE(sourceId, comicId));"
 		);
 	}
 
@@ -147,18 +147,26 @@ export class ComicHistory extends BaseDB {
 		return count;
 	}
 
+	static get(sourceId: string, comicId: string): ComicHistoryItem | null {
+		const st = this.db.prepare(
+			"SELECT * FROM comic_history WHERE sourceId = ? AND comicId = ?;"
+		);
+		const item = st.all(sourceId, comicId)[0] ?? null;
+		st.finalize();
+		return item;
+	}
+
 	static record(item: ComicHistoryRecordBody): void {
 		const st = this.db.prepare(
-			"INSERT INTO comic_history (sourceId, comicId, title, subtitle, cover, description, maxPage, lastReadAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(sourceId, comicId) DO UPDATE SET title=excluded.title, subtitle=excluded.subtitle, cover=excluded.cover, description=excluded.description, maxPage=excluded.maxPage, lastReadAt=excluded.lastReadAt;"
+			"INSERT INTO comic_history (sourceId, comicId, title, cover, chapter, page, lastReadAt) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT(sourceId, comicId) DO UPDATE SET title=excluded.title, cover=excluded.cover, chapter=excluded.chapter, page=excluded.page, lastReadAt=excluded.lastReadAt;"
 		);
 		st.run(
 			item.sourceId,
 			item.comicId,
 			item.title,
-			item.subtitle ?? null,
 			item.cover,
-			item.description ?? null,
-			item.maxPage ?? null,
+			item.chapter,
+			item.page,
 			Date.now()
 		);
 		st.finalize();

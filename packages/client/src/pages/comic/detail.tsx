@@ -1,4 +1,4 @@
-import type { ComicDetails } from "@puraty/server";
+import type { ComicDetails, ComicHistoryItem } from "@puraty/server";
 import FileUploadFilled from "@sicons/material/FileUploadFilled.svg";
 import FileUploadSharp from "@sicons/material/FileUploadSharp.svg";
 import ImageFilled from "@sicons/material/ImageFilled.svg";
@@ -48,7 +48,9 @@ const DetailHeader: FunctionalComponent<{
 	comicId: string;
 	comic: ComicDetails;
 	onRead: () => void;
-}> = ({ sourceId, comicId, comic, onRead }) => {
+	history?: ComicHistoryItem;
+	onContinue: () => void;
+}> = ({ sourceId, comicId, comic, onRead, history, onContinue }) => {
 	return (
 		<div class={style.comicHeaderWrapper}>
 			<img src={api.proxy(sourceId, comic.cover, comicId)} />
@@ -59,8 +61,10 @@ const DetailHeader: FunctionalComponent<{
 				</div>
 				<DetailMeta comic={comic} />
 				<div class="flex-grow-1"></div>
-				<div>
-					<button onClick={onRead}>阅读</button>
+				<div class="flex gap-1">
+					{If(history)(<button onClick={onContinue}>继续阅读</button>).Else(
+						<button onClick={onRead}>阅读</button>
+					)}
 				</div>
 			</div>
 		</div>
@@ -164,8 +168,9 @@ const ComicDetailPage = () => {
 	const provider = route?.params?.provider;
 	const comicId = route?.params?.comicId;
 	const data = useSharedData<ComicDetails>(`comic-${provider}-${comicId}`);
+	const [history, setHistory] = useState<ComicHistoryItem>();
 
-	const openManga = (_chapter?: string) => {
+	const openManga = (_chapter?: string, page?: number) => {
 		if (!data.value) return;
 
 		let chapter = _chapter;
@@ -180,9 +185,8 @@ const ComicDetailPage = () => {
 			}
 		}
 
-		router.navigate(
-			`/comic/${provider}/manga/${encodeURIComponent(comicId!)}/${chapter}`
-		);
+		const path = `/comic/${provider}/manga/${encodeURIComponent(comicId!)}/${chapter}`;
+		router.navigate(page ? `${path}?page=${page}` : path);
 	};
 
 	const load = useCallback(async () => {
@@ -200,6 +204,23 @@ const ComicDetailPage = () => {
 		refresh();
 	}, [provider, comicId]);
 
+	useEffect(() => {
+		let active = true;
+		setHistory(undefined);
+		if (provider && comicId) {
+			api.Comic.comicHistory(provider, comicId)
+				.then(({ item }) => {
+					if (active) setHistory(item ?? undefined);
+				})
+				.catch(error => {
+					console.error("Failed to load comic history", error);
+				});
+		}
+		return () => {
+			active = false;
+		};
+	}, [provider, comicId]);
+
 	return (
 		<div class={style.comicDetailWrapper}>
 			<LoadingWrapper>
@@ -208,6 +229,8 @@ const ComicDetailPage = () => {
 					comicId={comicId!}
 					comic={data.value}
 					onRead={() => openManga()}
+					history={history}
+					onContinue={() => openManga(history?.chapter, history?.page ?? 0)}
 				/>
 				<DetailDetails
 					comic={data.value}

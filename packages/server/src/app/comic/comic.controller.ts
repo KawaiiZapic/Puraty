@@ -55,17 +55,29 @@ export class ComicHandler {
 		};
 	}
 
+	@Get("/history/:sourceId/:comicId")
+	comicHistory(
+		@Path("sourceId") sourceId: string,
+		@Path("comicId") comicId: string
+	) {
+		return {
+			item: ComicHistory.get(sourceId, decodeURIComponent(comicId))
+		};
+	}
+
 	@Post("/history")
 	recordHistory(@Json body: ComicHistoryRecordBody) {
-		const required = [body?.sourceId, body?.comicId, body?.title, body?.cover];
-		const optional = [body?.subtitle, body?.description];
+		const required = [
+			body?.sourceId,
+			body?.comicId,
+			body?.title,
+			body?.cover,
+			body?.chapter
+		];
 		if (
 			required.some(value => typeof value !== "string" || value.length === 0) ||
-			optional.some(
-				value => typeof value !== "undefined" && typeof value !== "string"
-			) ||
-			(typeof body?.maxPage !== "undefined" &&
-				(!Number.isInteger(body.maxPage) || body.maxPage < 0))
+			!Number.isInteger(body?.page) ||
+			body.page < 0
 		) {
 			throw createHttpError(400, "Invalid comic history record");
 		}

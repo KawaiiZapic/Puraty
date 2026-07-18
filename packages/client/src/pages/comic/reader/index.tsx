@@ -32,9 +32,11 @@ const TimeNow: FunctionalComponent = () => {
 const ReaderOverlay: FunctionalComponent<{
 	detail: ComicDetails | null;
 	onClose: () => void;
-}> = ({ detail, onClose }) => {
+	onBack?: () => Promise<void>;
+}> = ({ detail, onClose, onBack }) => {
 	const router = useRouter();
-	const toHome = () => {
+	const toHome = async () => {
+		await onBack?.();
 		if (history.length === 0) {
 			router.navigate("/");
 		} else {
@@ -67,19 +69,19 @@ const ReaderOverlay: FunctionalComponent<{
 };
 
 const ReaderPage = () => {
-	const { provider, comicId, chapter } = useRoute()!.params;
+	const route = useRoute()!;
+	const { provider, comicId, chapter } = route.params;
+	const requestedPage = Number(route.query.page);
 	const data = useSharedData<ComicDetails>(`comic-${provider}-${comicId}`);
 	const [images, setImages] = useState<string[]>([]);
 	const [page, setPage] = useState(0);
 	const [imageLoading, setImageLoading] = useState(true);
 	const [overlayVisible, setOverlayVisible] = useState(false);
 	const [manga, setManga] = useState<ComicDetails>(data.value);
-	const [loadedReader, setLoadedReader] = useState<string>();
 	const g = useGesture();
 	const config = useConfig();
 
 	const cachedImages = useRef<HTMLImageElement[]>([]);
-	const recordedHistory = useRef<string>();
 
 	useEffect(() => {
 		const cached = cachedImages.current;
@@ -189,7 +191,9 @@ const ReaderPage = () => {
 		if (!provider || !comicId) return;
 		const pages = await api.Comic.pages(provider, comicId, chapter);
 		setImages(pages.images);
-		setLoadedReader(`${provider}-${comicId}-${chapter}`);
+		if (!isNaN(requestedPage) && requestedPage < pages.images.length) {
+			setPage(requestedPage);
+		}
 	};
 
 	const { LoadingWrapper, refresh } = useLoadingWrapper(load);
@@ -197,25 +201,23 @@ const ReaderPage = () => {
 	useEffect(() => {
 		refresh();
 		UpdateBatteryStatus();
-	}, [provider, comicId]);
+	}, [provider, comicId, chapter]);
 
-	useEffect(() => {
-		if (!loadedReader || !manga || recordedHistory.current === loadedReader) {
-			return;
-		}
-		recordedHistory.current = loadedReader;
-		api.Comic.recordHistory({
-			sourceId: provider!,
-			comicId: comicId!,
-			title: manga.title,
-			subtitle: manga.subTitle ?? manga.subtitle,
-			cover: manga.cover,
-			description: manga.description,
-			maxPage: manga.maxPage
-		}).catch(error => {
+	const recordHistory = useCallback(async () => {
+		if (!provider || !comicId || !chapter || !manga) return;
+		try {
+			await api.Comic.recordHistory({
+				sourceId: provider,
+				comicId,
+				title: manga.title,
+				cover: manga.cover,
+				chapter,
+				page
+			});
+		} catch (error) {
 			console.error("Failed to record comic history", error);
-		});
-	}, [loadedReader, manga]);
+		}
+	}, [manga, provider, chapter, page]);
 
 	return (
 		<>
@@ -223,6 +225,7 @@ const ReaderPage = () => {
 				<ReaderOverlay
 					detail={manga}
 					onClose={() => setOverlayVisible(false)}
+					onBack={recordHistory}
 				/>
 			)}
 			<div class={style.wrapper} {...g.listener}>

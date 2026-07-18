@@ -47,10 +47,9 @@ export interface ComicHistoryRecordBody {
 	sourceId: string;
 	comicId: string;
 	title: string;
-	subtitle?: string;
 	cover: string;
-	description?: string;
-	maxPage?: number;
+	chapter: string;
+	page: number;
 }
 
 export interface ComicHistoryItem extends ComicHistoryRecordBody {

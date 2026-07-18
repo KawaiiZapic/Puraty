@@ -1,4 +1,4 @@
-import type { Comic, ComicHistoryItem } from "@puraty/server";
+import type { ComicHistoryItem } from "@puraty/server";
 import AddOutlined from "@sicons/material/AddOutlined.svg";
 import ExploreOutlined from "@sicons/material/ExploreOutlined.svg";
 import HistoryOutlined from "@sicons/material/HistoryOutlined.svg";
@@ -12,21 +12,34 @@ import {
 	useLoadingWrapper,
 	useModal
 } from "@/components";
-import { SimpleComicItem } from "@/components/Comic/SimpleComicItem";
+import comicItemStyle from "@/components/Comic/ComicItem.module.css";
+import { LazyImg } from "@/components/LazyImg";
 import { useComicSources } from "@/context/source";
 
 import style from "./index.module.css";
 
-const toComic = (item: ComicHistoryItem): Comic => ({
-	id: item.comicId,
-	title: item.title,
-	subtitle: item.subtitle ?? "",
-	subTitle: item.subtitle ?? "",
-	cover: item.cover,
-	tags: [],
-	description: "",
-	maxPage: item.maxPage
-});
+const ComicHistoryItem = ({
+	record,
+	sourceId,
+	class: className
+}: {
+	record: ComicHistoryItem;
+	sourceId: string;
+	class?: string;
+}) => {
+	return (
+		<RouteLink
+			href={`/comic/${sourceId}/manga/${encodeURIComponent(record.comicId)}`}
+			class={"clickable-item flex items-center flex-col " + (className ?? "")}
+		>
+			<LazyImg
+				class={`${comicItemStyle.comicItemImage} mr-0!`}
+				src={api.proxy(sourceId, record.cover, record.comicId)}
+			/>
+			<div class={`line-clamp-2 text-xs! text-center px-1`}>{record.title}</div>
+		</RouteLink>
+	);
+};
 
 const ComicHistory = () => {
 	const modal = useModal();
@@ -78,10 +91,10 @@ const ComicHistory = () => {
 				).Else(
 					<div class="mx-1 grid grid-cols-4">
 						{items.map(item => (
-							<SimpleComicItem
+							<ComicHistoryItem
 								class="w-1/4 min-w-240px pt-2"
 								sourceId={item.sourceId}
-								comic={toComic(item)}
+								record={item}
 								key={item.comicId + item.comicId}
 							/>
 						))}

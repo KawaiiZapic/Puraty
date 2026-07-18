@@ -14,6 +14,11 @@ export const Comic = {
 			pageSize
 		});
 	},
+	comicHistory(sourceId: string, comicId: string) {
+		return Req.get<{ item: ComicHistoryItem | null }>(
+			`/api/comic/history/${encodeURIComponent(sourceId)}/${encodeURIComponent(comicId)}`
+		);
+	},
 	recordHistory(item: ComicHistoryRecordBody) {
 		return Req.post<void>("/api/comic/history", item);
 	},
