@@ -32,7 +32,7 @@ export class App {
 			debug: env.DEV
 		});
 
-		this.app.get("/", async e => {
+		this.app.get("/**", async e => {
 			e.res.headers.set("content-type", "text/html");
 			const { body, size } = await serveStatic("index.html");
 			e.res.headers.set("content-length", size);

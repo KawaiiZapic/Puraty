@@ -91,6 +91,9 @@ const routes: RouteRecord[] = [
 export const initializeRouter = () => {
 	const router = createRouter(routes);
 	router.with(fullscreen);
+	router.onNotFound(() => {
+		router.navigate("/");
+	});
 	router.ready();
 	return router;
 };
